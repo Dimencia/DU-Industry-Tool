@@ -36,6 +36,8 @@
             this.skillLevelsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SearchBox = new System.Windows.Forms.TextBox();
             this.SearchButton = new System.Windows.Forms.Button();
+            this.updateMarketValuesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.filterToMarketToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -69,7 +71,9 @@
             // 
             this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.inputOreValuesToolStripMenuItem,
-            this.skillLevelsToolStripMenuItem});
+            this.skillLevelsToolStripMenuItem,
+            this.updateMarketValuesToolStripMenuItem,
+            this.filterToMarketToolStripMenuItem});
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
             this.settingsToolStripMenuItem.Size = new System.Drawing.Size(76, 24);
             this.settingsToolStripMenuItem.Text = "Settings";
@@ -77,14 +81,14 @@
             // inputOreValuesToolStripMenuItem
             // 
             this.inputOreValuesToolStripMenuItem.Name = "inputOreValuesToolStripMenuItem";
-            this.inputOreValuesToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.inputOreValuesToolStripMenuItem.Size = new System.Drawing.Size(237, 26);
             this.inputOreValuesToolStripMenuItem.Text = "Ore Values";
             this.inputOreValuesToolStripMenuItem.Click += new System.EventHandler(this.inputOreValuesToolStripMenuItem_Click);
             // 
             // skillLevelsToolStripMenuItem
             // 
             this.skillLevelsToolStripMenuItem.Name = "skillLevelsToolStripMenuItem";
-            this.skillLevelsToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.skillLevelsToolStripMenuItem.Size = new System.Drawing.Size(237, 26);
             this.skillLevelsToolStripMenuItem.Text = "Skill Levels";
             this.skillLevelsToolStripMenuItem.Click += new System.EventHandler(this.skillLevelsToolStripMenuItem_Click);
             // 
@@ -104,6 +108,20 @@
             this.SearchButton.Text = "Search";
             this.SearchButton.UseVisualStyleBackColor = true;
             this.SearchButton.Click += new System.EventHandler(this.SearchButton_Click);
+            // 
+            // updateMarketValuesToolStripMenuItem
+            // 
+            this.updateMarketValuesToolStripMenuItem.Name = "updateMarketValuesToolStripMenuItem";
+            this.updateMarketValuesToolStripMenuItem.Size = new System.Drawing.Size(237, 26);
+            this.updateMarketValuesToolStripMenuItem.Text = "Update Market Values";
+            this.updateMarketValuesToolStripMenuItem.Click += new System.EventHandler(this.updateMarketValuesToolStripMenuItem_Click);
+            // 
+            // filterToMarketToolStripMenuItem
+            // 
+            this.filterToMarketToolStripMenuItem.Name = "filterToMarketToolStripMenuItem";
+            this.filterToMarketToolStripMenuItem.Size = new System.Drawing.Size(237, 26);
+            this.filterToMarketToolStripMenuItem.Text = "Filter To Market";
+            this.filterToMarketToolStripMenuItem.Click += new System.EventHandler(this.filterToMarketToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -136,5 +154,7 @@
         private System.Windows.Forms.ToolStripMenuItem skillLevelsToolStripMenuItem;
         private System.Windows.Forms.TextBox SearchBox;
         private System.Windows.Forms.Button SearchButton;
+        private System.Windows.Forms.ToolStripMenuItem updateMarketValuesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem filterToMarketToolStripMenuItem;
     }
 }

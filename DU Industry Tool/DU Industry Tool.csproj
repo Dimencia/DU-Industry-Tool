@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{728C72E3-CB0A-4871-958F-7FD68F743F2D}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <RootNamespace>DU_Industry_Tool</RootNamespace>
     <AssemblyName>DU Industry Tool</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
@@ -53,12 +53,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IndustryManager.cs" />
+    <Compile Include="LoadingForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LoadingForm.Designer.cs">
+      <DependentUpon>LoadingForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="MarketData.cs" />
+    <Compile Include="MarketManager.cs" />
     <Compile Include="OreValueForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -74,6 +82,9 @@
     <Compile Include="SkillForm.Designer.cs">
       <DependentUpon>SkillForm.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="LoadingForm.resx">
+      <DependentUpon>LoadingForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>

@@ -14,11 +14,17 @@ namespace DU_Industry_Tool
     {
 
         private IndustryManager Manager;
+        private MarketManager Market;
+        private bool MarketFiltered = false;
         public MainForm(IndustryManager manager)
         {
             InitializeComponent();
             // Setup the trees.  One recipe on each main node
             Manager = manager;
+
+            Market = new MarketManager();
+
+
             treeView.AfterSelect += TreeView_AfterSelect;
 
             // TODO: Freeze updates first
@@ -32,23 +38,6 @@ namespace DU_Industry_Tool
                     var recipeNode = new TreeNode(recipe.Name);
                     recipeNode.Tag = recipe;
                     recipe.Node = recipeNode;
-                    var inputsNode = new TreeNode("Inputs");
-                    var outputsNode = new TreeNode("Outputs");
-
-                    foreach(var ingredient in recipe.Ingredients)
-                    {
-                        var ingredientNode = new TreeNode(ingredient.Name + " : " + ingredient.Quantity);
-                        ingredientNode.Tag = manager._recipes[ingredient.Type];
-                        inputsNode.Nodes.Add(ingredientNode);
-                    }
-                    foreach (var product in recipe.Products)
-                    {
-                        var productNode = new TreeNode(product.Name + " : " + product.Quantity);
-                        productNode.Tag = manager._recipes[product.Type];
-                        outputsNode.Nodes.Add(productNode);
-                    }
-                    recipeNode.Nodes.Add(inputsNode);
-                    recipeNode.Nodes.Add(outputsNode);
 
                     groupNode.Nodes.Add(recipeNode);
                 }
@@ -81,13 +70,111 @@ namespace DU_Industry_Tool
                 costPanel.FlowDirection = FlowDirection.LeftToRight;
                 costPanel.AutoSize = true;
                 var costLabel = new Label();
-                costLabel.Text = "Cost To Make: ";
+                costLabel.Text = "Cost To Make ";
                 costLabel.AutoSize = true;
                 costLabel.Padding = new Padding(0, 0, 0, 10);
                 costPanel.Controls.Add(costLabel);
                 var totalCostLabel = new Label();
-                var cost = Manager.GetTotalCost(recipe.Key);
-                totalCostLabel.Text = cost.ToString("0.0");
+                var costToMake = Manager.GetTotalCost(recipe.Key);
+                totalCostLabel.Text = costToMake.ToString("N01") + "q";
+                totalCostLabel.AutoSize = true;
+                costPanel.Controls.Add(totalCostLabel);
+
+                infoPanel.Controls.Add(costPanel);
+
+                costPanel = new FlowLayoutPanel();
+                costPanel.FlowDirection = FlowDirection.LeftToRight;
+                costPanel.AutoSize = true;
+                costLabel = new Label();
+                costLabel.Text = "Untalented ";
+                costLabel.AutoSize = true;
+                costLabel.Padding = new Padding(0, 0, 0, 10);
+                costPanel.Controls.Add(costLabel);
+                totalCostLabel = new Label();
+                var cost = Manager.GetBaseCost(recipe.Key);
+                totalCostLabel.Text = cost.ToString("N01") + "q";
+                totalCostLabel.AutoSize = true;
+                costPanel.Controls.Add(totalCostLabel);
+
+                infoPanel.Controls.Add(costPanel);
+
+                costPanel = new FlowLayoutPanel();
+                costPanel.FlowDirection = FlowDirection.LeftToRight;
+                costPanel.AutoSize = true;
+                costLabel = new Label();
+                costLabel.Text = "Market ";
+                costLabel.AutoSize = true;
+                costLabel.Padding = new Padding(0, 0, 0, 10);
+                costPanel.Controls.Add(costLabel);
+                totalCostLabel = new Label();
+
+                // IDK why sometimes prices are listed as 0
+                var orders = Market.MarketOrders.Values.Where(o => o.ItemType == recipe.NqId && o.BuyQuantity < 0 && DateTime.Now < o.ExpirationDate && o.Price > 0);
+
+                var mostRecentOrder = orders.OrderBy(o => o.Price).FirstOrDefault();
+                if (mostRecentOrder == null)
+                    cost = 0;
+                else
+                    cost = mostRecentOrder.Price;
+
+                totalCostLabel.Text = cost.ToString("N01") + "q";
+                totalCostLabel.AutoSize = true;
+                costPanel.Controls.Add(totalCostLabel);
+                infoPanel.Controls.Add(costPanel);
+
+                if (mostRecentOrder != null) {
+                    costLabel = new Label();
+                    costLabel.Text = "Until " + mostRecentOrder.ExpirationDate.ToString();
+                    costPanel.Controls.Add(costLabel);
+
+                    costPanel = new FlowLayoutPanel();
+                    costPanel.FlowDirection = FlowDirection.LeftToRight;
+                    costPanel.AutoSize = true;
+                    costLabel = new Label();
+                    costLabel.Text = "Profit Margin ";
+                    costLabel.AutoSize = true;
+                    costLabel.Padding = new Padding(0, 0, 0, 10);
+                    costPanel.Controls.Add(costLabel);
+                    totalCostLabel = new Label();
+                    cost = ((mostRecentOrder.Price-costToMake)/mostRecentOrder.Price);
+                    totalCostLabel.Text = cost.ToString("0%");
+                    totalCostLabel.AutoSize = true;
+                    costPanel.Controls.Add(totalCostLabel);
+
+                    infoPanel.Controls.Add(costPanel);
+
+                    costPanel = new FlowLayoutPanel();
+                    costPanel.FlowDirection = FlowDirection.LeftToRight;
+                    costPanel.AutoSize = true;
+                    costLabel = new Label();
+                    costLabel.Text = "Profit/Day/Industry ";
+                    costLabel.AutoSize = true;
+                    costLabel.Padding = new Padding(0, 0, 0, 10);
+                    costPanel.Controls.Add(costLabel);
+                    totalCostLabel = new Label();
+                    cost = (mostRecentOrder.Price - costToMake)*(86400/recipe.Time);
+                    totalCostLabel.Text = cost.ToString("N01")+"q";
+                    totalCostLabel.AutoSize = true;
+                    costPanel.Controls.Add(totalCostLabel);
+
+                    infoPanel.Controls.Add(costPanel);
+                }
+
+
+
+                
+
+                costPanel = new FlowLayoutPanel();
+                costPanel.FlowDirection = FlowDirection.LeftToRight;
+                costPanel.AutoSize = true;
+                costLabel = new Label();
+                costLabel.Text = "Per Industry ";
+                costLabel.AutoSize = true;
+                costLabel.Padding = new Padding(0, 0, 0, 10);
+                costPanel.Controls.Add(costLabel);
+                totalCostLabel = new Label();
+                cost = 86400/recipe.Time;
+                totalCostLabel.Text = cost.ToString("0.0") + "/Day";
                 totalCostLabel.AutoSize = true;
                 costPanel.Controls.Add(totalCostLabel);
 
@@ -222,6 +309,60 @@ namespace DU_Industry_Tool
                 treeView.SelectedNode.EnsureVisible();
             }
             treeView.Focus();
+        }
+
+        private void updateMarketValuesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var loadForm = new LoadingForm(Market);
+            loadForm.ShowDialog(this);
+        }
+
+        private void filterToMarketToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (MarketFiltered)
+            {
+                MarketFiltered = false;
+                (sender as ToolStripMenuItem).Text = "Filter To Market";
+                treeView.Nodes.Clear();
+                foreach (var group in Manager._recipes.Values.GroupBy(r => r.ParentGroupName))
+                {
+                    var groupNode = new TreeNode(group.Key);
+
+
+                    foreach (var recipe in group)
+                    {
+                        var recipeNode = new TreeNode(recipe.Name);
+                        recipeNode.Tag = recipe;
+                        recipe.Node = recipeNode;
+
+                        groupNode.Nodes.Add(recipeNode);
+                    }
+
+                    treeView.Nodes.Add(groupNode);
+                }
+            }
+            else
+            {
+                MarketFiltered = true;
+                (sender as ToolStripMenuItem).Text = "Unfilter Market";
+                treeView.Nodes.Clear();
+                foreach (var group in Manager._recipes.Values.Where(r => Market.MarketOrders.Values.Any(v => v.ItemType == r.NqId)).GroupBy(r => r.ParentGroupName))
+                {
+                    var groupNode = new TreeNode(group.Key);
+
+
+                    foreach (var recipe in group)
+                    {
+                        var recipeNode = new TreeNode(recipe.Name);
+                        recipeNode.Tag = recipe;
+                        recipe.Node = recipeNode;
+
+                        groupNode.Nodes.Add(recipeNode);
+                    }
+
+                    treeView.Nodes.Add(groupNode);
+                }
+            }
         }
     }
 }

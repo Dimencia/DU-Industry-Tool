@@ -34,6 +34,7 @@ namespace DU_Industry_Tool
         public string ParentGroupName { get; set; }
         public string Key { get; set; }
         public TreeNode Node { get; set; }
+        public ulong NqId { get; set; } // Different from Id... for markets
     }
 
     public class ProductDetail
@@ -77,5 +78,10 @@ namespace DU_Industry_Tool
         public string RecordId { get; set; }
         public List<ProductDetail> Products { get; set; }
         public string Key { get; set; }
+    }
+
+    public class Injection
+    {
+        public ulong NqId { get; set; }
     }
 }
