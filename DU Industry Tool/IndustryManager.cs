@@ -138,14 +138,41 @@ namespace DU_Industry_Tool
             }
             else
             {
-
+                foreach (var group in _recipes.Values.GroupBy(r => r.ParentGroupName))
+                {
+                    Console.WriteLine(group.Key);
+                }
                 var multiplierTalentGroups = new string[] { "Pure", "Scraps", "Product" };
+
+                List<Talent> genericScrapTalents = new List<Talent>()
+                {
+                    new Talent() { Name = "Basic Scrap Refinery", Addition = -1, InputTalent = true },
+                    new Talent() { Name = "Uncommon Scrap Refinery", Addition = -1, InputTalent = true },
+                    new Talent() { Name = "Advanced Scrap Refinery", Addition = -1, InputTalent = true },
+                    new Talent() { Name = "Rare Scrap Refinery", Addition = -1, InputTalent = true }
+                };
+
                 foreach (var kvp in _recipes.Where(r => multiplierTalentGroups.Any(t => t == r.Value.ParentGroupName)))
                 {
                     var recipe = kvp.Value;
                     var talent = new Talent() { Name = recipe.Name + " Productivity", Addition = 0, Multiplier = 0.03 };
                     talent.ApplicableRecipes.Add(kvp.Key); // Each of these only applies to its one thing... 
                     Talents.Add(talent);
+                    if (recipe.ParentGroupName == "Pure" || recipe.ParentGroupName == "Product")
+                    {
+                        // Pures and products have an input rediction of 0.03 multiplier
+                        talent = new Talent() { Name = recipe.Name + " Ore Refining", Addition = 0, Multiplier = -0.03, InputTalent = true };
+                        talent.ApplicableRecipes.Add(kvp.Key);
+                        Talents.Add(talent);
+                    }
+                    else if (recipe.ParentGroupName == "Scraps")
+                    {
+                        // And scraps get a flat -1L general, and -2 specific
+                        talent = new Talent() { Name = recipe.Name + " Scrap Refinery", Addition = -2, InputTalent = true };
+                        talent.ApplicableRecipes.Add(kvp.Key);
+                        if (recipe.Level < 5) // Exotics don't have one
+                            genericScrapTalents[recipe.Level - 1].ApplicableRecipes.Add(kvp.Key);
+                    }
                 }
 
                 // Fuel talents
@@ -215,9 +242,13 @@ namespace DU_Industry_Tool
             foreach (var talent in Talents.Where(t => t.ApplicableRecipes.Contains(recipe.Key)))
             {
                 if (talent.InputTalent)
+                {
                     inputMultiplier += talent.Multiplier * talent.Value;
+                    Console.WriteLine("Applying talent " + talent.Name + " to " + recipe.Name + " for input mult " + (talent.Multiplier * talent.Value));
+                }
                 else
                 {
+                    Console.WriteLine("Applying talent " + talent.Name + " to " + recipe.Name + " for output mult " + (talent.Multiplier * talent.Value) + " and adder " + (talent.Addition * talent.Value));
                     outputMultiplier += talent.Multiplier * talent.Value;
                     outputAdder += talent.Addition * talent.Value;
                 }
@@ -230,11 +261,15 @@ namespace DU_Industry_Tool
             {
                 if (_recipes[ingredient.Type].ParentGroupName == "Ore")
                 {
-                    totalCost += (ingredient.Quantity * inputMultiplier * Ores.Where(o => o.Key == ingredient.Type).First().Value) / (recipe.Products.First().Quantity*outputMultiplier+outputAdder);
+                    Console.WriteLine(ingredient.Name + " value: " + Ores.Where(o => o.Key == ingredient.Type).First().Value + "; Requires " + ingredient.Quantity + " to make " + recipe.Products.First().Quantity + " for a total of " + ((Ores.Where(o => o.Key == ingredient.Type).First().Value * ingredient.Quantity) / recipe.Products.First().Quantity));
+
+                    Console.WriteLine("Talents: " + ingredient.Name + " value: " + Ores.Where(o => o.Key == ingredient.Type).First().Value + "; Requires " + (ingredient.Quantity * inputMultiplier) + " to make " + (recipe.Products.First().Quantity * outputMultiplier) + " for a total of " + ((Ores.Where(o => o.Key == ingredient.Type).First().Value * ingredient.Quantity * inputMultiplier) / (recipe.Products.First().Quantity * outputMultiplier + outputAdder)));
+
+                    totalCost += (ingredient.Quantity * inputMultiplier * Ores.Where(o => o.Key == ingredient.Type).First().Value) / (recipe.Products.First().Quantity * outputMultiplier + outputAdder);
                 }
                 else
                 {
-                    totalCost += GetTotalCost(ingredient.Type)*ingredient.Quantity*inputMultiplier/ (recipe.Products.First().Quantity * outputMultiplier + outputAdder);
+                    totalCost += GetTotalCost(ingredient.Type) * ingredient.Quantity * inputMultiplier / (recipe.Products.First().Quantity * outputMultiplier + outputAdder);
                 }
             }
 
@@ -266,16 +301,16 @@ namespace DU_Industry_Tool
                 }
                 else
                 {
-                    foreach(var result in GetOreComponents(ingredient.Type))
+                    foreach (var result in GetOreComponents(ingredient.Type))
                     {
-                        products.Add(new ProductDetail() { Name = result.Name, Quantity = (result.Quantity*ingredient.Quantity)/ recipe.Products[0].Quantity, Type = result.Type });
+                        products.Add(new ProductDetail() { Name = result.Name, Quantity = (result.Quantity * ingredient.Quantity) / recipe.Products[0].Quantity, Type = result.Type });
                     }
                 }
             }
             // Now flatten them into totals
 
             List<ProductDetail> results = new List<ProductDetail>();
-            foreach(var group in products.GroupBy(p => p.Type))
+            foreach (var group in products.GroupBy(p => p.Type))
             {
                 results.Add(new ProductDetail() { Name = group.First().Name, Type = group.Key, Quantity = group.Sum(p => p.Quantity) });
             }
