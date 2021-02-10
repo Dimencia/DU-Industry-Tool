@@ -1,0 +1,1793 @@
+{
+	
+    "standardframePart":{
+        "Id": "08d8a31f-515f-4d26-8af3-519519a84f23",
+        "ParentId": "08d8a31f-5159-4bb2-877d-6d69aec28495",
+        "Name": "Standard Frames"
+    },
+    "reinforcedframePart":{
+        "Id": "08d8a31f-515d-4ff2-810e-b6bac25bb3c2",
+        "ParentId": "08d8a31f-5159-4bb2-877d-6d69aec28495",
+        "Name": "Reinforced Frames"
+    },
+    "casingPart":{
+        "Id": "08d8a31f-515c-429d-878b-a37de74b02db",
+        "ParentId": "08d8a31f-5159-4bb2-877d-6d69aec28495",
+        "Name": "Casings"
+    },
+    "StructuralPart":{
+        "Id": "08d8a31f-5159-4bb2-877d-6d69aec28495",
+        "ParentId": "08d8a31f-50dc-4c02-8de7-8aa9a5df4c2e",
+        "Name": "Structural Parts"
+    },
+    "screwPart":{
+        "Id": "08d8a31f-5157-4dcc-8d91-4ff49c7b7779",
+        "ParentId": "08d8a31f-514c-4c21-8d9c-f41dfcc204d3",
+        "Name": "Screws"
+    },
+    "pipePart":{
+        "Id": "08d8a31f-5156-4065-8e1d-13c14baf06cd",
+        "ParentId": "08d8a31f-514c-4c21-8d9c-f41dfcc204d3",
+        "Name": "Pipes"
+    },
+    "ledPart":{
+        "Id": "08d8a31f-5154-4334-89e3-dd6bb40b753f",
+        "ParentId": "08d8a31f-514c-4c21-8d9c-f41dfcc204d3",
+        "Name": "LEDs"
+    },
+    "fixationPart":{
+        "Id": "08d8a31f-5152-45db-8c9a-415408681c9d",
+        "ParentId": "08d8a31f-514c-4c21-8d9c-f41dfcc204d3",
+        "Name": "Fixations"
+    },
+    "connectorPart":{
+        "Id": "08d8a31f-5150-4814-89a1-12b878205d04",
+        "ParentId": "08d8a31f-514c-4c21-8d9c-f41dfcc204d3",
+        "Name": "Connectors"
+    },
+    "componentPart":{
+        "Id": "08d8a31f-514e-4a1e-8d11-a8cd886bbec5",
+        "ParentId": "08d8a31f-514c-4c21-8d9c-f41dfcc204d3",
+        "Name": "Components"
+    },
+    "IntermediaryPart":{
+        "Id": "08d8a31f-514c-4c21-8d9c-f41dfcc204d3",
+        "ParentId": "08d8a31f-50dc-4c02-8de7-8aa9a5df4c2e",
+        "Name": "Intermediary parts"
+    },
+    "siloPart":{
+        "Id": "08d8a31f-514a-4f06-8938-d94e05131a35",
+        "ParentId": "08d8a31f-5124-4830-8c0e-147fd07bdd38",
+        "Name": "Missile Silos"
+    },
+    "screenPart":{
+        "Id": "08d8a31f-5149-41d7-8024-b1a56ed1c079",
+        "ParentId": "08d8a31f-5124-4830-8c0e-147fd07bdd38",
+        "Name": "Screens"
+    },
+    "roboticarmPart":{
+        "Id": "08d8a31f-5147-447d-8bc1-9f03865d3066",
+        "ParentId": "08d8a31f-5124-4830-8c0e-147fd07bdd38",
+        "Name": "Robotic Arms"
+    },
+    "powerconvertorPart":{
+        "Id": "08d8a31f-5145-473a-84eb-dab7f5a2ba36",
+        "ParentId": "08d8a31f-5124-4830-8c0e-147fd07bdd38",
+        "Name": "Power Transformer"
+    },
+    "orescannerPart":{
+        "Id": "08d8a31f-5143-494d-8ec6-a913f3a59562",
+        "ParentId": "08d8a31f-5124-4830-8c0e-147fd07bdd38",
+        "Name": "Ore Scanners"
+    },
+    "opticalsensorPart":{
+        "Id": "08d8a31f-5141-4bf5-87e7-4dfb7405f10c",
+        "ParentId": "08d8a31f-5124-4830-8c0e-147fd07bdd38",
+        "Name": "Optical sensors"
+    },
+    "motherboardPart":{
+        "Id": "08d8a31f-513f-416a-8aa8-feef8eb07587",
+        "ParentId": "08d8a31f-5124-4830-8c0e-147fd07bdd38",
+        "Name": "Motherboards"
+    },
+    "mobilepanelPart":{
+        "Id": "08d8a31f-513d-4188-8ceb-7c22d3da86d9",
+        "ParentId": "08d8a31f-5124-4830-8c0e-147fd07bdd38",
+        "Name": "Mobile Panels"
+    },
+    "mechanicalsensorPart":{
+        "Id": "08d8a31f-513b-460d-896b-c132d9265abd",
+        "ParentId": "08d8a31f-5124-4830-8c0e-147fd07bdd38",
+        "Name": "Mechanical Sensors"
+    },
+    "magneticrailPart":{
+        "Id": "08d8a31f-5139-4b47-847d-8c4623403644",
+        "ParentId": "08d8a31f-5124-4830-8c0e-147fd07bdd38",
+        "Name": "Magnetic Rails"
+    },
+    "lightPart":{
+        "Id": "08d8a31f-5138-407e-8c4a-d899f84edf71",
+        "ParentId": "08d8a31f-5124-4830-8c0e-147fd07bdd38",
+        "Name": "Lights"
+    },
+    "laserchamberPart":{
+        "Id": "08d8a31f-5136-45d8-8be5-d7705e642c54",
+        "ParentId": "08d8a31f-5124-4830-8c0e-147fd07bdd38",
+        "Name": "Laser Chambers"
+    },
+    "ionicchamberPart":{
+        "Id": "08d8a31f-5134-4c0b-8562-2fe00ade0094",
+        "ParentId": "08d8a31f-5124-4830-8c0e-147fd07bdd38",
+        "Name": "Ionic chambers"
+    },
+    "gazcylinderPart":{
+        "Id": "08d8a31f-5132-41d8-87b7-bd86169677f5",
+        "ParentId": "08d8a31f-5124-4830-8c0e-147fd07bdd38",
+        "Name": "Gas cylinders"
+    },
+    "electricenginePart":{
+        "Id": "08d8a31f-5130-4606-83c5-095427038994",
+        "ParentId": "08d8a31f-5124-4830-8c0e-147fd07bdd38",
+        "Name": "Electric engines"
+    },
+    "combustionchamberPart":{
+        "Id": "08d8a31f-512e-4a7b-87aa-271e024c26b5",
+        "ParentId": "08d8a31f-5124-4830-8c0e-147fd07bdd38",
+        "Name": "Combustion Chambers"
+    },
+    "firingsystemPart":{
+        "Id": "08d8a31f-512c-4ff9-8327-f05ff7700553",
+        "ParentId": "08d8a31f-5124-4830-8c0e-147fd07bdd38",
+        "Name": "Firing systems"
+    },
+    "coresystemPart":{
+        "Id": "08d8a31f-512b-4493-8a83-3b3655131cf8",
+        "ParentId": "08d8a31f-5124-4830-8c0e-147fd07bdd38",
+        "Name": "Core Systems"
+    },
+    "controlsystemPart":{
+        "Id": "08d8a31f-5129-4a18-8a51-ce83d9d47055",
+        "ParentId": "08d8a31f-5124-4830-8c0e-147fd07bdd38",
+        "Name": "Control systems"
+    },
+    "chemicalcontainerPart":{
+        "Id": "08d8a31f-5127-4f25-8138-779a7f0e5c8d",
+        "ParentId": "08d8a31f-5124-4830-8c0e-147fd07bdd38",
+        "Name": "Chemical containers"
+    },
+    "antennaPart":{
+        "Id": "08d8a31f-5126-439e-8376-687cf893a6aa",
+        "ParentId": "08d8a31f-5124-4830-8c0e-147fd07bdd38",
+        "Name": "Antennas"
+    },
+    "FunctionalPart":{
+        "Id": "08d8a31f-5124-4830-8c0e-147fd07bdd38",
+        "ParentId": "08d8a31f-50dc-4c02-8de7-8aa9a5df4c2e",
+        "Name": "Functional parts"
+    },
+    "quantumbarrierPart":{
+        "Id": "08d8a31f-5122-4b31-88cb-9a69fc0c4c95",
+        "ParentId": "08d8a31f-511c-4062-8bcb-fd56f993d7ab",
+        "Name": "Quantum Barriers"
+    },
+    "quantumalignmentunitPart":{
+        "Id": "08d8a31f-5121-4056-803b-0a9105e28ff4",
+        "ParentId": "08d8a31f-511c-4062-8bcb-fd56f993d7ab",
+        "Name": "Quantum Alignment Units"
+    },
+    "antimattercorePart":{
+        "Id": "08d8a31f-511f-4606-8b05-98dd1347589c",
+        "ParentId": "08d8a31f-511c-4062-8bcb-fd56f993d7ab",
+        "Name": "Antimatter cores"
+    },
+    "antigravitycorePart":{
+        "Id": "08d8a31f-511d-4b6e-8d59-bd04dbbbe00c",
+        "ParentId": "08d8a31f-511c-4062-8bcb-fd56f993d7ab",
+        "Name": "Anti-gravity cores"
+    },
+    "ExceptionalPart":{
+        "Id": "08d8a31f-511c-4062-8bcb-fd56f993d7ab",
+        "ParentId": "08d8a31f-50dc-4c02-8de7-8aa9a5df4c2e",
+        "Name": "Exceptional parts"
+    },
+    "DeprecatedPart":{
+        "Id": "08d8a31f-511a-4590-861b-7ebaa340e236",
+        "ParentId": "08d8a31f-50dc-4c02-8de7-8aa9a5df4c2e",
+        "Name": "Deprecated parts"
+    },
+    "warheadPart":{
+        "Id": "08d8a31f-5118-4af9-8fa6-99c7635be381",
+        "ParentId": "08d8a31f-50de-45f8-80d7-87a0f40d2c5c",
+        "Name": "Solid Warheads"
+    },
+    "singularitycontainerPart":{
+        "Id": "08d8a31f-5116-4472-84d8-1cf2de11b3a3",
+        "ParentId": "08d8a31f-50de-45f8-80d7-87a0f40d2c5c",
+        "Name": "Singularity Containers"
+    },
+    "quantumcorePart":{
+        "Id": "08d8a31f-5114-4794-8c3c-f3756c8d4ca9",
+        "ParentId": "08d8a31f-50de-45f8-80d7-87a0f40d2c5c",
+        "Name": "Quantum Cores"
+    },
+    "processorPart":{
+        "Id": "08d8a31f-5111-4aca-84b0-6fa69942144b",
+        "ParentId": "08d8a31f-50de-45f8-80d7-87a0f40d2c5c",
+        "Name": "Processors"
+    },
+    "powersystemPart":{
+        "Id": "08d8a31f-5102-4a00-82ae-1521925be2a3",
+        "ParentId": "08d8a31f-50de-45f8-80d7-87a0f40d2c5c",
+        "Name": "Power Systems"
+    },
+    "opticsPart":{
+        "Id": "08d8a31f-5101-4014-86b8-ac0ddcd19eb2",
+        "ParentId": "08d8a31f-50de-45f8-80d7-87a0f40d2c5c",
+        "Name": "Optics"
+    },
+    "magnetPart":{
+        "Id": "08d8a31f-50ff-45dd-8793-4e9e09a6afd6",
+        "ParentId": "08d8a31f-50de-45f8-80d7-87a0f40d2c5c",
+        "Name": "Magnets"
+    },
+    "injectorPart":{
+        "Id": "08d8a31f-50fd-4c12-8954-19ee8310de60",
+        "ParentId": "08d8a31f-50de-45f8-80d7-87a0f40d2c5c",
+        "Name": "Injectors"
+    },
+    "igniterPart":{
+        "Id": "08d8a31f-50fc-42c6-8d1a-6c49298010f4",
+        "ParentId": "08d8a31f-50de-45f8-80d7-87a0f40d2c5c",
+        "Name": "Explosive Modules"
+    },
+    "hydraulicsPart":{
+        "Id": "08d8a31f-50fa-4803-8ecf-b8ad089f721b",
+        "ParentId": "08d8a31f-50de-45f8-80d7-87a0f40d2c5c",
+        "Name": "Hydraulics"
+    },
+    "electronicsPart":{
+        "Id": "08d8a31f-50f8-4d6f-835c-9f32f00e2ee9",
+        "ParentId": "08d8a31f-50de-45f8-80d7-87a0f40d2c5c",
+        "Name": "Electronics"
+    },
+    "burnerPart":{
+        "Id": "08d8a31f-50f7-42af-8cbd-a4edf5ff865c",
+        "ParentId": "08d8a31f-50de-45f8-80d7-87a0f40d2c5c",
+        "Name": "Burners"
+    },
+    "antimattercapsulePart":{
+        "Id": "08d8a31f-50f4-4652-84b5-e015a2be2176",
+        "ParentId": "08d8a31f-50de-45f8-80d7-87a0f40d2c5c",
+        "Name": "Antimatter capsules"
+    },
+    "ComplexPart":{
+        "Id": "08d8a31f-50de-45f8-80d7-87a0f40d2c5c",
+        "ParentId": "08d8a31f-50dc-4c02-8de7-8aa9a5df4c2e",
+        "Name": "Complex parts"
+    },
+    "Part":{
+        "Id": "08d8a31f-50dc-4c02-8de7-8aa9a5df4c2e",
+        
+        "Name": "Parts"
+    },
+    "UncommonPureMaterial":{
+        "Id": "08d8a31f-50db-4276-8b03-9ab547976621",
+        "ParentId": "08d8a31f-50d1-4834-88a0-93b212775142",
+        "Name": "Uncommon Pure Material"
+    },
+    "RarePureMaterial":{
+        "Id": "08d8a31f-50d9-49df-811c-51fe3018ee4c",
+        "ParentId": "08d8a31f-50d1-4834-88a0-93b212775142",
+        "Name": "Rare Pure Material"
+    },
+    "ExoticPureMaterial":{
+        "Id": "08d8a31f-50d7-4fed-8282-3dbc9d7cd0c4",
+        "ParentId": "08d8a31f-50d1-4834-88a0-93b212775142",
+        "Name": "Exotic Pure Material"
+    },
+    "DeprecatedPureMaterial":{
+        "Id": "08d8a31f-50d6-438c-8b89-57de6c52a314",
+        "ParentId": "08d8a31f-50d1-4834-88a0-93b212775142",
+        "Name": "Deprecated Pure Materials"
+    },
+    "BasicPureMaterial":{
+        "Id": "08d8a31f-50d4-4a1e-85dd-a72ac7f50b5d",
+        "ParentId": "08d8a31f-50d1-4834-88a0-93b212775142",
+        "Name": "Basic Pure Material"
+    },
+    "AdvancedPureMaterial":{
+        "Id": "08d8a31f-50d3-41e5-87da-e64c4a37e842",
+        "ParentId": "08d8a31f-50d1-4834-88a0-93b212775142",
+        "Name": "Advanced Pure Material"
+    },
+    "PureMaterial":{
+        "Id": "08d8a31f-50d1-4834-88a0-93b212775142",
+        "ParentId": "08d8a31f-50c5-40fb-887f-53b7873a2046",
+        "Name": "Pure"
+    },
+    "polymerProduct":{
+        "Id": "08d8a31f-50cf-4f4a-8753-1a02f4b4c1fb",
+        "ParentId": "08d8a31f-50c8-433c-8fc4-bd29e5fb62fd",
+        "Name": "Polymers"
+    },
+    "lightMetalProduct":{
+        "Id": "08d8a31f-50ce-45fd-88b9-0da7fa7c4e5a",
+        "ParentId": "08d8a31f-50c8-433c-8fc4-bd29e5fb62fd",
+        "Name": "Light Metals"
+    },
+    "heavyMetalProduct":{
+        "Id": "08d8a31f-50cc-4ded-8dcb-a7255197db20",
+        "ParentId": "08d8a31f-50c8-433c-8fc4-bd29e5fb62fd",
+        "Name": "Heavy Metals"
+    },
+    "glassCategoryProduct":{
+        "Id": "08d8a31f-50cb-451e-8b92-1451ab8f4b38",
+        "ParentId": "08d8a31f-50c8-433c-8fc4-bd29e5fb62fd",
+        "Name": "Glass materials"
+    },
+    "conductorMetalProduct":{
+        "Id": "08d8a31f-50c9-4c0d-8195-ca76d714eca0",
+        "ParentId": "08d8a31f-50c8-433c-8fc4-bd29e5fb62fd",
+        "Name": "Conductor Metals"
+    },
+    "ProductMaterial":{
+        "Id": "08d8a31f-50c8-433c-8fc4-bd29e5fb62fd",
+        "ParentId": "08d8a31f-50c5-40fb-887f-53b7873a2046",
+        "Name": "Product"
+    },
+    "CatalystMaterial":{
+        "Id": "08d8a31f-50c6-49f9-81cf-58d9ce1b14bb",
+        "ParentId": "08d8a31f-50c5-40fb-887f-53b7873a2046",
+        "Name": "Catalyst"
+    },
+    "RefinedMaterial":{
+        "Id": "08d8a31f-50c5-40fb-887f-53b7873a2046",
+        "ParentId": "08d8a31f-504b-4442-832f-728e6b8eb538",
+        "Name": "Refined Materials"
+    },
+    "Ore5":{
+        "Id": "08d8a31f-50c3-4814-875e-27353e233d6c",
+        "ParentId": "08d8a31f-50bb-4d8c-8187-a739b97274c8",
+        "Name": "Tier 5 Ores"
+    },
+    "Ore4":{
+        "Id": "08d8a31f-50c1-4ec5-8739-9b7ac95ed2d9",
+        "ParentId": "08d8a31f-50bb-4d8c-8187-a739b97274c8",
+        "Name": "Tier 4 Ores"
+    },
+    "Ore2":{
+        "Id": "08d8a31f-50c0-46f5-845a-43ec26f5978d",
+        "ParentId": "08d8a31f-50bb-4d8c-8187-a739b97274c8",
+        "Name": "Tier 2 Ores"
+    },
+    "Ore1":{
+        "Id": "08d8a31f-50be-4dfa-8466-916146e77841",
+        "ParentId": "08d8a31f-50bb-4d8c-8187-a739b97274c8",
+        "Name": "Tier 1 Ores"
+    },
+    "Ore3":{
+        "Id": "08d8a31f-50bd-45c4-8ea5-3601d1f3d821",
+        "ParentId": "08d8a31f-50bb-4d8c-8187-a739b97274c8",
+        "Name": "Tier 3 Ores"
+    },
+    "OreMaterial":{
+        "Id": "08d8a31f-50bb-4d8c-8187-a739b97274c8",
+        "ParentId": "08d8a31f-50b9-4865-87cc-191a28f935c7",
+        "Name": "Ore"
+    },
+    "MineableMaterial":{
+        "Id": "08d8a31f-50b9-4865-87cc-191a28f935c7",
+        "ParentId": "08d8a31f-504b-4442-832f-728e6b8eb538",
+        "Name": "Minable materials"
+    },
+    "vanadiumHoneycomb":{
+        "Id": "08d8a31f-50b7-4f72-8dbc-cf836c4c930c",
+        "ParentId": "08d8a31f-5096-4b2e-8628-4658444b22b3",
+        "Name": "Vanadium Honeycomb"
+    },
+    "titaniumHoneycomb":{
+        "Id": "08d8a31f-50b6-489c-841d-40519fb50833",
+        "ParentId": "08d8a31f-5096-4b2e-8628-4658444b22b3",
+        "Name": "Titanium Honeycomb"
+    },
+    "sulfurHoneycomb":{
+        "Id": "08d8a31f-50b4-4f15-82ae-7ffee02ce10f",
+        "ParentId": "08d8a31f-5096-4b2e-8628-4658444b22b3",
+        "Name": "Sulfur Honeycomb"
+    },
+    "sodiumHoneycomb":{
+        "Id": "08d8a31f-50b2-4f9d-8854-97d19f4fe962",
+        "ParentId": "08d8a31f-5096-4b2e-8628-4658444b22b3",
+        "Name": "Sodium Honeycomb"
+    },
+    "silverHoneycomb":{
+        "Id": "08d8a31f-50b1-487a-8a5c-b708db72f375",
+        "ParentId": "08d8a31f-5096-4b2e-8628-4658444b22b3",
+        "Name": "Silver Honeycomb"
+    },
+    "siliconHoneycomb":{
+        "Id": "08d8a31f-50b0-41c8-88cb-81debdcc6876",
+        "ParentId": "08d8a31f-5096-4b2e-8628-4658444b22b3",
+        "Name": "Silicon Honeycomb"
+    },
+    "scandiumHoneycomb":{
+        "Id": "08d8a31f-50ae-4b02-80d0-2765892ff5b6",
+        "ParentId": "08d8a31f-5096-4b2e-8628-4658444b22b3",
+        "Name": "Scandium Honeycomb"
+    },
+    "niobiumHoneycomb":{
+        "Id": "08d8a31f-50ad-431f-8fff-673d92ffb64e",
+        "ParentId": "08d8a31f-5096-4b2e-8628-4658444b22b3",
+        "Name": "Niobium Honeycomb"
+    },
+    "nickelHoneycomb":{
+        "Id": "08d8a31f-50aa-48eb-8295-f9b51642614c",
+        "ParentId": "08d8a31f-5096-4b2e-8628-4658444b22b3",
+        "Name": "Nickel Honeycomb"
+    },
+    "manganeseHoneycomb":{
+        "Id": "08d8a31f-50a8-4b83-8c12-747a90d02e08",
+        "ParentId": "08d8a31f-5096-4b2e-8628-4658444b22b3",
+        "Name": "Manganese Honeycomb"
+    },
+    "lithiumHoneycomb":{
+        "Id": "08d8a31f-50a6-4f2f-8e07-442ba73f248e",
+        "ParentId": "08d8a31f-5096-4b2e-8628-4658444b22b3",
+        "Name": "Lithium Honeycomb"
+    },
+    "ironHoneycomb":{
+        "Id": "08d8a31f-50a4-4a50-8a79-9f087399ede1",
+        "ParentId": "08d8a31f-5096-4b2e-8628-4658444b22b3",
+        "Name": "Iron Honeycomb"
+    },
+    "goldHoneycomb":{
+        "Id": "08d8a31f-50a3-43b2-8ab9-7264119d683a",
+        "ParentId": "08d8a31f-5096-4b2e-8628-4658444b22b3",
+        "Name": "Gold Honeycomb"
+    },
+    "fluorineHoneycomb":{
+        "Id": "08d8a31f-50a1-4d07-8cac-49bca0545a6b",
+        "ParentId": "08d8a31f-5096-4b2e-8628-4658444b22b3",
+        "Name": "Fluorine Honeycomb"
+    },
+    "copperHoneycomb":{
+        "Id": "08d8a31f-509f-4ce5-8a0f-d62ee899e1ba",
+        "ParentId": "08d8a31f-5096-4b2e-8628-4658444b22b3",
+        "Name": "Copper Honeycomb"
+    },
+    "cobaltHoneycomb":{
+        "Id": "08d8a31f-509e-4607-8ef7-b0892757d11e",
+        "ParentId": "08d8a31f-5096-4b2e-8628-4658444b22b3",
+        "Name": "Cobalt Honeycomb"
+    },
+    "chromiumHoneycomb":{
+        "Id": "08d8a31f-509c-4fbf-862f-a71ad0c5771d",
+        "ParentId": "08d8a31f-5096-4b2e-8628-4658444b22b3",
+        "Name": "Chromium Honeycomb"
+    },
+    "carbonHoneycomb":{
+        "Id": "08d8a31f-509b-4812-89d4-6e808696ab64",
+        "ParentId": "08d8a31f-5096-4b2e-8628-4658444b22b3",
+        "Name": "Carbon Honeycomb"
+    },
+    "calciumHoneycomb":{
+        "Id": "08d8a31f-5099-4af5-88fc-ee7f917755db",
+        "ParentId": "08d8a31f-5096-4b2e-8628-4658444b22b3",
+        "Name": "Calcium Honeycomb"
+    },
+    "aluminiumHoneycomb":{
+        "Id": "08d8a31f-5098-4208-8a38-a4974fee57f0",
+        "ParentId": "08d8a31f-5096-4b2e-8628-4658444b22b3",
+        "Name": "Aluminium Honeycomb"
+    },
+    "PureHoneycomb":{
+        "Id": "08d8a31f-5096-4b2e-8628-4658444b22b3",
+        "ParentId": "08d8a31f-5051-4a22-89a2-a92e554e86c3",
+        "Name": "Pure Honeycomb Materials"
+    },
+    "woodHoneycomb":{
+        "Id": "08d8a31f-5095-419f-8069-8bc35396fd52",
+        "ParentId": "08d8a31f-5052-4e93-8745-94083fae6f99",
+        "Name": "Wood"
+    },
+    "steelHoneycomb":{
+        "Id": "08d8a31f-5093-4a63-8094-82f837fb04f3",
+        "ParentId": "08d8a31f-5052-4e93-8745-94083fae6f99",
+        "Name": "Steel"
+    },
+    "stainlessSteelHoneycomb":{
+        "Id": "08d8a31f-5092-4371-88ac-bb750bf10077",
+        "ParentId": "08d8a31f-5052-4e93-8745-94083fae6f99",
+        "Name": "Stainless Steel"
+    },
+    "siluminHoneycomb":{
+        "Id": "08d8a31f-5090-4cd1-8071-25910d682a05",
+        "ParentId": "08d8a31f-5052-4e93-8745-94083fae6f99",
+        "Name": "Silumin"
+    },
+    "scAlHoneycomb":{
+        "Id": "08d8a31f-508f-4792-894f-90a309ecab0a",
+        "ParentId": "08d8a31f-5052-4e93-8745-94083fae6f99",
+        "Name": "Sc-Al"
+    },
+    "plasticHoneycomb":{
+        "Id": "08d8a31f-508e-41db-8c89-308e391f5508",
+        "ParentId": "08d8a31f-5052-4e93-8745-94083fae6f99",
+        "Name": "Plastic"
+    },
+    "marbleHoneycomb":{
+        "Id": "08d8a31f-508c-4b98-8989-cc189b36e09c",
+        "ParentId": "08d8a31f-5052-4e93-8745-94083fae6f99",
+        "Name": "Marble"
+    },
+    "maragingSteelHoneycomb":{
+        "Id": "08d8a31f-508b-45dd-8641-9a8c0f9ffdba",
+        "ParentId": "08d8a31f-5052-4e93-8745-94083fae6f99",
+        "Name": "Maraging Steel"
+    },
+    "mangalloyHoneycomb":{
+        "Id": "08d8a31f-5089-4fc9-85c8-097818df9297",
+        "ParentId": "08d8a31f-5052-4e93-8745-94083fae6f99",
+        "Name": "Mangalloy"
+    },
+    "inconelHoneycomb":{
+        "Id": "08d8a31f-5088-4afc-87d6-cbb33c0e1e92",
+        "ParentId": "08d8a31f-5052-4e93-8745-94083fae6f99",
+        "Name": "Inconel"
+    },
+    "grade5TitaniumAlloyHoneycomb":{
+        "Id": "08d8a31f-5087-460d-812c-ae1d0b8b1353",
+        "ParentId": "08d8a31f-5052-4e93-8745-94083fae6f99",
+        "Name": "Grade 5 Titanium Alloy"
+    },
+    "emissiveHoneycomb":{
+        "Id": "08d8a31f-5086-41b0-8388-5a5244cc6060",
+        "ParentId": "08d8a31f-5052-4e93-8745-94083fae6f99",
+        "Name": "Luminescent Glass Honeycomb"
+    },
+    "duraluminHoneycomb":{
+        "Id": "08d8a31f-5084-4d14-8626-48fdf1c69fbc",
+        "ParentId": "08d8a31f-5052-4e93-8745-94083fae6f99",
+        "Name": "Duralumin Honeycomb"
+    },
+    "concreteHoneycomb":{
+        "Id": "08d8a31f-5083-478e-88ef-c4aa4228c187",
+        "ParentId": "08d8a31f-5052-4e93-8745-94083fae6f99",
+        "Name": "Concrete Honeycomb"
+    },
+    "carbonfiberHoneycomb":{
+        "Id": "08d8a31f-5081-44f6-82af-c202afcc8ea1",
+        "ParentId": "08d8a31f-5052-4e93-8745-94083fae6f99",
+        "Name": "Carbon Fiber Honeycomb"
+    },
+    "brickHoneycomb":{
+        "Id": "08d8a31f-507e-4bd1-8287-fec7944187fe",
+        "ParentId": "08d8a31f-5052-4e93-8745-94083fae6f99",
+        "Name": "Brick Honeycomb"
+    },
+    "alLiHoneycomb":{
+        "Id": "08d8a31f-5054-4304-88dc-9c0b30d307c6",
+        "ParentId": "08d8a31f-5052-4e93-8745-94083fae6f99",
+        "Name": "Al-Li Honeycomb"
+    },
+    "ProductHoneycomb":{
+        "Id": "08d8a31f-5052-4e93-8745-94083fae6f99",
+        "ParentId": "08d8a31f-5051-4a22-89a2-a92e554e86c3",
+        "Name": "Product Honeycomb Materials"
+    },
+    "Honeycomb":{
+        "Id": "08d8a31f-5051-4a22-89a2-a92e554e86c3",
+        "ParentId": "08d8a31f-504b-4442-832f-728e6b8eb538",
+        "Name": "Honeycomb materials"
+    },
+    "SpaceFuel":{
+        "Id": "08d8a31f-5050-4555-8741-1bd04504b575",
+        "ParentId": "08d8a31f-504c-47fd-893f-b4a176a90a59",
+        "Name": "Space Fuels"
+    },
+    "RocketFuel":{
+        "Id": "08d8a31f-504f-410a-8e74-9c4fba1be4c4",
+        "ParentId": "08d8a31f-504c-47fd-893f-b4a176a90a59",
+        "Name": "Rocket Fuels"
+    },
+    "AtmoFuel":{
+        "Id": "08d8a31f-504d-4cdb-8a45-4bd020f993ca",
+        "ParentId": "08d8a31f-504c-47fd-893f-b4a176a90a59",
+        "Name": "Atmospheric Fuels"
+    },
+    "Fuel":{
+        "Id": "08d8a31f-504c-47fd-893f-b4a176a90a59",
+        "ParentId": "08d8a31f-504b-4442-832f-728e6b8eb538",
+        "Name": "Fuels"
+    },
+    "Material":{
+        "Id": "08d8a31f-504b-4442-832f-728e6b8eb538",
+        "ParentId": "08d8a31f-4f17-4195-862d-42d7290833ce",
+        "Name": "Materials"
+    },
+    "PlanetLightUnit":{
+        "Id": "08d8a31f-504a-405d-8875-088b974ad71e",
+        "ParentId": "08d8a31f-5042-4abe-80c7-e46e533a99ab",
+        "Name": "Ground lights"
+    },
+    "CoreUnitStatic":{
+        "Id": "08d8a31f-5048-4c99-81a8-ceeeaf6a7bf6",
+        "ParentId": "08d8a31f-5045-41a2-8104-c051b2e78a2b",
+        "Name": "Static Core Units"
+    },
+    "CoreUnitSpace":{
+        "Id": "08d8a31f-5047-490f-820f-02831171f900",
+        "ParentId": "08d8a31f-5045-41a2-8104-c051b2e78a2b",
+        "Name": "Space Core Units"
+    },
+    "CoreUnitDynamic":{
+        "Id": "08d8a31f-5046-4533-88f2-5d8b29789984",
+        "ParentId": "08d8a31f-5045-41a2-8104-c051b2e78a2b",
+        "Name": "Dynamic Core Units"
+    },
+    "CoreUnit":{
+        "Id": "08d8a31f-5045-41a2-8104-c051b2e78a2b",
+        "ParentId": "08d8a31f-5042-4abe-80c7-e46e533a99ab",
+        "Name": "Core Units"
+    },
+    "TerritoryUnit":{
+        "Id": "08d8a31f-5043-4e51-846c-ba8030c227da",
+        "ParentId": "08d8a31f-5042-4abe-80c7-e46e533a99ab",
+        "Name": "Territory Units"
+    },
+    "PlanetElement":{
+        "Id": "08d8a31f-5042-4abe-80c7-e46e533a99ab",
+        "ParentId": "08d8a31f-4f39-4ecd-8184-2bd64479f177",
+        "Name": "Planet Elements"
+    },
+    "LandingGearUnit":{
+        "Id": "08d8a31f-5041-475a-8070-219949aeae13",
+        "ParentId": "08d8a31f-503f-40c9-81dc-dc645f364542",
+        "Name": "Landing Gears"
+    },
+    "GyroUnit":{
+        "Id": "08d8a31f-5040-4413-8dbd-c171a7e84129",
+        "ParentId": "08d8a31f-503f-40c9-81dc-dc645f364542",
+        "Name": "Gyroscopes"
+    },
+    "SupportTechTransportation":{
+        "Id": "08d8a31f-503f-40c9-81dc-dc645f364542",
+        "ParentId": "08d8a31f-5005-404b-86b2-aff7e6c060ef",
+        "Name": "Support Tech"
+    },
+    "WarpDriveUnit":{
+        "Id": "08d8a31f-503d-454a-8817-6831d3fcec83",
+        "ParentId": "08d8a31f-5037-4dcd-8e60-1d22e8dd9cb4",
+        "Name": "Warp Drive Units"
+    },
+    "WarpBeaconUnit":{
+        "Id": "08d8a31f-503c-41b5-8d52-98f65ecccb0a",
+        "ParentId": "08d8a31f-5037-4dcd-8e60-1d22e8dd9cb4",
+        "Name": "Warp Beacon Units"
+    },
+    "AntiGravityPulsorUnit":{
+        "Id": "08d8a31f-503a-4e3d-85d9-5912b60235b8",
+        "ParentId": "08d8a31f-5037-4dcd-8e60-1d22e8dd9cb4",
+        "Name": "Anti-Gravity Pulsor"
+    },
+    "AntiGravityGeneratorUnit":{
+        "Id": "08d8a31f-5039-4ac2-8dd4-f772449bde46",
+        "ParentId": "08d8a31f-5037-4dcd-8e60-1d22e8dd9cb4",
+        "Name": "Anti-Gravity Generator"
+    },
+    "HighTechTransportation":{
+        "Id": "08d8a31f-5037-4dcd-8e60-1d22e8dd9cb4",
+        "ParentId": "08d8a31f-5005-404b-86b2-aff7e6c060ef",
+        "Name": "High-Tech Transportation"
+    },
+    "VerticalBooster":{
+        "Id": "08d8a31f-5036-4914-8e4d-6fd4f5a1d624",
+        "ParentId": "08d8a31f-5034-42d4-84e8-d23f90cc84af",
+        "Name": "Vertical Boosters"
+    },
+    "Hovercraft":{
+        "Id": "08d8a31f-5035-45c6-8733-05c1b2079f23",
+        "ParentId": "08d8a31f-5034-42d4-84e8-d23f90cc84af",
+        "Name": "Hovercraft Engines"
+    },
+    "SurfaceEngine":{
+        "Id": "08d8a31f-5034-42d4-84e8-d23f90cc84af",
+        "ParentId": "08d8a31f-5023-42b4-8e4b-4b15cbe9bf46",
+        "Name": "Ground Engines"
+    },
+    "SpaceEngineXtraSmallGroup":{
+        "Id": "08d8a31f-5032-4f7a-8e64-067d8330562f",
+        "ParentId": "08d8a31f-502d-40ed-8abd-4b3ec2a867a0",
+        "Name": "Space Engines XS"
+    },
+    "SpaceEngineXtraLargeGroup":{
+        "Id": "08d8a31f-5031-4c63-86fe-f3515ffe836e",
+        "ParentId": "08d8a31f-502d-40ed-8abd-4b3ec2a867a0",
+        "Name": "Space Engines XL"
+    },
+    "SpaceEngineSmallGroup":{
+        "Id": "08d8a31f-5030-497a-82fa-319413cccd6f",
+        "ParentId": "08d8a31f-502d-40ed-8abd-4b3ec2a867a0",
+        "Name": "Small Space Engines"
+    },
+    "SpaceEngineMediumGroup":{
+        "Id": "08d8a31f-502f-46c4-8cf7-164b3f791b1a",
+        "ParentId": "08d8a31f-502d-40ed-8abd-4b3ec2a867a0",
+        "Name": "Medium Space Engines"
+    },
+    "SpaceEngineLargeGroup":{
+        "Id": "08d8a31f-502e-437d-8612-b3e034e6eb2f",
+        "ParentId": "08d8a31f-502d-40ed-8abd-4b3ec2a867a0",
+        "Name": "Large Space Engines"
+    },
+    "SpaceEngine":{
+        "Id": "08d8a31f-502d-40ed-8abd-4b3ec2a867a0",
+        "ParentId": "08d8a31f-5023-42b4-8e4b-4b15cbe9bf46",
+        "Name": "Space Engines"
+    },
+    "RocketEngine":{
+        "Id": "08d8a31f-502b-4e76-8f2b-a1495d7a1aec",
+        "ParentId": "08d8a31f-5023-42b4-8e4b-4b15cbe9bf46",
+        "Name": "Rocket Engines"
+    },
+    "AtmosphericEngineXtraSmallGroup":{
+        "Id": "08d8a31f-502a-4bce-8729-123f6a8b8398",
+        "ParentId": "08d8a31f-5025-4a4f-851e-ea1b23d6550e",
+        "Name": "Atmospheric Engines XS"
+    },
+    "AtmosphericEngineSmallGroup":{
+        "Id": "08d8a31f-5029-494e-8675-ef5517925c97",
+        "ParentId": "08d8a31f-5025-4a4f-851e-ea1b23d6550e",
+        "Name": "Small Atmospheric Engines"
+    },
+    "AtmosphericEngineMediumGroup":{
+        "Id": "08d8a31f-5028-46c8-84ef-ac054c2ddcc2",
+        "ParentId": "08d8a31f-5025-4a4f-851e-ea1b23d6550e",
+        "Name": "Medium Atmospheric Engines"
+    },
+    "AtmosphericEngineLargeGroup":{
+        "Id": "08d8a31f-5026-4cf8-876b-5b6d22a3e6ac",
+        "ParentId": "08d8a31f-5025-4a4f-851e-ea1b23d6550e",
+        "Name": "Large Atmospheric Engines"
+    },
+    "AtmosphericEngine":{
+        "Id": "08d8a31f-5025-4a4f-851e-ea1b23d6550e",
+        "ParentId": "08d8a31f-5023-42b4-8e4b-4b15cbe9bf46",
+        "Name": "Atmospheric Engines"
+    },
+    "Adjustor":{
+        "Id": "08d8a31f-5024-4776-8982-045e58aaf237",
+        "ParentId": "08d8a31f-5023-42b4-8e4b-4b15cbe9bf46",
+        "Name": "Adjustors"
+    },
+    "EngineDisplay":{
+        "Id": "08d8a31f-5023-42b4-8e4b-4b15cbe9bf46",
+        "ParentId": "08d8a31f-5006-41d3-8726-5b1fbd11d624",
+        "Name": "Engines"
+    },
+    "Spacebrake":{
+        "Id": "08d8a31f-5021-45bd-846d-5c7b7ffd67d9",
+        "ParentId": "08d8a31f-500b-4999-8cbc-345cfa4596fc",
+        "Name": "Space Brakes"
+    },
+    "Airbrake":{
+        "Id": "08d8a31f-501f-4537-8ac9-2f32d12c80e7",
+        "ParentId": "08d8a31f-500b-4999-8cbc-345cfa4596fc",
+        "Name": "Airbrakes"
+    },
+    "Brake":{
+        "Id": "08d8a31f-500b-4999-8cbc-345cfa4596fc",
+        "ParentId": "08d8a31f-5006-41d3-8726-5b1fbd11d624",
+        "Name": "Atmospheric Brakes"
+    },
+    "Wing2":{
+        "Id": "08d8a31f-500a-4787-8b0b-d888db56f8b4",
+        "ParentId": "08d8a31f-5007-4326-83a7-baf81e3fbc10",
+        "Name": "Wing"
+    },
+    "Stabilizer":{
+        "Id": "08d8a31f-5009-4577-8699-fd711293c92f",
+        "ParentId": "08d8a31f-5007-4326-83a7-baf81e3fbc10",
+        "Name": "Stabilizer"
+    },
+    "Aileron2":{
+        "Id": "08d8a31f-5008-4460-8040-9e588bafddc8",
+        "ParentId": "08d8a31f-5007-4326-83a7-baf81e3fbc10",
+        "Name": "Aileron"
+    },
+    "Airfoil":{
+        "Id": "08d8a31f-5007-4326-83a7-baf81e3fbc10",
+        "ParentId": "08d8a31f-5006-41d3-8726-5b1fbd11d624",
+        "Name": "Airfoil"
+    },
+    "EngineUnit":{
+        "Id": "08d8a31f-5006-41d3-8726-5b1fbd11d624",
+        "ParentId": "08d8a31f-5005-404b-86b2-aff7e6c060ef",
+        "Name": "Engines"
+    },
+    "Piloting":{
+        "Id": "08d8a31f-5005-404b-86b2-aff7e6c060ef",
+        "ParentId": "08d8a31f-4f3a-485c-8c71-4d0379da4e2e",
+        "Name": "Transportation Elements"
+    },
+    "SpeakerUnit":{
+        "Id": "08d8a31f-5003-4f2b-8856-f47d21ca5d43",
+        "ParentId": "08d8a31f-4ff9-4b4a-89e5-0c75cd840474",
+        "Name": "Speakers"
+    },
+    "RadarUnit":{
+        "Id": "08d8a31f-5002-4e1f-8562-b6709132a2f2",
+        "ParentId": "08d8a31f-4ff9-4b4a-89e5-0c75cd840474",
+        "Name": "Radars"
+    },
+    "MarketUnit":{
+        "Id": "08d8a31f-5001-4ca0-874a-e44cd15f0c63",
+        "ParentId": "08d8a31f-4ff9-4b4a-89e5-0c75cd840474",
+        "Name": "Markets"
+    },
+    "MarketPodUnit":{
+        "Id": "08d8a31f-5000-4ae8-842d-812fec062776",
+        "ParentId": "08d8a31f-4ff9-4b4a-89e5-0c75cd840474",
+        "Name": "Market Pods"
+    },
+    "GravityChangerUnit":{
+        "Id": "08d8a31f-4fff-46be-89e3-15703a9c5c05",
+        "ParentId": "08d8a31f-4ff9-4b4a-89e5-0c75cd840474",
+        "Name": "Gravity changers"
+    },
+    "FactoryUnit":{
+        "Id": "08d8a31f-4ffe-44f8-83f7-7499182901eb",
+        "ParentId": "08d8a31f-4ff9-4b4a-89e5-0c75cd840474",
+        "Name": "Factories"
+    },
+    "EnergyUnit":{
+        "Id": "08d8a31f-4ffd-4379-8227-4e2be54eb288",
+        "ParentId": "08d8a31f-4ff9-4b4a-89e5-0c75cd840474",
+        "Name": "Electricity providers"
+    },
+    "DecoTerritoryUnit":{
+        "Id": "08d8a31f-4ffc-41dc-8a0f-d4ff53071ec9",
+        "ParentId": "08d8a31f-4ff9-4b4a-89e5-0c75cd840474",
+        "Name": "Decorative Territory Unit"
+    },
+    "ConveyorBeltUnit":{
+        "Id": "08d8a31f-4ffa-4fba-87b0-41397349db6b",
+        "ParentId": "08d8a31f-4ff9-4b4a-89e5-0c75cd840474",
+        "Name": "Conveyor belts"
+    },
+    "Other":{
+        "Id": "08d8a31f-4ff9-4b4a-89e5-0c75cd840474",
+        "ParentId": "08d8a31f-4f3a-485c-8c71-4d0379da4e2e",
+        "Name": "Other"
+    },
+    "Industry4":{
+        "Id": "08d8a31f-4ff8-49fb-8db5-ac6e49ab44d3",
+        "ParentId": "08d8a31f-4ff2-4c9f-883c-0a8b2b6033e7",
+        "Name": "Rare Industry"
+    },
+    "Industry3":{
+        "Id": "08d8a31f-4ff7-48c6-8b50-938b89fda68f",
+        "ParentId": "08d8a31f-4ff2-4c9f-883c-0a8b2b6033e7",
+        "Name": "Advanced Industry"
+    },
+    "Industry2":{
+        "Id": "08d8a31f-4ff6-4710-88a4-bec39d33f9ff",
+        "ParentId": "08d8a31f-4ff2-4c9f-883c-0a8b2b6033e7",
+        "Name": "Uncommon Industry"
+    },
+    "Industry1":{
+        "Id": "08d8a31f-4ff4-4f95-8c28-dcc391a5635c",
+        "ParentId": "08d8a31f-4ff2-4c9f-883c-0a8b2b6033e7",
+        "Name": "Basic Industry"
+    },
+    "DeprecatedIndustry":{
+        "Id": "08d8a31f-4ff3-4d66-85d9-52075d181af7",
+        "ParentId": "08d8a31f-4ff2-4c9f-883c-0a8b2b6033e7",
+        "Name": "Deprecated industry"
+    },
+    "IndustryUnit":{
+        "Id": "08d8a31f-4ff2-4c9f-883c-0a8b2b6033e7",
+        "ParentId": "08d8a31f-4fca-41ed-8134-ddaeff6f3cc8",
+        "Name": "Industry"
+    },
+    "ItemContainer":{
+        "Id": "08d8a31f-4ff1-4b54-8484-9d05d3885b52",
+        "ParentId": "08d8a31f-4fcb-4174-869d-6a5974a27816",
+        "Name": "Item containers"
+    },
+    "SpaceFuelContainer":{
+        "Id": "08d8a31f-4ff0-4a28-8ff1-f443dae09ebb",
+        "ParentId": "08d8a31f-4fec-4ffd-8cb2-f901e008b1a2",
+        "Name": "Space Fuel Containers"
+    },
+    "RocketFuelContainer":{
+        "Id": "08d8a31f-4fef-41c2-8fb1-52db13d935cb",
+        "ParentId": "08d8a31f-4fec-4ffd-8cb2-f901e008b1a2",
+        "Name": "Rocket Fuel Containers"
+    },
+    "AtmoFuelContainer":{
+        "Id": "08d8a31f-4fee-410d-8c46-78a8fae45bd0",
+        "ParentId": "08d8a31f-4fec-4ffd-8cb2-f901e008b1a2",
+        "Name": "Atmospheric Fuel Containers"
+    },
+    "FuelContainer":{
+        "Id": "08d8a31f-4fec-4ffd-8cb2-f901e008b1a2",
+        "ParentId": "08d8a31f-4fcb-4174-869d-6a5974a27816",
+        "Name": "Fuel Tanks"
+    },
+    "DispenserUnit":{
+        "Id": "08d8a31f-4fcd-40b6-84ab-979743478a72",
+        "ParentId": "08d8a31f-4fcb-4174-869d-6a5974a27816",
+        "Name": "Dispensers"
+    },
+    "AmmoContainerUnit":{
+        "Id": "08d8a31f-4fcc-40fe-8e92-9fd90394d5c2",
+        "ParentId": "08d8a31f-4fcb-4174-869d-6a5974a27816",
+        "Name": "Ammo Container"
+    },
+    "ContainerUnit":{
+        "Id": "08d8a31f-4fcb-4174-869d-6a5974a27816",
+        "ParentId": "08d8a31f-4fca-41ed-8134-ddaeff6f3cc8",
+        "Name": "Containers"
+    },
+    "IndustryInfrastructure":{
+        "Id": "08d8a31f-4fca-41ed-8134-ddaeff6f3cc8",
+        "ParentId": "08d8a31f-4f3a-485c-8c71-4d0379da4e2e",
+        "Name": "Industry & infrastructure Elements"
+    },
+    "SeatUnit":{
+        "Id": "08d8a31f-4fc9-4282-81f3-ce98674eaf49",
+        "ParentId": "08d8a31f-4f98-44b6-8748-170d274f6400",
+        "Name": "Chairs"
+    },
+    "RepulsorUnit":{
+        "Id": "08d8a31f-4fc8-432d-8bc7-671b91405fb0",
+        "ParentId": "08d8a31f-4f98-44b6-8748-170d274f6400",
+        "Name": "Repulsors"
+    },
+    "LightUnit":{
+        "Id": "08d8a31f-4fc7-434b-83b1-04a5ac206c0b",
+        "ParentId": "08d8a31f-4f98-44b6-8748-170d274f6400",
+        "Name": "Lights"
+    },
+    "VirtualProjectorUnit":{
+        "Id": "08d8a31f-4fc6-441f-8fda-728b9f013d98",
+        "ParentId": "08d8a31f-4fc4-44b8-8271-46929f9c52ba",
+        "Name": "Virtual projectors"
+    },
+    "ForceFieldUnit":{
+        "Id": "08d8a31f-4fc5-43b4-8bec-802a1a5e26a1",
+        "ParentId": "08d8a31f-4fc4-44b8-8271-46929f9c52ba",
+        "Name": "Force Fields"
+    },
+    "HighTechFurniture":{
+        "Id": "08d8a31f-4fc4-44b8-8271-46929f9c52ba",
+        "ParentId": "08d8a31f-4f98-44b6-8748-170d274f6400",
+        "Name": "High-Tech Furniture"
+    },
+    "FireworksUnit":{
+        "Id": "08d8a31f-4fc3-461d-8607-b5109ac0e163",
+        "ParentId": "08d8a31f-4f98-44b6-8748-170d274f6400",
+        "Name": "Fireworks Launchers"
+    },
+    "ElevatorUnit":{
+        "Id": "08d8a31f-4fc2-472f-862a-6feb32975f73",
+        "ParentId": "08d8a31f-4f98-44b6-8748-170d274f6400",
+        "Name": "Elevators"
+    },
+    "PressureTileUnit":{
+        "Id": "08d8a31f-4fc1-47a1-88de-4b5802649c41",
+        "ParentId": "08d8a31f-4fbe-4a60-898f-6883fdd894fc",
+        "Name": "Pressure tiles"
+    },
+    "ManualSwitchUnit":{
+        "Id": "08d8a31f-4fc0-486f-8ba5-a2ec2cf3e3b5",
+        "ParentId": "08d8a31f-4fbe-4a60-898f-6883fdd894fc",
+        "Name": "Manual Switches"
+    },
+    "ManualButtonUnit":{
+        "Id": "08d8a31f-4fbf-4955-803d-552fa54adbfa",
+        "ParentId": "08d8a31f-4fbe-4a60-898f-6883fdd894fc",
+        "Name": "Manual Buttons"
+    },
+    "Trigger":{
+        "Id": "08d8a31f-4fbe-4a60-898f-6883fdd894fc",
+        "ParentId": "08d8a31f-4faa-4d30-8566-989bcfbbeffe",
+        "Name": "Triggers"
+    },
+    "TelemeterUnit":{
+        "Id": "08d8a31f-4fbd-4ac0-8098-857498063b9e",
+        "ParentId": "08d8a31f-4fb9-4ead-8a05-d0fdf9dd3c93",
+        "Name": "Telemeters"
+    },
+    "LightDetectorUnit":{
+        "Id": "08d8a31f-4fbc-4a61-80b3-def174105f0a",
+        "ParentId": "08d8a31f-4fb9-4ead-8a05-d0fdf9dd3c93",
+        "Name": "Light Detectors"
+    },
+    "LaserDetectorUnit":{
+        "Id": "08d8a31f-4fbb-4b9f-8f5a-b11af73b31d6",
+        "ParentId": "08d8a31f-4fb9-4ead-8a05-d0fdf9dd3c93",
+        "Name": "Laser Detectors"
+    },
+    "DetectionZoneUnit":{
+        "Id": "08d8a31f-4fba-4ce5-86c9-05f89d99cb02",
+        "ParentId": "08d8a31f-4fb9-4ead-8a05-d0fdf9dd3c93",
+        "Name": "Zone detectors"
+    },
+    "Sensor":{
+        "Id": "08d8a31f-4fb9-4ead-8a05-d0fdf9dd3c93",
+        "ParentId": "08d8a31f-4faa-4d30-8566-989bcfbbeffe",
+        "Name": "Sensors"
+    },
+    "TogglerUnit":{
+        "Id": "08d8a31f-4fb9-408c-81b8-76d5d358c13c",
+        "ParentId": "08d8a31f-4fab-4997-8bc0-2355a816838a",
+        "Name": "Toggles"
+    },
+    "RelayUnit":{
+        "Id": "08d8a31f-4fb8-426c-848c-005032b3cf89",
+        "ParentId": "08d8a31f-4fab-4997-8bc0-2355a816838a",
+        "Name": "Relays"
+    },
+    "ReceiverUnit":{
+        "Id": "08d8a31f-4fb7-448f-81fb-4240fd238541",
+        "ParentId": "08d8a31f-4fab-4997-8bc0-2355a816838a",
+        "Name": "Receivers"
+    },
+    "RandomiserUnit":{
+        "Id": "08d8a31f-4fb6-4673-8ef3-0cdda8cb55fc",
+        "ParentId": "08d8a31f-4fab-4997-8bc0-2355a816838a",
+        "Name": "Randomizers"
+    },
+    "XorOperatorUnit":{
+        "Id": "08d8a31f-4fb5-490d-89b2-c029f378145a",
+        "ParentId": "08d8a31f-4fb0-470a-869e-cb3126d6db3b",
+        "Name": "XOR Operators"
+    },
+    "OrOperatorUnit":{
+        "Id": "08d8a31f-4fb4-4b4e-87aa-1d74dd8396bd",
+        "ParentId": "08d8a31f-4fb0-470a-869e-cb3126d6db3b",
+        "Name": "OR operators"
+    },
+    "NotOperatorUnit":{
+        "Id": "08d8a31f-4fb3-4e04-8f86-5afe47edd0d7",
+        "ParentId": "08d8a31f-4fb0-470a-869e-cb3126d6db3b",
+        "Name": "NOT operators"
+    },
+    "NorOperatorUnit":{
+        "Id": "08d8a31f-4fb2-4e88-84fc-8691a5e45a16",
+        "ParentId": "08d8a31f-4fb0-470a-869e-cb3126d6db3b",
+        "Name": "NOR operators"
+    },
+    "NandOperatorUnit":{
+        "Id": "08d8a31f-4fb2-41ad-8ea9-0ab4b2b7db6f",
+        "ParentId": "08d8a31f-4fb0-470a-869e-cb3126d6db3b",
+        "Name": "NAND Operators"
+    },
+    "AndOperatorUnit":{
+        "Id": "08d8a31f-4fb1-442b-8fc2-10174c5f2de7",
+        "ParentId": "08d8a31f-4fb0-470a-869e-cb3126d6db3b",
+        "Name": "AND operators"
+    },
+    "Operator":{
+        "Id": "08d8a31f-4fb0-470a-869e-cb3126d6db3b",
+        "ParentId": "08d8a31f-4fab-4997-8bc0-2355a816838a",
+        "Name": "Logic Operators"
+    },
+    "LaserEmitterUnit":{
+        "Id": "08d8a31f-4faf-492f-8d6d-f1999e2e76fc",
+        "ParentId": "08d8a31f-4fab-4997-8bc0-2355a816838a",
+        "Name": "Laser Emitters"
+    },
+    "EmitterUnit":{
+        "Id": "08d8a31f-4fae-4c4f-82f3-1b92cc6ef821",
+        "ParentId": "08d8a31f-4fab-4997-8bc0-2355a816838a",
+        "Name": "Data Emitters"
+    },
+    "DelayLineUnit":{
+        "Id": "08d8a31f-4fad-4f86-8639-db5d622df7a7",
+        "ParentId": "08d8a31f-4fab-4997-8bc0-2355a816838a",
+        "Name": "Delay Lines"
+    },
+    "DataBankUnit":{
+        "Id": "08d8a31f-4fad-42ed-80d7-9af33e06d556",
+        "ParentId": "08d8a31f-4fab-4997-8bc0-2355a816838a",
+        "Name": "Databanks"
+    },
+    "CounterUnit":{
+        "Id": "08d8a31f-4fac-461f-8c8a-5245dac56f7c",
+        "ParentId": "08d8a31f-4fab-4997-8bc0-2355a816838a",
+        "Name": "Counters"
+    },
+    "ElectronicUnit":{
+        "Id": "08d8a31f-4fab-4997-8bc0-2355a816838a",
+        "ParentId": "08d8a31f-4faa-4d30-8566-989bcfbbeffe",
+        "Name": "Electronics"
+    },
+    "Electronics":{
+        "Id": "08d8a31f-4faa-4d30-8566-989bcfbbeffe",
+        "ParentId": "08d8a31f-4f98-44b6-8748-170d274f6400",
+        "Name": "Electronic Elements"
+    },
+    "DoorUnit":{
+        "Id": "08d8a31f-4faa-406f-8235-572bc4f85703",
+        "ParentId": "08d8a31f-4f98-44b6-8748-170d274f6400",
+        "Name": "Doors"
+    },
+    "VideoScreenUnit":{
+        "Id": "08d8a31f-4fa9-43d5-838b-5faf295bf7b2",
+        "ParentId": "08d8a31f-4fa6-4dc5-8d96-209f15bc946a",
+        "Name": "Video screen"
+    },
+    "AdminScreenSignUnit":{
+        "Id": "08d8a31f-4fa8-4750-8d7d-159f65bc586f",
+        "ParentId": "08d8a31f-4fa7-4a95-8759-793bfdda81e9",
+        "Name": "Admin signs"
+    },
+    "ScreenSignUnit":{
+        "Id": "08d8a31f-4fa7-4a95-8759-793bfdda81e9",
+        "ParentId": "08d8a31f-4fa6-4dc5-8d96-209f15bc946a",
+        "Name": "Signs"
+    },
+    "ScreenUnit":{
+        "Id": "08d8a31f-4fa6-4dc5-8d96-209f15bc946a",
+        "ParentId": "08d8a31f-4fa5-44f1-8031-c4dfb5c3cca9",
+        "Name": "Screens"
+    },
+    "InfoButtonUnit":{
+        "Id": "08d8a31f-4fa6-412d-861a-084fa302d3d2",
+        "ParentId": "08d8a31f-4fa5-44f1-8031-c4dfb5c3cca9",
+        "Name": "Info Buttons"
+    },
+    "Display":{
+        "Id": "08d8a31f-4fa5-44f1-8031-c4dfb5c3cca9",
+        "ParentId": "08d8a31f-4f98-44b6-8748-170d274f6400",
+        "Name": "Displays"
+    },
+    "WindowUnit":{
+        "Id": "08d8a31f-4fa4-48cb-8e8f-7a543b512cfd",
+        "ParentId": "08d8a31f-4f99-4128-8a13-919e976ade33",
+        "Name": "Windows"
+    },
+    "ProjectorHologramUnit":{
+        "Id": "08d8a31f-4fa3-4b28-8eb6-dae6c7194db1",
+        "ParentId": "08d8a31f-4f99-4128-8a13-919e976ade33",
+        "Name": "Holograms"
+    },
+    "PlantUnit":{
+        "Id": "08d8a31f-4fa2-4e5d-8399-484cabdef569",
+        "ParentId": "08d8a31f-4f99-4128-8a13-919e976ade33",
+        "Name": "Plants"
+    },
+    "PipeUnit":{
+        "Id": "08d8a31f-4fa2-4195-866e-98f6e1c04b4a",
+        "ParentId": "08d8a31f-4f99-4128-8a13-919e976ade33",
+        "Name": "Pipes"
+    },
+    "HullDecoUnit":{
+        "Id": "08d8a31f-4fa1-430f-8ebe-83061310cfc1",
+        "ParentId": "08d8a31f-4f99-4128-8a13-919e976ade33",
+        "Name": "Hull decoration"
+    },
+    "FurnitureUnit":{
+        "Id": "08d8a31f-4fa0-4031-8610-5748ebedb58d",
+        "ParentId": "08d8a31f-4f99-4128-8a13-919e976ade33",
+        "Name": "Furniture"
+    },
+    "CanonUnit":{
+        "Id": "08d8a31f-4f9e-4e07-8fdb-8a85cd3e8d7a",
+        "ParentId": "08d8a31f-4f99-4128-8a13-919e976ade33",
+        "Name": "Deprecated decorative gun"
+    },
+    "CableUnit":{
+        "Id": "08d8a31f-4f9e-41e8-8021-cc8bae235892",
+        "ParentId": "08d8a31f-4f99-4128-8a13-919e976ade33",
+        "Name": "Decorative cables"
+    },
+    "BoardUnit":{
+        "Id": "08d8a31f-4f9d-4685-868d-d11558c84c9b",
+        "ParentId": "08d8a31f-4f99-4128-8a13-919e976ade33",
+        "Name": "Board"
+    },
+    "BathroomUnit":{
+        "Id": "08d8a31f-4f9c-4b18-88ab-5a018cf18af9",
+        "ParentId": "08d8a31f-4f99-4128-8a13-919e976ade33",
+        "Name": "Bathroom Elements"
+    },
+    "BarrierUnit":{
+        "Id": "08d8a31f-4f9b-4f69-81fd-3d955a2c702a",
+        "ParentId": "08d8a31f-4f99-4128-8a13-919e976ade33",
+        "Name": "Barriers"
+    },
+    "ArkshipDecoUnit":{
+        "Id": "08d8a31f-4f9b-43e1-8bdc-0ce271f10245",
+        "ParentId": "08d8a31f-4f99-4128-8a13-919e976ade33",
+        "Name": "Arkship Elements"
+    },
+    "AntenaUnit":{
+        "Id": "08d8a31f-4f9a-4880-858a-ee06a30f596f",
+        "ParentId": "08d8a31f-4f99-4128-8a13-919e976ade33",
+        "Name": "Antennas"
+    },
+    "Adjunct":{
+        "Id": "08d8a31f-4f99-4d0e-8eef-88178c97ce38",
+        "ParentId": "08d8a31f-4f99-4128-8a13-919e976ade33",
+        "Name": "Adjuncts"
+    },
+    "DecorativeUnit":{
+        "Id": "08d8a31f-4f99-4128-8a13-919e976ade33",
+        "ParentId": "08d8a31f-4f98-44b6-8748-170d274f6400",
+        "Name": "Decorative Element"
+    },
+    "FurnituresAppliances":{
+        "Id": "08d8a31f-4f98-44b6-8748-170d274f6400",
+        "ParentId": "08d8a31f-4f3a-485c-8c71-4d0379da4e2e",
+        "Name": "Furniture & Appliances"
+    },
+    "WeaponRailgunSmall":{
+        "Id": "08d8a31f-4f97-48b1-8404-6c28d83f17c6",
+        "ParentId": "08d8a31f-4f94-43cb-813d-ded2eb88d86d",
+        "Name": "Railguns S"
+    },
+    "WeaponRailgunMedium":{
+        "Id": "08d8a31f-4f96-4c89-8e0c-9250ebb84159",
+        "ParentId": "08d8a31f-4f94-43cb-813d-ded2eb88d86d",
+        "Name": "Railguns M"
+    },
+    "WeaponRailgunLarge":{
+        "Id": "08d8a31f-4f96-4091-805d-53511d91cd09",
+        "ParentId": "08d8a31f-4f94-43cb-813d-ded2eb88d86d",
+        "Name": "Railguns L "
+    },
+    "WeaponRailgunExtraSmall":{
+        "Id": "08d8a31f-4f95-4404-84e5-b689b441fd9d",
+        "ParentId": "08d8a31f-4f94-43cb-813d-ded2eb88d86d",
+        "Name": "Railguns XS"
+    },
+    "WeaponRailgun":{
+        "Id": "08d8a31f-4f94-43cb-813d-ded2eb88d86d",
+        "ParentId": "08d8a31f-4f48-4300-8654-9df9d94ac9b7",
+        "Name": "Railguns"
+    },
+    "WeaponMissileSmall":{
+        "Id": "08d8a31f-4f93-4778-8eb3-ba552a0d7332",
+        "ParentId": "08d8a31f-4f63-45f9-88ce-508ce774affa",
+        "Name": "Missiles S"
+    },
+    "WeaponMissileMedium":{
+        "Id": "08d8a31f-4f92-4ba5-88f6-61969b8ccce1",
+        "ParentId": "08d8a31f-4f63-45f9-88ce-508ce774affa",
+        "Name": "Missiles M"
+    },
+    "WeaponMissileLarge":{
+        "Id": "08d8a31f-4f91-4a97-875b-4c3b0238a44e",
+        "ParentId": "08d8a31f-4f63-45f9-88ce-508ce774affa",
+        "Name": "Missiles L"
+    },
+    "WeaponMissileExtraSmall":{
+        "Id": "08d8a31f-4f90-418c-8267-cb319724d97c",
+        "ParentId": "08d8a31f-4f63-45f9-88ce-508ce774affa",
+        "Name": "Missiles XS"
+    },
+    "WeaponMissile":{
+        "Id": "08d8a31f-4f63-45f9-88ce-508ce774affa",
+        "ParentId": "08d8a31f-4f48-4300-8654-9df9d94ac9b7",
+        "Name": "Missile Pods"
+    },
+    "WeaponLaserSmall":{
+        "Id": "08d8a31f-4f62-42ba-8729-4ac5979dc3b4",
+        "ParentId": "08d8a31f-4f5e-485b-8c68-65698b930f39",
+        "Name": "Lasers S"
+    },
+    "WeaponLaserMedium":{
+        "Id": "08d8a31f-4f61-4484-81b6-b3ecf3927f86",
+        "ParentId": "08d8a31f-4f5e-485b-8c68-65698b930f39",
+        "Name": "Lasers M"
+    },
+    "WeaponLaserLarge":{
+        "Id": "08d8a31f-4f60-4649-8c9a-20377688c717",
+        "ParentId": "08d8a31f-4f5e-485b-8c68-65698b930f39",
+        "Name": "Lasers L"
+    },
+    "WeaponLaserExtraSmall":{
+        "Id": "08d8a31f-4f5f-46c4-8b8c-dc1e1383f082",
+        "ParentId": "08d8a31f-4f5e-485b-8c68-65698b930f39",
+        "Name": "Lasers XS"
+    },
+    "WeaponLaser":{
+        "Id": "08d8a31f-4f5e-485b-8c68-65698b930f39",
+        "ParentId": "08d8a31f-4f48-4300-8654-9df9d94ac9b7",
+        "Name": "Lasers"
+    },
+    "WeaponCannonSmall":{
+        "Id": "08d8a31f-4f5d-4d83-84c4-55d290b4f533",
+        "ParentId": "08d8a31f-4f5a-4d90-837a-2d443868537a",
+        "Name": "Cannons S"
+    },
+    "WeaponCannonMedium":{
+        "Id": "08d8a31f-4f5d-4297-82bc-fb38b7711af7",
+        "ParentId": "08d8a31f-4f5a-4d90-837a-2d443868537a",
+        "Name": "Cannons M"
+    },
+    "WeaponCannonLarge":{
+        "Id": "08d8a31f-4f5c-464b-86d5-7e47fc7959da",
+        "ParentId": "08d8a31f-4f5a-4d90-837a-2d443868537a",
+        "Name": "Cannons L"
+    },
+    "WeaponCannonExtraSmall":{
+        "Id": "08d8a31f-4f5b-494b-881b-b9862b65b7b3",
+        "ParentId": "08d8a31f-4f5a-4d90-837a-2d443868537a",
+        "Name": "Cannons XS"
+    },
+    "WeaponCannon":{
+        "Id": "08d8a31f-4f5a-4d90-837a-2d443868537a",
+        "ParentId": "08d8a31f-4f48-4300-8654-9df9d94ac9b7",
+        "Name": "Cannons"
+    },
+    "GunUnit":{
+        "Id": "08d8a31f-4f59-462b-8a16-e188296bc455",
+        "ParentId": "08d8a31f-4f48-4300-8654-9df9d94ac9b7",
+        "Name": "Gun"
+    },
+    "WeaponUnit":{
+        "Id": "08d8a31f-4f48-4300-8654-9df9d94ac9b7",
+        "ParentId": "08d8a31f-4f43-4c1b-857d-a83c01d973a8",
+        "Name": "Weapon Unit"
+    },
+    "RadarPVPSpaceSmallGroup":{
+        "Id": "08d8a31f-4f47-48b5-8e7c-3995cb11640c",
+        "ParentId": "08d8a31f-4f45-4a6d-8722-282ac09c8482",
+        "Name": "Space Radars S"
+    },
+    "RadarPVPSpaceMediumGroup":{
+        "Id": "08d8a31f-4f46-4e48-88a8-d04b553f8adb",
+        "ParentId": "08d8a31f-4f45-4a6d-8722-282ac09c8482",
+        "Name": "Space Radars M"
+    },
+    "RadarPVPSpaceLargeGroup":{
+        "Id": "08d8a31f-4f46-4476-8649-6ace44db58a7",
+        "ParentId": "08d8a31f-4f45-4a6d-8722-282ac09c8482",
+        "Name": "Space Radars L"
+    },
+    "RadarPvPSpace":{
+        "Id": "08d8a31f-4f45-4a6d-8722-282ac09c8482",
+        "ParentId": "08d8a31f-4f44-467f-8e0f-9c0936cfd1aa",
+        "Name": "Space Radars"
+    },
+    "RadarPvPAtmospheric":{
+        "Id": "08d8a31f-4f45-4085-87f8-ffa901c84555",
+        "ParentId": "08d8a31f-4f44-467f-8e0f-9c0936cfd1aa",
+        "Name": "Atmospheric Radar"
+    },
+    "RadarPVPUnit":{
+        "Id": "08d8a31f-4f44-467f-8e0f-9c0936cfd1aa",
+        "ParentId": "08d8a31f-4f43-4c1b-857d-a83c01d973a8",
+        "Name": "Radar"
+    },
+    "CombatDefense":{
+        "Id": "08d8a31f-4f43-4c1b-857d-a83c01d973a8",
+        "ParentId": "08d8a31f-4f3a-485c-8c71-4d0379da4e2e",
+        "Name": "Combat & Defense Elements"
+    },
+    "TerritoryScannerUnit":{
+        "Id": "08d8a31f-4f43-4139-8031-268d364123c8",
+        "ParentId": "08d8a31f-4f3b-4240-84ae-2d75a739182b",
+        "Name": "Territory Scanners"
+    },
+    "TeleportationNodeUnit":{
+        "Id": "08d8a31f-4f42-468a-8ca1-f684e795159a",
+        "ParentId": "08d8a31f-4f3b-4240-84ae-2d75a739182b",
+        "Name": "Teleportation Nodes"
+    },
+    "SurrogateUnits":{
+        "Id": "08d8a31f-4f41-4cba-81bf-94764954d890",
+        "ParentId": "08d8a31f-4f3b-4240-84ae-2d75a739182b",
+        "Name": "Surrogate Station Equipment"
+    },
+    "ResurrectionNodeUnit":{
+        "Id": "08d8a31f-4f41-430b-83d3-76de8bd9f0cf",
+        "ParentId": "08d8a31f-4f3b-4240-84ae-2d75a739182b",
+        "Name": "Resurrection Nodes"
+    },
+    "PVPSeatUnit":{
+        "Id": "08d8a31f-4f40-496a-8321-7e5f9379bf7a",
+        "ParentId": "08d8a31f-4f3b-4bf2-8910-a5cfba14e402",
+        "Name": "Gunner Module"
+    },
+    "RemoteControlUnit":{
+        "Id": "08d8a31f-4f3f-4fd1-86bf-f54d198f8287",
+        "ParentId": "08d8a31f-4f3d-4914-8be1-fa8b9d815cc7",
+        "Name": "Remote Controllers"
+    },
+    "CockpitHovercraftUnit":{
+        "Id": "08d8a31f-4f3f-45e5-862e-fd2f794fed1b",
+        "ParentId": "08d8a31f-4f3d-4914-8be1-fa8b9d815cc7",
+        "Name": "Hovercraft cockpits"
+    },
+    "CockpitFighterUnit":{
+        "Id": "08d8a31f-4f3e-4c4f-8940-9931a701e615",
+        "ParentId": "08d8a31f-4f3d-4914-8be1-fa8b9d815cc7",
+        "Name": "Closed cockpits"
+    },
+    "CockpitCommandmentUnit":{
+        "Id": "08d8a31f-4f3e-4299-8f05-72567b0b148f",
+        "ParentId": "08d8a31f-4f3d-4914-8be1-fa8b9d815cc7",
+        "Name": "Command seat"
+    },
+    "KinematicsController":{
+        "Id": "08d8a31f-4f3d-4914-8be1-fa8b9d815cc7",
+        "ParentId": "08d8a31f-4f3b-4bf2-8910-a5cfba14e402",
+        "Name": "Piloting Control Units"
+    },
+    "Generic":{
+        "Id": "08d8a31f-4f3c-4f9c-84bb-4c1ecc4dd78e",
+        "ParentId": "08d8a31f-4f3b-4bf2-8910-a5cfba14e402",
+        "Name": "Generic Control Units"
+    },
+    "ECU":{
+        "Id": "08d8a31f-4f3c-45df-8c39-b77d52e50bbf",
+        "ParentId": "08d8a31f-4f3b-4bf2-8910-a5cfba14e402",
+        "Name": "Emergency controllers"
+    },
+    "ControlUnit":{
+        "Id": "08d8a31f-4f3b-4bf2-8910-a5cfba14e402",
+        "ParentId": "08d8a31f-4f3b-4240-84ae-2d75a739182b",
+        "Name": "Control Units"
+    },
+    "Systems":{
+        "Id": "08d8a31f-4f3b-4240-84ae-2d75a739182b",
+        "ParentId": "08d8a31f-4f3a-485c-8c71-4d0379da4e2e",
+        "Name": "Systems"
+    },
+    "ConstructElement":{
+        "Id": "08d8a31f-4f3a-485c-8c71-4d0379da4e2e",
+        "ParentId": "08d8a31f-4f39-4ecd-8184-2bd64479f177",
+        "Name": "Construct Elements"
+    },
+    "Element":{
+        "Id": "08d8a31f-4f39-4ecd-8184-2bd64479f177",
+        "ParentId": "08d8a31f-4f17-4195-862d-42d7290833ce",
+        "Name": "Elements"
+    },
+    "WarpCell":{
+        "Id": "08d8a31f-4f39-44dd-84f0-9416646e3af8",
+        "ParentId": "08d8a31f-4f18-4d5e-8058-7b62788124ab",
+        "Name": "Warp Cell"
+    },
+    "UncommonScrap":{
+        "Id": "08d8a31f-4f38-4b17-8db3-5c38bc239e22",
+        "ParentId": "08d8a31f-4f34-4303-88e3-c46e0f4be6ae",
+        "Name": "Uncommon Scraps"
+    },
+    "RareScrap":{
+        "Id": "08d8a31f-4f37-4fa5-882d-57740730e9aa",
+        "ParentId": "08d8a31f-4f34-4303-88e3-c46e0f4be6ae",
+        "Name": "Rare Scraps"
+    },
+    "ExoticScrap":{
+        "Id": "08d8a31f-4f37-4592-8af0-385eb1f61fa7",
+        "ParentId": "08d8a31f-4f34-4303-88e3-c46e0f4be6ae",
+        "Name": "Exotic Scraps"
+    },
+    "DeprecatedScrap":{
+        "Id": "08d8a31f-4f36-4b1d-87db-c780b80e3b50",
+        "ParentId": "08d8a31f-4f34-4303-88e3-c46e0f4be6ae",
+        "Name": "DeprecatedScrap"
+    },
+    "BasicScrap":{
+        "Id": "08d8a31f-4f35-4e5c-84a4-fca5d5dc27d0",
+        "ParentId": "08d8a31f-4f34-4303-88e3-c46e0f4be6ae",
+        "Name": "Basic Scraps"
+    },
+    "AdvancedScrap":{
+        "Id": "08d8a31f-4f35-421d-8634-1cbcaaf55d86",
+        "ParentId": "08d8a31f-4f34-4303-88e3-c46e0f4be6ae",
+        "Name": "Advanced Scraps"
+    },
+    "Scrap":{
+        "Id": "08d8a31f-4f34-4303-88e3-c46e0f4be6ae",
+        "ParentId": "08d8a31f-4f18-4d5e-8058-7b62788124ab",
+        "Name": "Scraps"
+    },
+    "FireworkShower":{
+        "Id": "08d8a31f-4f33-498b-8dd3-45400fdff456",
+        "ParentId": "08d8a31f-4f31-4480-852d-7d525a908b11",
+        "Name": "Shower shaped Fireworks"
+    },
+    "FireworkRing":{
+        "Id": "08d8a31f-4f33-4018-8e08-af5ac6b68897",
+        "ParentId": "08d8a31f-4f31-4480-852d-7d525a908b11",
+        "Name": "Ring-shaped Fireworks"
+    },
+    "FireworkPalmtree":{
+        "Id": "08d8a31f-4f32-46c0-83e7-14a524ecbef2",
+        "ParentId": "08d8a31f-4f31-4480-852d-7d525a908b11",
+        "Name": "Palm tree-shaped Fireworks"
+    },
+    "FireWorkBall":{
+        "Id": "08d8a31f-4f31-4da1-8017-49a5623f6e19",
+        "ParentId": "08d8a31f-4f31-4480-852d-7d525a908b11",
+        "Name": "Ball-shaped Fireworks"
+    },
+    "FireWork":{
+        "Id": "08d8a31f-4f31-4480-852d-7d525a908b11",
+        "ParentId": "08d8a31f-4f18-4d5e-8058-7b62788124ab",
+        "Name": "Fireworks"
+    },
+    "AmmoRailgunSmallElectromagnetic":{
+        "Id": "08d8a31f-4f30-4b7f-8bec-9c89e3bd5fba",
+        "ParentId": "08d8a31f-4f2f-4997-872c-301999174196",
+        "Name": "Electromagnetic Ammo"
+    },
+    "AmmoRailgunSmallAntimatter":{
+        "Id": "08d8a31f-4f30-4276-82c9-92a652ed6184",
+        "ParentId": "08d8a31f-4f2f-4997-872c-301999174196",
+        "Name": "Antimatter Ammo"
+    },
+    "AmmoRailgunSmall":{
+        "Id": "08d8a31f-4f2f-4997-872c-301999174196",
+        "ParentId": "08d8a31f-4f2a-464a-8e66-b3418339c6a0",
+        "Name": "Railgun S Ammo"
+    },
+    "AmmoRailgunMediumElectromagnetic":{
+        "Id": "08d8a31f-4f2f-40da-8e9b-bbbfeda8b3c9",
+        "ParentId": "08d8a31f-4f2d-4f92-8a61-e5fca97810ea",
+        "Name": "Electromagnetic Ammo"
+    },
+    "AmmoRailgunMediumAntimatter":{
+        "Id": "08d8a31f-4f2e-480a-8d27-a0d3a0ca5960",
+        "ParentId": "08d8a31f-4f2d-4f92-8a61-e5fca97810ea",
+        "Name": "Antimatter Ammo"
+    },
+    "AmmoRailgunMedium":{
+        "Id": "08d8a31f-4f2d-4f92-8a61-e5fca97810ea",
+        "ParentId": "08d8a31f-4f2a-464a-8e66-b3418339c6a0",
+        "Name": "Railgun Ammo M"
+    },
+    "AmmoRailgunLargeElectromagnetic":{
+        "Id": "08d8a31f-4f2d-46f2-862a-2d4d5e16aaae",
+        "ParentId": "08d8a31f-4f2c-4608-8eb0-0e008c9a09a7",
+        "Name": "Electromagnetic Ammo"
+    },
+    "AmmoRailgunLargeAntimatter":{
+        "Id": "08d8a31f-4f2c-4e82-8d47-4cf785323b71",
+        "ParentId": "08d8a31f-4f2c-4608-8eb0-0e008c9a09a7",
+        "Name": "Antimatter Ammo"
+    },
+    "AmmoRailgunLarge":{
+        "Id": "08d8a31f-4f2c-4608-8eb0-0e008c9a09a7",
+        "ParentId": "08d8a31f-4f2a-464a-8e66-b3418339c6a0",
+        "Name": "Railgun L Ammo"
+    },
+    "AmmoRailgunExtraSmallElectromagnetic":{
+        "Id": "08d8a31f-4f2b-4e09-89c7-5cb964e28d87",
+        "ParentId": "08d8a31f-4f2a-4e0b-8706-c3d8a81a9294",
+        "Name": "Electromagnetic Ammo"
+    },
+    "AmmoRailgunExtraSmallAntimatter":{
+        "Id": "08d8a31f-4f2b-4616-8984-d3c12fcffa4f",
+        "ParentId": "08d8a31f-4f2a-4e0b-8706-c3d8a81a9294",
+        "Name": "Antimatter Ammo"
+    },
+    "AmmoRailgunExtraSmall":{
+        "Id": "08d8a31f-4f2a-4e0b-8706-c3d8a81a9294",
+        "ParentId": "08d8a31f-4f2a-464a-8e66-b3418339c6a0",
+        "Name": "Railgun Ammo XS"
+    },
+    "AmmoRailgun":{
+        "Id": "08d8a31f-4f2a-464a-8e66-b3418339c6a0",
+        "ParentId": "08d8a31f-4f19-43b4-8283-170f6728bfd9",
+        "Name": "Railgun Ammo"
+    },
+    "AmmoMissileSmallKinetic":{
+        "Id": "08d8a31f-4f29-4e78-826f-58258c890dda",
+        "ParentId": "08d8a31f-4f28-4e61-8a5b-b547d929897b",
+        "Name": "Kinetic Ammo"
+    },
+    "AmmoMissileSmallAntimatter":{
+        "Id": "08d8a31f-4f29-467c-8b20-9197b8e65277",
+        "ParentId": "08d8a31f-4f28-4e61-8a5b-b547d929897b",
+        "Name": "Antimatter Ammo"
+    },
+    "AmmoMissileSmall":{
+        "Id": "08d8a31f-4f28-4e61-8a5b-b547d929897b",
+        "ParentId": "08d8a31f-4f24-4003-8f22-36b20b656792",
+        "Name": "Missile S Ammo"
+    },
+    "AmmoMissileMediumKinetic":{
+        "Id": "08d8a31f-4f28-46f5-81af-ffdb1a69f60a",
+        "ParentId": "08d8a31f-4f27-487e-8833-89885bf191b0",
+        "Name": "Kinetic Ammo"
+    },
+    "AmmoMissileMediumAntimatter":{
+        "Id": "08d8a31f-4f27-4fba-8617-689ca885f520",
+        "ParentId": "08d8a31f-4f27-487e-8833-89885bf191b0",
+        "Name": "Antimatter Ammo"
+    },
+    "AmmoMissileMedium":{
+        "Id": "08d8a31f-4f27-487e-8833-89885bf191b0",
+        "ParentId": "08d8a31f-4f24-4003-8f22-36b20b656792",
+        "Name": "Missile M Ammo"
+    },
+    "AmmoMissileLargeKinetic":{
+        "Id": "08d8a31f-4f27-419d-8247-d7b99f7d6200",
+        "ParentId": "08d8a31f-4f26-43db-895f-01a7513a9bd2",
+        "Name": "Kinetic Ammo"
+    },
+    "AmmoMissileLargeAntimatter":{
+        "Id": "08d8a31f-4f26-4ab7-84f2-33a4aec1795e",
+        "ParentId": "08d8a31f-4f26-43db-895f-01a7513a9bd2",
+        "Name": "Antimatter Ammo"
+    },
+    "AmmoMissileLarge":{
+        "Id": "08d8a31f-4f26-43db-895f-01a7513a9bd2",
+        "ParentId": "08d8a31f-4f24-4003-8f22-36b20b656792",
+        "Name": "Missile Ammo L"
+    },
+    "AmmoMissileExtraSmallKinetic":{
+        "Id": "08d8a31f-4f25-4d03-8637-0c857d3fef1b",
+        "ParentId": "08d8a31f-4f24-4a0a-8525-1270fb784241",
+        "Name": "Kinetic Ammo"
+    },
+    "AmmoMissileExtraSmallAntimatter":{
+        "Id": "08d8a31f-4f25-443b-8ac2-fedeaf0afaae",
+        "ParentId": "08d8a31f-4f24-4a0a-8525-1270fb784241",
+        "Name": "Antimatter Ammo"
+    },
+    "AmmoMissileExtraSmall":{
+        "Id": "08d8a31f-4f24-4a0a-8525-1270fb784241",
+        "ParentId": "08d8a31f-4f24-4003-8f22-36b20b656792",
+        "Name": "Missile Ammo XS"
+    },
+    "AmmoMissile":{
+        "Id": "08d8a31f-4f24-4003-8f22-36b20b656792",
+        "ParentId": "08d8a31f-4f19-43b4-8283-170f6728bfd9",
+        "Name": "Missile Pod Ammo"
+    },
+    "AmmoLaserSmallThermic":{
+        "Id": "08d8a31f-4f23-494e-8a09-774493bf0cf5",
+        "ParentId": "08d8a31f-4f22-4c7b-8da6-bfe32e428fde",
+        "Name": "Thermic Ammo"
+    },
+    "AmmoLaserSmallElectromagnetic":{
+        "Id": "08d8a31f-4f23-42ea-8f2b-61213124e3b3",
+        "ParentId": "08d8a31f-4f22-4c7b-8da6-bfe32e428fde",
+        "Name": "Electromagnetic Ammo"
+    },
+    "AmmoLaserSmall":{
+        "Id": "08d8a31f-4f22-4c7b-8da6-bfe32e428fde",
+        "ParentId": "08d8a31f-4f1e-407b-8b4c-db4b164afa90",
+        "Name": "Laser S Ammo"
+    },
+    "AmmoLaserMediumThermic":{
+        "Id": "08d8a31f-4f22-4615-87de-ac192a16114b",
+        "ParentId": "08d8a31f-4f21-44ee-8da8-b4332f639925",
+        "Name": "Thermic Ammo"
+    },
+    "AmmoLaserMediumElectromagnetic":{
+        "Id": "08d8a31f-4f21-4dc8-81a0-b119544085c0",
+        "ParentId": "08d8a31f-4f21-44ee-8da8-b4332f639925",
+        "Name": "Electromagnetic Ammo"
+    },
+    "AmmoLaserMedium":{
+        "Id": "08d8a31f-4f21-44ee-8da8-b4332f639925",
+        "ParentId": "08d8a31f-4f1e-407b-8b4c-db4b164afa90",
+        "Name": "Laser Ammo M"
+    },
+    "AmmoLaserLargeThermic":{
+        "Id": "08d8a31f-4f20-4c1b-82b7-c542dbf7edc0",
+        "ParentId": "08d8a31f-4f1f-491e-8b06-135bd48891b3",
+        "Name": "Thermic Ammo"
+    },
+    "AmmoLaserLargeElectromagnetic":{
+        "Id": "08d8a31f-4f20-4203-89db-3d5d8b1a3f18",
+        "ParentId": "08d8a31f-4f1f-491e-8b06-135bd48891b3",
+        "Name": "Electromagnetic Ammo"
+    },
+    "AmmoLaserLarge":{
+        "Id": "08d8a31f-4f1f-491e-8b06-135bd48891b3",
+        "ParentId": "08d8a31f-4f1e-407b-8b4c-db4b164afa90",
+        "Name": "Laser Ammo L"
+    },
+    "AmmoLaserExtraSmallThermic":{
+        "Id": "08d8a31f-4f1f-40e3-8d2d-ef94d08a2c39",
+        "ParentId": "08d8a31f-4f1e-45f5-87ad-697ef2a36a7e",
+        "Name": "Thermic Ammo"
+    },
+    "AmmoLaserExtraSmallElectromagnetic":{
+        "Id": "08d8a31f-4f1e-4b81-8978-a8b4620c3837",
+        "ParentId": "08d8a31f-4f1e-45f5-87ad-697ef2a36a7e",
+        "Name": "Electromagnetic Ammo"
+    },
+    "AmmoLaserExtraSmall":{
+        "Id": "08d8a31f-4f1e-45f5-87ad-697ef2a36a7e",
+        "ParentId": "08d8a31f-4f1e-407b-8b4c-db4b164afa90",
+        "Name": "Laser Ammo XS"
+    },
+    "AmmoLaser":{
+        "Id": "08d8a31f-4f1e-407b-8b4c-db4b164afa90",
+        "ParentId": "08d8a31f-4f19-43b4-8283-170f6728bfd9",
+        "Name": "Laser Ammo"
+    },
+    "AmmoCannonSmallThermic":{
+        "Id": "08d8a31f-4f1d-4b30-873b-a5439c070b5b",
+        "ParentId": "08d8a31f-4f1d-40cb-8a97-d2dcdf3b74cb",
+        "Name": "Thermic Ammo"
+    },
+    "AmmoCannonSmallKinetic":{
+        "Id": "08d8a31f-4f1d-4611-8fbf-6c08e13dd82c",
+        "ParentId": "08d8a31f-4f1d-40cb-8a97-d2dcdf3b74cb",
+        "Name": "Kinetic Ammo"
+    },
+    "AmmoCannonSmall":{
+        "Id": "08d8a31f-4f1d-40cb-8a97-d2dcdf3b74cb",
+        "ParentId": "08d8a31f-4f19-493e-81ab-79281894af58",
+        "Name": "Cannon S Ammo"
+    },
+    "AmmoCannonMediumThermic":{
+        "Id": "08d8a31f-4f1c-4b6f-8418-a697f901f64a",
+        "ParentId": "08d8a31f-4f1c-415f-8f5e-a89b00df433c",
+        "Name": "Thermic Ammo"
+    },
+    "AmmoCannonMediumKinetic":{
+        "Id": "08d8a31f-4f1c-464f-883c-74275d7e94cd",
+        "ParentId": "08d8a31f-4f1c-415f-8f5e-a89b00df433c",
+        "Name": "Kinetic Ammo"
+    },
+    "AmmoCannonMedium":{
+        "Id": "08d8a31f-4f1c-415f-8f5e-a89b00df433c",
+        "ParentId": "08d8a31f-4f19-493e-81ab-79281894af58",
+        "Name": "Medium Cannon Ammo"
+    },
+    "AmmoCannonLargeThermic":{
+        "Id": "08d8a31f-4f1b-4bcf-8b65-b0a0b8bd89ae",
+        "ParentId": "08d8a31f-4f1b-41dd-85a2-69082bb5f35d",
+        "Name": "Thermic Ammo"
+    },
+    "AmmoCannonLargeKinetic":{
+        "Id": "08d8a31f-4f1b-4768-8ea5-8e68d4953365",
+        "ParentId": "08d8a31f-4f1b-41dd-85a2-69082bb5f35d",
+        "Name": "Kinetic Ammo"
+    },
+    "AmmoCannonLarge":{
+        "Id": "08d8a31f-4f1b-41dd-85a2-69082bb5f35d",
+        "ParentId": "08d8a31f-4f19-493e-81ab-79281894af58",
+        "Name": "Large Cannon Ammo"
+    },
+    "AmmoCannonExtraSmallThermic":{
+        "Id": "08d8a31f-4f1a-4b14-850c-ce4a946f657b",
+        "ParentId": "08d8a31f-4f19-4f98-815d-824fe776b46a",
+        "Name": "Thermic Ammo"
+    },
+    "AmmoCannonExtraSmallKinetic":{
+        "Id": "08d8a31f-4f1a-45f6-8d85-4a03eb039b9d",
+        "ParentId": "08d8a31f-4f19-4f98-815d-824fe776b46a",
+        "Name": "Kinetic Ammo"
+    },
+    "AmmoCannonExtraSmall":{
+        "Id": "08d8a31f-4f19-4f98-815d-824fe776b46a",
+        "ParentId": "08d8a31f-4f19-493e-81ab-79281894af58",
+        "Name": "Cannon Ammo XS"
+    },
+    "AmmoCannon":{
+        "Id": "08d8a31f-4f19-493e-81ab-79281894af58",
+        "ParentId": "08d8a31f-4f19-43b4-8283-170f6728bfd9",
+        "Name": "Cannon Ammo"
+    },
+    "Ammo":{
+        "Id": "08d8a31f-4f19-43b4-8283-170f6728bfd9",
+        "ParentId": "08d8a31f-4f18-4d5e-8058-7b62788124ab",
+        "Name": "Ammunition"
+    },
+    "ConsumableDisplay":{
+        "Id": "08d8a31f-4f18-4d5e-8058-7b62788124ab",
+        "ParentId": "08d8a31f-4f17-4195-862d-42d7290833ce",
+        "Name": "Consumables"
+    },
+    "Consumable":{
+        "Id": "08d8a31f-4f17-4195-862d-42d7290833ce",
+        
+        "Name": "Consumables"
+    }
+}
