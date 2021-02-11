@@ -317,6 +317,45 @@ namespace DU_Industry_Tool
         {
             var loadForm = new LoadingForm(Market);
             loadForm.ShowDialog(this);
+            if (loadForm.DiscardOres)
+            {
+                // Get rid of them
+                List<ulong> toRemove = new List<ulong>();
+                foreach(var order in Market.MarketOrders) 
+                {
+                    var recipe = Manager._recipes.Values.Where(r => r.NqId == order.Value.ItemType).FirstOrDefault();
+                    if (recipe != null && recipe.ParentGroupName == "Ore")
+                        toRemove.Add(order.Key);
+                    
+                }
+                foreach (var key in toRemove)
+                    Market.MarketOrders.Remove(key);
+                Market.SaveData();
+            }
+            else
+            {
+                // Process them and leave them so they show in exports
+                foreach (var order in Market.MarketOrders)
+                {
+                    var recipe = Manager._recipes.Values.Where(r => r.NqId == order.Value.ItemType).FirstOrDefault();
+                    if (recipe != null && recipe.ParentGroupName == "Ore")
+                    {
+                        var ore = Manager.Ores.Where(o => o.Key.ToLower() == recipe.Key.ToLower()).FirstOrDefault();
+                        if (ore != null)
+                        {
+                            var orders = Market.MarketOrders.Values.Where(o => o.ItemType == recipe.NqId && o.BuyQuantity < 0 && DateTime.Now < o.ExpirationDate && o.Price > 0);
+
+                            var bestOrder = orders.OrderBy(o => o.Price).FirstOrDefault();
+                            if (bestOrder != null)
+                                ore.Value = bestOrder.Price;
+                        }
+                    }
+
+                }
+                Manager.SaveOreValues();
+            }
+
+            loadForm.Dispose();
         }
 
         private void filterToMarketToolStripMenuItem_Click(object sender, EventArgs e)
@@ -393,7 +432,7 @@ namespace DU_Industry_Tool
                 foreach(var recipe in recipes)
                 {
                     worksheet.Cell(row, 1).Value = recipe.Name;
-                    double costToMake = Manager.GetBaseCost(recipe.Key);
+                    double costToMake = Manager.GetTotalCost(recipe.Key);
                     worksheet.Cell(row, 2).Value = costToMake;
 
                     var orders = Market.MarketOrders.Values.Where(o => o.ItemType == recipe.NqId && o.BuyQuantity < 0 && DateTime.Now < o.ExpirationDate && o.Price > 0);

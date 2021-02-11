@@ -117,7 +117,7 @@ namespace DU_Industry_Tool
                     numProcessed++;
                     Console.WriteLine("Finished log file " + numProcessed + " of " + files.Length);
                     if (form != null)
-                        form.UpdateProgressBar((int)(((float)numProcessed / files.Length) * 100));
+                        form.UpdateProgressBar(Math.Min((int)(((float)numProcessed / files.Length) * 100),99));
                 }
             }
             // Alright, here's the fun part.  Group all of them by ItemType, and then find the most recent LogTime for that ItemType.  Discard all who don't have that same LogTime
@@ -132,6 +132,13 @@ namespace DU_Industry_Tool
             }
             Console.WriteLine("Parsed " + MarketOrders.Count + " market orders from log files");
             // And save it
+            SaveData();
+            if (form != null)
+                form.UpdateProgressBar(100);// Signal that we're done
+        }
+
+        public void SaveData()
+        {
             var saveable = new SaveableMarketData() { CheckedLogFiles = CheckedLogFiles, Data = MarketOrders, LogFolderPath = _logFolderPath };
             File.WriteAllText("MarketOrders.json", JsonConvert.SerializeObject(saveable));
         }
