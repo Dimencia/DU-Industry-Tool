@@ -423,6 +423,8 @@ namespace DU_Industry_Tool
                 worksheet.Cell(1, 6).Value = "Profit Per Day";
                 worksheet.Cell(1, 7).Value = "Units Per Day";
 
+                worksheet.Row(1).CellsUsed().Style.Font.SetBold();
+
                 int row = 2;
 
                 var recipes = Manager._recipes.Values.ToList();
