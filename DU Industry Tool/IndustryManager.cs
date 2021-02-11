@@ -163,7 +163,10 @@ namespace DU_Industry_Tool
                     if (recipe.ParentGroupName == "Pure" || recipe.ParentGroupName == "Product")
                     {
                         // Pures and products have an input rediction of 0.03 multiplier
-                        talent = new Talent() { Name = recipe.Name + " Ore Refining", Addition = 0, Multiplier = -0.03, InputTalent = true };
+                        string nameString = recipe.Name;
+                        if (recipe.ParentGroupName == "Pure")
+                            nameString += " Ore";
+                        talent = new Talent() { Name = nameString + " Refining", Addition = 0, Multiplier = -0.03, InputTalent = true };
                         talent.ApplicableRecipes.Add(kvp.Key);
                         Talents.Add(talent);
                     }
@@ -172,10 +175,12 @@ namespace DU_Industry_Tool
                         // And scraps get a flat -1L general, and -2 specific
                         talent = new Talent() { Name = recipe.Name + " Scrap Refinery", Addition = -2, InputTalent = true };
                         talent.ApplicableRecipes.Add(kvp.Key);
+                        Talents.Add(talent);
                         if (recipe.Level < 5) // Exotics don't have one
                             genericScrapTalents[recipe.Level - 1].ApplicableRecipes.Add(kvp.Key);
                     }
                 }
+                Talents.AddRange(genericScrapTalents);
 
                 // Fuel talents
                 var genericRefineryTalent = new Talent() { Name = "Fuel Refinery", Addition = 0, Multiplier = -0.02, InputTalent = true };

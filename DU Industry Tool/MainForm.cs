@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ClosedXML.Excel;
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -362,6 +364,60 @@ namespace DU_Industry_Tool
 
                     treeView.Nodes.Add(groupNode);
                 }
+            }
+        }
+
+        private void exportToSpreadsheetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // If market filtered, only exports items with market values.
+            // Exports the following:
+            // Name, Cost To Make, Market Cost, Time To Make, Profit Margin (with formula), Profit Per Day (with formula), Units Per Day with formula
+            using (var workbook = new XLWorkbook())
+            {
+                var worksheet = workbook.Worksheets.Add("Price Data " + DateTime.Now.ToString("yyyy-MM-dd"));
+                
+                worksheet.Cell(1, 1).Value = "Name";
+                worksheet.Cell(1, 2).Value = "Cost To Make";
+                worksheet.Cell(1, 3).Value = "Market Cost";
+                worksheet.Cell(1, 4).Value = "Time To Make";
+                worksheet.Cell(1, 5).Value = "Profit Margin";
+                worksheet.Cell(1, 6).Value = "Profit Per Day";
+                worksheet.Cell(1, 7).Value = "Units Per Day";
+
+                int row = 2;
+
+                var recipes = Manager._recipes.Values.ToList();
+                if (MarketFiltered)
+                    recipes = Manager._recipes.Values.Where(r => Market.MarketOrders.Values.Any(v => v.ItemType == r.NqId)).ToList();
+
+                foreach(var recipe in recipes)
+                {
+                    worksheet.Cell(row, 1).Value = recipe.Name;
+                    double costToMake = Manager.GetBaseCost(recipe.Key);
+                    worksheet.Cell(row, 2).Value = costToMake;
+
+                    var orders = Market.MarketOrders.Values.Where(o => o.ItemType == recipe.NqId && o.BuyQuantity < 0 && DateTime.Now < o.ExpirationDate && o.Price > 0);
+
+                    var mostRecentOrder = orders.OrderBy(o => o.Price).FirstOrDefault();
+                    double cost = 0;
+                    if (mostRecentOrder == null)
+                        cost = 0;
+                    else
+                        cost = mostRecentOrder.Price;
+
+                    worksheet.Cell(row, 3).Value = cost;
+                    worksheet.Cell(row, 4).Value = recipe.Time;
+                    //worksheet.Cell(row, 5).Value = cost = ((mostRecentOrder.Price - costToMake) / mostRecentOrder.Price);
+                    worksheet.Cell(row, 5).FormulaR1C1 = "=((R[0]C[-2]-R[0]C[-3])/R[0]C[-2])";
+                    //cost = (mostRecentOrder.Price - costToMake)*(86400/recipe.Time);
+                    worksheet.Cell(row, 6).FormulaR1C1 = "=(R[0]C[-3]-R[0]C[-4])*(86400/R[0]C[-2])";
+                    worksheet.Cell(row, 7).FormulaR1C1 = "=86400/R[0]C[-3]";
+
+                    row++;
+                }
+                worksheet.ColumnsUsed().AdjustToContents();
+                workbook.SaveAs("Item Export " + DateTime.Now.ToString("yyyy-MM-dd") + ".xlsx");
+                MessageBox.Show("Exported to " + "Item Export " + DateTime.Now.ToString("yyyy-MM-dd") + ".xlsx in the same folder as the exe");
             }
         }
     }

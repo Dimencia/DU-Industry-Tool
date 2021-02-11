@@ -25,7 +25,7 @@ namespace DU_Industry_Tool
             mainPanel.AutoScroll = true;
             mainPanel.AutoSize = true;
 
-            foreach(var talent in manager.Talents)
+            foreach (var talent in manager.Talents.OrderBy(t => t.Name))
             {
                 var panel = new FlowLayoutPanel();
                 panel.WrapContents = false;
