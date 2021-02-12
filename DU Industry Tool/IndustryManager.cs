@@ -74,63 +74,6 @@ namespace DU_Industry_Tool
                 progressBar.Value = 60;
 
 
-            // Temporary - fill out the CSV
-            /*
-            if (File.Exists("Part_Cost_Calculator-Input_View.csv"))
-            {
-                List<TempSheet> sheetValues = new List<TempSheet>();
-                using (StreamReader reader = new StreamReader("Part_Cost_Calculator-Input_View.csv"))
-                {
-                    reader.ReadLine(); // Skip header line
-
-                    while (!reader.EndOfStream)
-                    {
-                        var line = reader.ReadLine();
-                        var pieces = line.Split(',');
-                        // Try to find the recipe
-                        if (pieces.Length > 0)
-                        {
-                            var recipe = _recipes.Values.Where(r => r.Name.ToLower() == pieces[0].ToLower()).FirstOrDefault();
-                            if (recipe != null)
-                                sheetValues.Add(new TempSheet() { Name = pieces[0], RecordId = pieces[1], Products = GetOreComponents(recipe.Key), Key = recipe.Key });
-                        }
-
-                    }
-                }
-
-                List<string> oreNames = new List<string>()
-                {
-                    "Hematite","Bauxite","Coal","Quartz","Limestone","Chromite","Malachite","Natron","Acanthite","Garnierite","Pyrite","Petalite","Gold Nuggets","Cobaltite","Kolbeckite","Cryolite","Columbite","Rhodinite","Illmenite","Vanadinite","Thoramine"
-                };
-
-                using (StreamWriter writer = new StreamWriter("PartCostOutput.csv"))
-                {
-                    writer.WriteLine("Item Name,RecordID," + string.Join(",",oreNames));
-                    foreach (var value in sheetValues)
-                    {
-                        writer.Write(value.Name + "," + value.RecordId + ",");
-                        if (_recipes.ContainsKey(value.Key) && _recipes[value.Key].Products.Count > 0)
-                        {
-                            foreach (var ore in oreNames)
-                            {
-                                var finalValue = value.Products.Where(p => p.Name.ToLower() == ore.ToLower()).FirstOrDefault();
-                                if (finalValue != null)
-                                    writer.Write(finalValue.Quantity + ",");
-                                else
-                                    writer.Write("0,");
-                            }
-                        }
-                        else
-                        {
-                            foreach (var ore in oreNames)
-                                writer.Write(",");
-                        }
-                        writer.WriteLine();
-                    }
-                }
-            }
-            */
-
             // Generate Talents
 
             // Check if they have a talent file already to load values from instead
@@ -140,13 +83,9 @@ namespace DU_Industry_Tool
             }
             else
             {
-                foreach (var group in _recipes.Values.GroupBy(r => r.ParentGroupName))
-                {
-                    Console.WriteLine(group.Key);
-                }
-                var multiplierTalentGroups = new string[] { "Pure", "Scraps", "Product" };
+                var multiplierTalentGroups = new string[] { "Pure", "Scraps", "Product" }; // Setup the names of the item-specific multiplier talents
 
-                List<Talent> genericScrapTalents = new List<Talent>()
+                List<Talent> genericScrapTalents = new List<Talent>() // Setup the scrap talents so we can add each scrap to their applicableRecipe later
                 {
                     new Talent() { Name = "Basic Scrap Refinery", Addition = -1, InputTalent = true },
                     new Talent() { Name = "Uncommon Scrap Refinery", Addition = -1, InputTalent = true },
@@ -155,14 +94,14 @@ namespace DU_Industry_Tool
                 };
 
                 foreach (var kvp in _recipes.Where(r => multiplierTalentGroups.Any(t => t == r.Value.ParentGroupName)))
-                {
+                { // Iterate over every recipe that is part of one of the multiplierTalentGroups, "Pure", "Scraps", or "Product"
                     var recipe = kvp.Value;
-                    var talent = new Talent() { Name = recipe.Name + " Productivity", Addition = 0, Multiplier = 0.03 };
-                    talent.ApplicableRecipes.Add(kvp.Key); // Each of these only applies to its one thing... 
+                    var talent = new Talent() { Name = recipe.Name + " Productivity", Addition = 0, Multiplier = 0.03 }; // They all have 3% multiplier
+                    talent.ApplicableRecipes.Add(kvp.Key); // Each of these only applies to its one specific element
                     Talents.Add(talent);
                     if (recipe.ParentGroupName == "Pure" || recipe.ParentGroupName == "Product")
                     {
-                        // Pures and products have an input rediction of 0.03 multiplier
+                        // Pures and products have an input reduction of 0.03 multiplier as well as the output multiplier
                         string nameString = recipe.Name;
                         if (recipe.ParentGroupName == "Pure")
                             nameString += " Ore";
@@ -183,6 +122,7 @@ namespace DU_Industry_Tool
                 Talents.AddRange(genericScrapTalents);
 
                 // Fuel talents
+                // Generic gets -2% per level to inputs
                 var genericRefineryTalent = new Talent() { Name = "Fuel Refinery", Addition = 0, Multiplier = -0.02, InputTalent = true };
 
                 foreach (var groupList in _recipes.Values.Where(r => r.ParentGroupName == "Fuels").GroupBy(r => r.GroupId))
@@ -190,10 +130,9 @@ namespace DU_Industry_Tool
                     var groupName = Groups.Values.Where(g => g.Id == groupList.Key).FirstOrDefault()?.Name;
                     var outTalent = new Talent() { Name = groupName + " Productivity", Addition = 0, Multiplier = 0.05 };
                     var inTalent = new Talent() { Name = groupName + " Refinery", Addition = 0, Multiplier = -0.03, InputTalent = true };
+                    // Specific gets -3% per level to inputs
 
-                    // Fuels also have a -3% input cost set of talents for each group
-
-                    // We also need to store what things are applicable to these talents
+                    // Store that everything in this group is applicable to all of these recipes (mostly catches the kergon varieties)
                     foreach (var recipe in groupList)
                     {
                         outTalent.ApplicableRecipes.Add(recipe.Key);
@@ -267,24 +206,15 @@ namespace DU_Industry_Tool
 
             foreach (var ingredient in recipe.Ingredients)
             {
-                if (_recipes[ingredient.Type].ParentGroupName == "Ore")
+                var resRecipe = JsonConvert.DeserializeObject<IngredientRecipe>(JsonConvert.SerializeObject(_recipes[ingredient.Type]));
+                if (Groups.Values.Where(g => g.Id == resRecipe.GroupId).FirstOrDefault()?.Name != "Catalyst")
                 {
-                    //Console.WriteLine(ingredient.Name + " value: " + Ores.Where(o => o.Key == ingredient.Type).First().Value + "; Requires " + ingredient.Quantity + " to make " + recipe.Products.First().Quantity + " for a total of " + ((Ores.Where(o => o.Key == ingredient.Type).First().Value * ingredient.Quantity) / recipe.Products.First().Quantity));
-
-                    //Console.WriteLine("Talents: " + ingredient.Name + " value: " + Ores.Where(o => o.Key == ingredient.Type).First().Value + "; Requires " + (ingredient.Quantity * inputMultiplier) + " to make " + (recipe.Products.First().Quantity * outputMultiplier) + " for a total of " + ((Ores.Where(o => o.Key == ingredient.Type).First().Value * ingredient.Quantity * inputMultiplier) / (recipe.Products.First().Quantity * outputMultiplier + outputAdder)));
-                    var resRecipe = new IngredientRecipe() { Key = ingredient.Type, Name = ingredient.Name, Quantity = (ingredient.Quantity * inputMultiplier / (recipe.Products.First().Quantity * outputMultiplier + outputAdder))*quantity, ParentGroupName = "Ore"};
+                    resRecipe.Quantity = (ingredient.Quantity * inputMultiplier / (recipe.Products.First().Quantity * outputMultiplier + outputAdder)) * quantity;
                     results.Add(resRecipe);
-                }
-                else
-                {
-                    var resRecipe = JsonConvert.DeserializeObject<IngredientRecipe>(JsonConvert.SerializeObject(_recipes[ingredient.Type]));
-                    if (Groups.Values.Where(g => g.Id == resRecipe.GroupId).FirstOrDefault()?.Name != "Catalyst")
-                    {
-                        resRecipe.Quantity = (ingredient.Quantity * inputMultiplier / (recipe.Products.First().Quantity * outputMultiplier + outputAdder))*quantity;
-                        results.Add(resRecipe);
+                    if (resRecipe.Ingredients.Count > 0)
                         results.AddRange(GetIngredientRecipes(ingredient.Type, resRecipe.Quantity));
-                    }
                 }
+
             }
 
             return results;
@@ -327,13 +257,14 @@ namespace DU_Industry_Tool
         {
 
             double totalCost = 0;
-            double inputMultiplier = 0;
-            double outputMultiplier = 0;
-            double outputAdder = 0;
+            double inputMultiplier = 1; // We start at 1x
+            double outputMultiplier = 1;
+            double outputAdder = 0; // And +0
+            double inputAdder = 0;
 
             var recipe = _recipes[key];
 
-            // Skip catalysts entirely tho.
+            // Skip catalysts entirely, because they are reusable and shouldn't be included in cost
             if (Groups.Values.Where(g => g.Id == recipe.GroupId).FirstOrDefault()?.Name == "Catalyst")
                 return 0;
 
@@ -341,12 +272,11 @@ namespace DU_Industry_Tool
             {
                 if (talent.InputTalent)
                 {
-                    inputMultiplier += talent.Multiplier * talent.Value;
-                    //Console.WriteLine("Applying talent " + talent.Name + " to " + recipe.Name + " for input mult " + (talent.Multiplier * talent.Value));
+                    inputMultiplier += talent.Multiplier * talent.Value; // Add each talent's multipler and adder so that we get values like 1.15 or 0.85, for pos/neg multipliers
+                    inputAdder += talent.Addition * talent.Value;
                 }
                 else
                 {
-                    //Console.WriteLine("Applying talent " + talent.Name + " to " + recipe.Name + " for output mult " + (talent.Multiplier * talent.Value) + " and adder " + (talent.Addition * talent.Value));
                     outputMultiplier += talent.Multiplier * talent.Value;
                     outputAdder += talent.Addition * talent.Value;
                 }
@@ -357,17 +287,13 @@ namespace DU_Industry_Tool
 
             foreach (var ingredient in recipe.Ingredients)
             {
-                if (_recipes[ingredient.Type].ParentGroupName == "Ore")
-                {
-                    //Console.WriteLine(ingredient.Name + " value: " + Ores.Where(o => o.Key == ingredient.Type).First().Value + "; Requires " + ingredient.Quantity + " to make " + recipe.Products.First().Quantity + " for a total of " + ((Ores.Where(o => o.Key == ingredient.Type).First().Value * ingredient.Quantity) / recipe.Products.First().Quantity));
-
-                    //Console.WriteLine("Talents: " + ingredient.Name + " value: " + Ores.Where(o => o.Key == ingredient.Type).First().Value + "; Requires " + (ingredient.Quantity * inputMultiplier) + " to make " + (recipe.Products.First().Quantity * outputMultiplier) + " for a total of " + ((Ores.Where(o => o.Key == ingredient.Type).First().Value * ingredient.Quantity * inputMultiplier) / (recipe.Products.First().Quantity * outputMultiplier + outputAdder)));
-
-                    totalCost += (ingredient.Quantity * inputMultiplier * Ores.Where(o => o.Key == ingredient.Type).First().Value) / (recipe.Products.First().Quantity * outputMultiplier + outputAdder);
+                if (_recipes[ingredient.Type].ParentGroupName == "Ore") // If it's an ore, add its value directly
+                { // We multiply talentedQuantity * value, divided by the number of products we produce per batch, to give the value of a single one of these products
+                    totalCost += ((ingredient.Quantity * inputMultiplier + inputAdder) * Ores.Where(o => o.Key == ingredient.Type).First().Value) / (recipe.Products.First().Quantity * outputMultiplier + outputAdder);
                 }
-                else
-                {
-                    totalCost += GetTotalCost(ingredient.Type) * ingredient.Quantity * inputMultiplier / (recipe.Products.First().Quantity * outputMultiplier + outputAdder);
+                else // If it's not, get the total cost of the thing and add that
+                { // Since this is the value of a single one, we multiply by the quantity we require (modified by talents), again divided by the number of products we produce, for the value of 1 of them
+                    totalCost += GetTotalCost(ingredient.Type) * (ingredient.Quantity * inputMultiplier + inputAdder) / (recipe.Products.First().Quantity * outputMultiplier + outputAdder);
                 }
             }
 
