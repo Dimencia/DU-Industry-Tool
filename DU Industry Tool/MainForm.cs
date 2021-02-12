@@ -461,5 +461,55 @@ namespace DU_Industry_Tool
                 MessageBox.Show("Exported to " + "Item Export " + DateTime.Now.ToString("yyyy-MM-dd") + ".xlsx in the same folder as the exe");
             }
         }
+
+        private void factoryBreakdownForSelectedToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Exports an excel sheet with info about how to setup the factory for the selected recipe (aborts if no recipe selected)
+            if (treeView.SelectedNode != null && treeView.SelectedNode.Tag != null && treeView.SelectedNode.Tag is SchematicRecipe)
+            {
+                var recipe = treeView.SelectedNode.Tag as SchematicRecipe;
+                // Shows the amount of required components, amount per day required, amount per day per industry, and the number of industries you need of that component to provide for 1 of the parent
+                // The number of parent parts can be put in as a value
+                using (var workbook = new XLWorkbook())
+                {
+                    var worksheet = workbook.Worksheets.Add("Factory");
+                    worksheet.Cell(1, 1).Value = "Number of Industries producing " + recipe.Name;
+                    worksheet.Cell(1, 2).Value = "Produced/Day";
+                    worksheet.Cell(2, 1).Value = 1;
+                    worksheet.Cell(2, 2).FormulaR1C1 = $"=R[0]C[-1]*(86400/{recipe.Time})";
+
+                    worksheet.Cell(1, 3).Value = "Product";
+                    worksheet.Cell(1, 4).Value = "Required/Day";
+                    worksheet.Cell(1, 5).Value = "Produced/Day/Industry";
+                    worksheet.Cell(1, 6).Value = "Num Industries Required";
+                    worksheet.Cell(1, 7).Value = "Actual";
+
+                    worksheet.Row(1).Style.Font.SetBold();
+
+                    int row = 2;
+                    var ingredients = Manager.GetIngredientRecipes(recipe.Key).OrderByDescending(i => i.Level).GroupBy(i => i.Key);
+                    foreach(var group in ingredients)
+                    {
+                        worksheet.Cell(row, 3).Value = group.First().Name;
+                        worksheet.Cell(row, 4).FormulaA1 = $"=B2*{group.Sum(g => g.Quantity)}";
+                        double outputMult = 1;
+                        var talents = Manager.Talents.Where(t => t.InputTalent == false && t.ApplicableRecipes.Contains(group.First().Key));
+                        if (talents.Count() > 0)
+                            outputMult += talents.Sum(t => t.Multiplier);
+                        if (group.First().ParentGroupName != "Ore")
+                            worksheet.Cell(row, 5).Value = (86400 / group.First().Time)*group.First().Products.First().Quantity*outputMult;
+                        worksheet.Cell(row, 6).FormulaR1C1 = "=R[0]C[-2]/R[0]C[-1]";
+                        worksheet.Cell(row, 7).FormulaR1C1 = "=ROUNDUP(R[0]C[-1])";
+
+                        row++;
+                    }
+
+                    worksheet.ColumnsUsed().AdjustToContents();
+                    workbook.SaveAs($"Factory Plan {recipe.Name} {DateTime.Now.ToString("yyyy-MM-dd")}.xlsx");
+                    MessageBox.Show($"Exported to 'Factory Plan { recipe.Name} { DateTime.Now.ToString("yyyy-MM-dd")}.xlsx' in the same folder as the exe");
+                }
+            }
+
+        }
     }
 }

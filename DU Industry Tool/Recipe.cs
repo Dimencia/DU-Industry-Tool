@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -33,14 +35,20 @@ namespace DU_Industry_Tool
         public Guid GroupId { get; set; }
         public string ParentGroupName { get; set; }
         public string Key { get; set; }
+        [JsonIgnore]
         public TreeNode Node { get; set; }
         public ulong NqId { get; set; } // Different from Id... for markets
+    }
+
+    public class IngredientRecipe : SchematicRecipe
+    {
+        public double Quantity { get; set; }
     }
 
     public class ProductDetail
     {
         public string Type { get; set; }
-        public float Quantity { get; set; }
+        public double Quantity { get; set; }
         public string Name { get; set; }
     }
 

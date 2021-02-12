@@ -232,6 +232,64 @@ namespace DU_Industry_Tool
             File.WriteAllText("oreValues.json", JsonConvert.SerializeObject(Ores));
         }
 
+
+        public List<IngredientRecipe> GetIngredientRecipes(string key, double quantity = 1)
+        {
+            var results = new List<IngredientRecipe>();
+
+            double inputMultiplier = 0;
+            double outputMultiplier = 0;
+            double outputAdder = 0;
+
+            var recipe = _recipes[key];
+
+            // Skip catalysts entirely tho.
+            if (Groups.Values.Where(g => g.Id == recipe.GroupId).FirstOrDefault()?.Name == "Catalyst")
+                return results;
+
+            foreach (var talent in Talents.Where(t => t.ApplicableRecipes.Contains(recipe.Key)))
+            {
+                if (talent.InputTalent)
+                {
+                    inputMultiplier += talent.Multiplier * talent.Value;
+                    //Console.WriteLine("Applying talent " + talent.Name + " to " + recipe.Name + " for input mult " + (talent.Multiplier * talent.Value));
+                }
+                else
+                {
+                    //Console.WriteLine("Applying talent " + talent.Name + " to " + recipe.Name + " for output mult " + (talent.Multiplier * talent.Value) + " and adder " + (talent.Addition * talent.Value));
+                    outputMultiplier += talent.Multiplier * talent.Value;
+                    outputAdder += talent.Addition * talent.Value;
+                }
+            }
+
+            inputMultiplier += 1;
+            outputMultiplier += 1;
+
+            foreach (var ingredient in recipe.Ingredients)
+            {
+                if (_recipes[ingredient.Type].ParentGroupName == "Ore")
+                {
+                    //Console.WriteLine(ingredient.Name + " value: " + Ores.Where(o => o.Key == ingredient.Type).First().Value + "; Requires " + ingredient.Quantity + " to make " + recipe.Products.First().Quantity + " for a total of " + ((Ores.Where(o => o.Key == ingredient.Type).First().Value * ingredient.Quantity) / recipe.Products.First().Quantity));
+
+                    //Console.WriteLine("Talents: " + ingredient.Name + " value: " + Ores.Where(o => o.Key == ingredient.Type).First().Value + "; Requires " + (ingredient.Quantity * inputMultiplier) + " to make " + (recipe.Products.First().Quantity * outputMultiplier) + " for a total of " + ((Ores.Where(o => o.Key == ingredient.Type).First().Value * ingredient.Quantity * inputMultiplier) / (recipe.Products.First().Quantity * outputMultiplier + outputAdder)));
+                    var resRecipe = new IngredientRecipe() { Key = ingredient.Type, Name = ingredient.Name, Quantity = (ingredient.Quantity * inputMultiplier / (recipe.Products.First().Quantity * outputMultiplier + outputAdder))*quantity, ParentGroupName = "Ore"};
+                    results.Add(resRecipe);
+                }
+                else
+                {
+                    var resRecipe = JsonConvert.DeserializeObject<IngredientRecipe>(JsonConvert.SerializeObject(_recipes[ingredient.Type]));
+                    if (Groups.Values.Where(g => g.Id == resRecipe.GroupId).FirstOrDefault()?.Name != "Catalyst")
+                    {
+                        resRecipe.Quantity = (ingredient.Quantity * inputMultiplier / (recipe.Products.First().Quantity * outputMultiplier + outputAdder))*quantity;
+                        results.Add(resRecipe);
+                        results.AddRange(GetIngredientRecipes(ingredient.Type, resRecipe.Quantity));
+                    }
+                }
+            }
+
+            return results;
+        }
+
         public double GetBaseCost(string key)
         {
             // Just like the other one, but ignore talents.
