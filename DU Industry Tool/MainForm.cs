@@ -30,10 +30,9 @@ namespace DU_Industry_Tool
             treeView.AfterSelect += TreeView_AfterSelect;
 
             // TODO: Freeze updates first
-            foreach(var group in manager._recipes.Values.GroupBy(r => r.ParentGroupName))
+            foreach(var group in manager._recipes.Values.OrderBy(r => r.Name).GroupBy(r => r.ParentGroupName))
             {
                 var groupNode = new TreeNode(group.Key);
-                
                 
                 foreach(var recipe in group)
                 {
