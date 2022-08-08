@@ -34,10 +34,13 @@ namespace DU_Industry_Tool
         public List<ProductDetail> Ingredients { get; set; } = new List<ProductDetail>();
         public Guid GroupId { get; set; }
         public string ParentGroupName { get; set; }
+        [JsonIgnore]
         public string Key { get; set; }
         [JsonIgnore]
         public TreeNode Node { get; set; }
         public ulong NqId { get; set; } // Different from Id... for markets
+        public string SchemaType { get; set; }
+        public double SchemaPrice { get; set; }
     }
 
     public class IngredientRecipe : SchematicRecipe
@@ -50,8 +53,9 @@ namespace DU_Industry_Tool
         public string Type { get; set; }
         public double Quantity { get; set; }
         public string Name { get; set; }
+        [JsonIgnore]
+        public string SchemaType { get; set; }
     }
-
 
     public class Group
     {
@@ -76,6 +80,14 @@ namespace DU_Industry_Tool
         public string Key { get; set; }
         public string Name { get; set; }
         public double Value { get; set; }
+        public int Level { get; set; }
+    }
+
+    public class Schematic
+    {
+        public string Key { get; set; }
+        public string Name { get; set; }
+        public double Cost { get; set; }
         public int Level { get; set; }
     }
 

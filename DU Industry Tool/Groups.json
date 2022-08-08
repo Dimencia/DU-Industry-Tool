@@ -860,6 +860,16 @@
         "ParentId": "08d8a31f-4f3a-485c-8c71-4d0379da4e2e",
         "Name": "Other"
     },
+    "MiningUnits":{
+        "Id": "08d8a31f-4ff8-49fc-8db6-ac6e49ab44d3",
+        "ParentId": "08d8a31f-4ff2-4c9f-883c-0a8b2b6033e7",
+        "Name": "Mining Units"
+    },
+    "Industry5":{
+        "Id": "08d8a31f-4ff8-49fb-8db6-ac6e49ab44d3",
+        "ParentId": "08d8a31f-4ff2-4c9f-883c-0a8b2b6033e7",
+        "Name": "Exotic Industry"
+    },
     "Industry4":{
         "Id": "08d8a31f-4ff8-49fb-8db5-ac6e49ab44d3",
         "ParentId": "08d8a31f-4ff2-4c9f-883c-0a8b2b6033e7",
@@ -924,6 +934,11 @@
         "Id": "08d8a31f-4fcc-40fe-8e92-9fd90394d5c2",
         "ParentId": "08d8a31f-4fcb-4174-869d-6a5974a27816",
         "Name": "Ammo Container"
+    },
+    "MissionContainerUnit":{
+        "Id": "08d8a31f-4fcc-40fe-8e92-9fd90394d5c3",
+        "ParentId": "08d8a31f-4fcb-4174-869d-6a5974a27816",
+        "Name": "Mission Container"
     },
     "ContainerUnit":{
         "Id": "08d8a31f-4fcb-4174-869d-6a5974a27816",
@@ -1787,7 +1802,6 @@
     },
     "Consumable":{
         "Id": "08d8a31f-4f17-4195-862d-42d7290833ce",
-        
-        "Name": "Consumables"
+         "Name": "Consumables"
     }
 }
