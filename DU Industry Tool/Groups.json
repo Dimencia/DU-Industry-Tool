@@ -1380,6 +1380,36 @@
         "ParentId": "08d8a31f-4f43-4c1b-857d-a83c01d973a8",
         "Name": "Radar"
     },
+    "BaseShieldGeneratorUnit":{
+        "Id": "08d8a31f-4f44-467f-8e0f-9c0936cfd1ab",
+        "ParentId": "08d8a31f-4f44-467f-8e0f-ac0936cfd1ac",
+        "Name": "Base Shield Generator"
+    },
+    "CapacitorShieldGeneratorUnit":{
+        "Id": "08d8a31f-4f44-467f-8e0f-9c0936cfd1ac",
+        "ParentId": "08d8a31f-4f44-467f-8e0f-ac0936cfd1ac",
+        "Name": "Capacitor Shield Generators"
+    },
+    "VariableShieldGeneratorUnit":{
+        "Id": "08d8a31f-4f44-467f-8e0f-9c0936cfd1ad",
+        "ParentId": "08d8a31f-4f44-467f-8e0f-ac0936cfd1ad",
+        "Name": "Variable Shield Generators"
+    },
+    "VenterShieldGeneratorUnit":{
+        "Id": "08d8a31f-4f44-467f-8e0f-9c0936cfd1ae",
+        "ParentId": "08d8a31f-4f44-467f-8e0f-ac0936cfd1ad",
+        "Name": "Venter Shield Generators"
+    },
+    "AdvancedShieldGeneratorUnit":{
+        "Id": "08d8a31f-4f44-467f-8e0f-9c0936cfd1a0",
+        "ParentId": "08d8a31f-4f44-467f-8e0f-ac0936cfd1ad",
+        "Name": "Advanced Shield Generators"
+    },
+    "ShieldGenerators":{
+        "Id": "08d8a31f-4f44-467f-8e0f-ac0936cfd1ac",
+        "ParentId": "08d8a31f-4f43-4c1b-857d-a83c01d973a8",
+        "Name": "Shield Generators"
+    },
     "CombatDefense":{
         "Id": "08d8a31f-4f43-4c1b-857d-a83c01d973a8",
         "ParentId": "08d8a31f-4f3a-485c-8c71-4d0379da4e2e",

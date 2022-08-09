@@ -68,113 +68,94 @@ namespace DU_Industry_Tool
             FlowLayoutPanel costPanel = new FlowLayoutPanel();
             costPanel.FlowDirection = FlowDirection.LeftToRight;
             costPanel.AutoSize = true;
-            var costLabel = new Label();
-            costLabel.Text = "Cost To Make ";
-            costLabel.AutoSize = true;
-            costLabel.Padding = new Padding(0, 0, 0, 10);
-            costPanel.Controls.Add(costLabel);
             var totalCostLabel = new Label();
             Manager.ProductQuantity = int.Parse(QuantityBox.Text);
-            var costToMake = Manager.GetTotalCost(recipe.Key);
-            totalCostLabel.Text = costToMake.ToString("N02") + "q";
+            var costToMake = Manager.GetTotalCost(recipe.Key, silent: true);
+            totalCostLabel.Text = "Cost To Make " + costToMake.ToString("N02") + "q";
             totalCostLabel.AutoSize = true;
             costPanel.Controls.Add(totalCostLabel);
-
             infoPanel.Controls.Add(costPanel);
 
             costPanel = new FlowLayoutPanel();
             costPanel.FlowDirection = FlowDirection.LeftToRight;
             costPanel.AutoSize = true;
-            costLabel = new Label();
-            costLabel.Text = "Untalented (without schematics) ";
-            costLabel.AutoSize = true;
-            costLabel.Padding = new Padding(0, 0, 0, 10);
-            costPanel.Controls.Add(costLabel);
             totalCostLabel = new Label();
             var cost = Manager.GetBaseCost(recipe.Key);
-            totalCostLabel.Text = cost.ToString("N02") + "q";
+            totalCostLabel.Text = "Untalented (without schematics) " + cost.ToString("N02") + "q";
             totalCostLabel.AutoSize = true;
             costPanel.Controls.Add(totalCostLabel);
-
             infoPanel.Controls.Add(costPanel);
 
             costPanel = new FlowLayoutPanel();
             costPanel.FlowDirection = FlowDirection.LeftToRight;
             costPanel.AutoSize = true;
-            costLabel = new Label();
-            costLabel.Text = "Market ";
-            costLabel.AutoSize = true;
-            costLabel.Padding = new Padding(0, 0, 0, 10);
-            costPanel.Controls.Add(costLabel);
-            totalCostLabel = new Label();
 
             // IDK why sometimes prices are listed as 0
             var orders = Market.MarketOrders.Values.Where(o => o.ItemType == recipe.NqId &&
                                                                o.BuyQuantity < 0 &&
                                                                DateTime.Now < o.ExpirationDate &&
                                                                o.Price > 0);
-
             var mostRecentOrder = orders.OrderBy(o => o.Price).FirstOrDefault();
             cost = mostRecentOrder?.Price ?? 0;
 
-            totalCostLabel.Text = cost.ToString("N02") + "q";
+            totalCostLabel = new Label();
+            totalCostLabel.Text = "Market " + cost.ToString("N02") + "q";
             totalCostLabel.AutoSize = true;
             costPanel.Controls.Add(totalCostLabel);
-            infoPanel.Controls.Add(costPanel);
 
-            if (mostRecentOrder != null)
+            if (mostRecentOrder == null)
             {
-                costLabel = new Label();
-                costLabel.Text = "Until " + mostRecentOrder.ExpirationDate ?? "No expiration";
-                costPanel.Controls.Add(costLabel);
-
-                costPanel = new FlowLayoutPanel();
-                costPanel.FlowDirection = FlowDirection.LeftToRight;
-                costPanel.AutoSize = true;
-                costLabel = new Label();
-                costLabel.Text = "Profit Margin ";
-                costLabel.AutoSize = true;
-                costLabel.Padding = new Padding(0, 0, 0, 10);
-                costPanel.Controls.Add(costLabel);
-                totalCostLabel = new Label();
-                cost = ((mostRecentOrder.Price-costToMake)/mostRecentOrder.Price);
-                totalCostLabel.Text = cost.ToString("0%");
-                totalCostLabel.AutoSize = true;
-                costPanel.Controls.Add(totalCostLabel);
-
+                infoPanel.Controls.Add(costPanel);
+            }
+            else
+            {
+                var costLabela = new Label();
+                costLabela.Text = "Until " + mostRecentOrder.ExpirationDate ?? "No expiration";
+                costPanel.Controls.Add(costLabela);
                 infoPanel.Controls.Add(costPanel);
 
+                var costPanelm = new FlowLayoutPanel();
+                costPanelm.FlowDirection = FlowDirection.LeftToRight;
+                costPanelm.AutoSize = true;
+
+                var costLabelb = new Label();
+                costLabelb.Text = "Profit Margin ";
+                costLabelb.AutoSize = true;
+                //costLabelb.Padding = new Padding(0, 0, 0, 10);
+                costPanelm.Controls.Add(costLabelb);
+                var totalCostLabelm = new Label();
+                cost = ((mostRecentOrder.Price-costToMake)/mostRecentOrder.Price);
+                totalCostLabelm.Text = cost.ToString("0%");
+                totalCostLabelm.AutoSize = true;
+                costPanelm.Controls.Add(totalCostLabelm);
+                infoPanel.Controls.Add(costPanelm);
+
                 costPanel = new FlowLayoutPanel();
                 costPanel.FlowDirection = FlowDirection.LeftToRight;
                 costPanel.AutoSize = true;
-                costLabel = new Label();
-                costLabel.Text = "Profit/Day/Industry ";
-                costLabel.AutoSize = true;
-                costLabel.Padding = new Padding(0, 0, 0, 10);
-                costPanel.Controls.Add(costLabel);
                 totalCostLabel = new Label();
                 cost = (mostRecentOrder.Price - costToMake)*(86400/recipe.Time);
-                totalCostLabel.Text = cost.ToString("N02")+"q";
+                totalCostLabel.Text = "Profit/Day/Industry " + cost.ToString("N02")+"q";
                 totalCostLabel.AutoSize = true;
                 costPanel.Controls.Add(totalCostLabel);
-
                 infoPanel.Controls.Add(costPanel);
             }
 
-            costPanel = new FlowLayoutPanel();
-            costPanel.FlowDirection = FlowDirection.LeftToRight;
-            costPanel.AutoSize = true;
-            costLabel = new Label();
-            costLabel.Text = "Per Industry ";
-            costLabel.AutoSize = true;
-            costLabel.Padding = new Padding(0, 0, 0, 10);
-            costPanel.Controls.Add(costLabel);
-            totalCostLabel = new Label();
+            var costPanel2 = new FlowLayoutPanel();
+            costPanel2.FlowDirection = FlowDirection.LeftToRight;
+            costPanel2.AutoSize = false;
+            costPanel2.Size = new System.Drawing.Size(400, 40);
+
+            var totalCostLabel2 = new Label();
             cost = 86400/recipe.Time;
-            totalCostLabel.Text = cost.ToString("0.0") + "/Day";
-            totalCostLabel.AutoSize = true;
-            costPanel.Controls.Add(totalCostLabel);
-            infoPanel.Controls.Add(costPanel);
+            //totalCostLabel2.BorderStyle = BorderStyle.FixedSingle;
+            totalCostLabel2.Text = "Per Industry " + cost.ToString("0.0") + "/Day";
+            //totalCostLabel2.Padding = new Padding(0, 0, 10, 0);
+            //totalCostLabel2.Margin = new Padding(0, 0, 0, 0);
+            //totalCostLabel2.Size = new System.Drawing.Size(150, 30);
+            totalCostLabel2.AutoSize = true;
+            costPanel2.Controls.Add(totalCostLabel2);
+            infoPanel.Controls.Add(costPanel2);
 
             // ----- Ingredients -----
             costPanel = new FlowLayoutPanel();
@@ -249,8 +230,8 @@ namespace DU_Industry_Tool
             costPanel.AutoScroll = true;
             costPanel.Font = new System.Drawing.Font("Lucida Console", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 
+            var costLabel = new Label();
             costLabel.Padding = new Padding(0, 10, 10, 10);
-            costLabel = new Label();
             costLabel.AutoSize = false;
             costLabel.Text = "Cost Details";
             costLabel.Font = new Font(costLabel.Font, FontStyle.Bold);
