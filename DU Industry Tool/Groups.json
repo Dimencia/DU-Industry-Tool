@@ -1500,6 +1500,11 @@
         "ParentId": "08d8a31f-4f18-4d5e-8058-7b62788124ab",
         "Name": "Warp Cell"
     },
+    "RelicPlasmas":{
+        "Id": "08d8a31f-4f39-44dd-84f1-9416646e3af8",
+        "ParentId": "08d8a31f-4f18-4d5e-8058-7b62788124ab",
+        "Name": "Relic Plasmas"
+    },
     "UncommonScrap":{
         "Id": "08d8a31f-4f38-4b17-8db3-5c38bc239e22",
         "ParentId": "08d8a31f-4f34-4303-88e3-c46e0f4be6ae",

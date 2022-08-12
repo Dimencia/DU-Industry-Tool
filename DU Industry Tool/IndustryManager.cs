@@ -3,10 +3,12 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace DU_Industry_Tool
 {
@@ -230,7 +232,6 @@ namespace DU_Industry_Tool
                 progressBar.Value = 50;
 
             // Populate Keys, fix products and assign schematics
-            var dataIssues = false;
             int ucount = 0;
             int pcount = 0;
             foreach (var kvp in _recipes)
@@ -274,7 +275,6 @@ namespace DU_Industry_Tool
 
                 if (string.IsNullOrEmpty(kvp.Value.ParentGroupName))
                 {
-                    dataIssues = true;
                     if (kvp.Key.IndexOf("shield", StringComparison.InvariantCultureIgnoreCase) >= 0)
                     {
                         kvp.Value.ParentGroupName = "Shield Generators";
@@ -337,6 +337,13 @@ namespace DU_Industry_Tool
                 var isElement = false;
                 var parentName = kvp.Value.ParentGroupName;
 
+                if (kvp.Key.IndexOf("deep space asteroid", StringComparison.InvariantCultureIgnoreCase) >= 0)
+                {
+                    var r = Schematics.First(x => x.Key == "T1EXL");
+                    kvp.Value.SchemaType = r.Key;
+                    kvp.Value.SchemaPrice = r.Value.Cost;
+                    continue;
+                }
                 if (kvp.Key.Equals("WarpCellStandard", StringComparison.InvariantCultureIgnoreCase))
                 {
                     var r = Schematics.First(x => x.Key == "WarpCell");
@@ -422,6 +429,7 @@ namespace DU_Industry_Tool
                         "Screens",
                         "Sensors",
                         "Shield Generators",
+                        "Space Brakes",
                         "Space Engines",
                         "Space Radars",
                         "Support Tech",
@@ -566,6 +574,36 @@ namespace DU_Industry_Tool
                 {
                     Ores.Add(new Ore() { Key = recipe.Key, Name = recipe.Name, Value = 25 * recipe.Level, Level = recipe.Level }); // BS some values
                 }
+            }
+            // Add plasmas (if missing) to the ore list so a cost can be assigned
+            var plasmas = new List<string>
+            {
+                "Relic Plasma Unus l",
+                "Relic Plasma Duo l",
+                "Relic Plasma Tres l",
+                "Relic Plasma Quattuor l",
+                "Relic Plasma Quinque l",
+                "Relic Plasma Sex l",
+                "Relic Plasma Septem l",
+                "Relic Plasma Octo l",
+                "Relic Plasma Novem l",
+                "Relic Plasma Decem l"
+            };
+            var changed = false;
+            for (var i = 1; i <= 10; i++)
+            {
+                var plasmaKey = $"Plasma{i}";
+                if (Ores.Exists(x => x.Key == plasmaKey))
+                    continue;
+                Ores.Add(new Ore() { Key = plasmaKey,
+                    Name = plasmas[i-1],
+                    Value = 10000000,
+                    Level = 0
+                });
+                changed = true;
+            }
+            if (changed)
+            {
                 SaveOreValues();
             }
             if (progressBar != null)
@@ -828,11 +866,11 @@ namespace DU_Industry_Tool
             if (depth == 0)
             {
                 amount = ProductQuantity;
-                CostResults = new StringBuilder();
-                _sumProducts = new SortedDictionary<string, double>();
-                _sumPures = new SortedDictionary<string, double>();
-                _sumOres = new SortedDictionary<string, double>();
-                _sumSchemClass = new SortedDictionary<string, Tuple<int,double>>();
+                CostResults     = new StringBuilder();
+                _sumProducts    = new SortedDictionary<string, double>();
+                _sumPures       = new SortedDictionary<string, double>();
+                _sumOres        = new SortedDictionary<string, double>();
+                _sumSchemClass  = new SortedDictionary<string, Tuple<int,double>>();
                 _schematicsCost = 0;
             }
             double totalCost = 0;
@@ -852,10 +890,9 @@ namespace DU_Industry_Tool
                 return 0;
             }
 
-            var productQty = product.Quantity;
-
             GetTalentsForKey(recipe.Key, out var inputMultiplier, out var inputAdder, out var outputMultiplier, out var outputAdder);
 
+            var productQty = product.Quantity;
             var curLevel = level;
             level += "     ";
             Debug.WriteLineIf(!silent, $"{curLevel}> {product.Name} ({amount:N2})");
@@ -873,21 +910,37 @@ namespace DU_Industry_Tool
 
                 var cost     = 0d;
                 var qty      = 0d;
-                var factor   = ((ingredient.Quantity + inputAdder) * inputMultiplier) /
-                               ((productQty + outputAdder) * outputMultiplier);
+                double factor = 1;
                 var myRecipe = _recipes[ingredient.Type];
-                if (myRecipe.ParentGroupName == "Ore")
+                if (depth > 0 && ingredient.Quantity > productQty && myRecipe.ParentGroupName == "Ore")
+                {
+                    factor = ((productQty + outputAdder) * outputMultiplier) /
+                              ((ingredient.Quantity + inputAdder) * inputMultiplier);
+                }
+                else
+                {
+                    factor = ((ingredient.Quantity + inputAdder) * inputMultiplier) /
+                             ((productQty + outputAdder) * outputMultiplier);
+                }
+                var isPlasma = myRecipe.ParentGroupName == "Consumables" && myRecipe.Key.StartsWith("Plasma");
+                if (myRecipe.ParentGroupName == "Ore" || isPlasma)
                 {
                     qty = amount / factor;
                     cost = qty * Ores.First(o => o.Key == ingredient.Type).Value;
                     totalCost += cost;
-                    if (!string.IsNullOrEmpty(myRecipe.SchemaType))
+                    var prefix = ingredient.Type;
+                    if (isPlasma)
                     {
-                        if (_sumOres.ContainsKey(ingredient.Type))
-                            _sumOres[ingredient.Type] += qty;
-                        else
-                            _sumOres.Add(ingredient.Type, qty);
+                        qty = 1;
                     }
+                    else
+                    {
+                        prefix = "T"+(myRecipe.Level < 2 ? "1" : myRecipe.Level.ToString())+" "+prefix;
+                    }
+                    if (_sumOres.ContainsKey(prefix))
+                        _sumOres[prefix] += qty;
+                    else
+                        _sumOres.Add(prefix, qty);
                     Debug.WriteLineIf(!silent && qty > 0, $"{curLevel}     ({ingredient.Name}: {qty:N2} = {cost:N2}q)");
                     continue;
                 }
@@ -933,7 +986,7 @@ namespace DU_Industry_Tool
             }
 
             CostResults.AppendLine("Totals:");
-            _schematicsCost += CalculateItemCost(_sumOres, "U", 2, amount);
+            _schematicsCost += CalculateItemCost(_sumOres, "U", 1, amount);
             _schematicsCost += CalculateItemCost(_sumPures, "U", 2, amount);
             _schematicsCost += CalculateItemCost(_sumProducts, "P", 1, amount);
             CostResults.AppendLine("Schematics:".PadRight(16)+$"{_schematicsCost:N1}q".PadLeft(20));
@@ -978,28 +1031,62 @@ namespace DU_Industry_Tool
         }
 
         private double CalculateItemCost(SortedDictionary<string, double> itemPrices, string listType = "P",
-                                      byte minLevel = 1, double quantity = 1, bool outputDetails = false)
+                                      byte minLevel = 1, double quantity = 1, bool outputDetails = true)
         {
             double outSum = 0;
             foreach (var item in itemPrices)
             {
-                if (!_recipes.ContainsKey(item.Key))
+                var key = item.Key;
+                if (listType == "U" && key.StartsWith("T"))
+                {
+                    key = key.Substring(3);
+                }
+                if (!_recipes.ContainsKey(key))
+                {
                     continue;
-                var recipe = _recipes[item.Key];
-                if (recipe == null || recipe.Level < minLevel) continue;
+                }
+                var recipe   = _recipes[key];
+                var isOre    = recipe.ParentGroupName == "Ore";
+                var isT1Ore  = listType == "U" && isOre && recipe?.Level <= 1;
+                var isPlasma = recipe.ParentGroupName == "Consumables" && recipe.Key.StartsWith("Plasma");
+                if (listType == "U" && !isOre && recipe.Level < minLevel)
+                {
+                    continue;
+                }
+
+                double orePrice = 0;
+                if (listType == "U" && isOre)
+                {
+                    orePrice = Ores.FirstOrDefault(o => o.Key == key)?.Value ?? 0;
+                }
+                double tmp = item.Value * quantity;
+                var output = $"{recipe.Name}: {tmp:N2}"+(isPlasma ? "" : " L");
+                if (isOre && orePrice > 0.00d)
+                {
+                    tmp *= orePrice;
+                    output += $" = {tmp:N2} q";
+                }
 
                 var idx = recipe.SchemaType;
+                var lvl = recipe.Level < 2 ? 1 : recipe.Level;
                 if (string.IsNullOrEmpty(idx))
                 {
-                    idx = $"T{recipe.Level}{listType}";
+                    idx = $"T{lvl}{listType}";
                 }
-                if (!Schematics.ContainsKey(idx))
+                var orePrefix = idx.Substring(0, 2) + " ";
+                if (isT1Ore || isPlasma || !Schematics.ContainsKey(idx))
+                {
+                    if (outputDetails)
+                    {
+                        CostResults.AppendLine((isPlasma ? "" : orePrefix)+output);
+                    }
                     continue;
+                }
                 // for every "started" batch we need a schematic and DU ignores talents
                 var schem = Schematics[idx];
                 var allQuantity = item.Value * quantity;
                 int cnt = (int)Math.Ceiling(allQuantity / 100);
-                var tmp = schem.Cost * cnt;
+                tmp = schem.Cost * cnt;
                 if (_sumSchemClass.ContainsKey(idx))
                 {
                     var item1 = _sumSchemClass[idx].Item1 + cnt;
@@ -1011,8 +1098,8 @@ namespace DU_Industry_Tool
                     _sumSchemClass.Add(idx, new Tuple<int, double>(cnt, tmp));
                 if (outputDetails)
                 {
-                    var output = $"{recipe.Name}: {allQuantity:N2} L => {cnt} sch. = {tmp:N2}q";
-                    CostResults.AppendLine(output);
+                    output += $" | {cnt} sch. = {tmp:N2}q";
+                    CostResults.AppendLine(orePrefix+output);
                 }
                 outSum += tmp;
             }
