@@ -3,12 +3,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using DocumentFormat.OpenXml.Wordprocessing;
 
 namespace DU_Industry_Tool
 {
@@ -25,6 +23,7 @@ namespace DU_Industry_Tool
         public readonly Dictionary<string, Group> Groups;
         public List<Ore> Ores { get; } = new List<Ore>();
         public SortedDictionary<string, Schematic> Schematics { get; } = new SortedDictionary<string, Schematic>();
+        public List<string> ApplicableTalents { get; private set; }
 
         public List<Talent> Talents { get; } = new List<Talent>();
 
@@ -67,7 +66,7 @@ namespace DU_Industry_Tool
                 progressBar.Value = 30;
 
             // Schematics and prices
-            // mostly by formula as of patch 0.31.3
+            // mostly by formula as of patch 0.31.6
 
             var csPriceList = new int[] { 150,  375,  1000,   3000, 0 }; // Construct Support
             var cuPriceList = new int[] { 250, 5000, 62500, 725000, 0 }; // Core Units
@@ -78,34 +77,44 @@ namespace DU_Industry_Tool
             }
             else
             {
-                // Generate:
-                // U  = Pures
-                // P  = Products
-                // HU = Honeycomb Pures
-                // HP = Honeycomb Products
-                // SC = Scraps
+                // Generate (prefixed with Tx with x = tier):
+                // U  = Pures, e.g. T2U
+                // P  = Products, e.g. T3P
+                // HU = Honeycomb Pures, e.g. T2HC
+                // HP = Honeycomb Products, e.g. T3HP
+                // SC = Scraps, e.g. T2SC
+                // TxEy = Tier x, Element size y, e.g. T2XL tier 2, XL
                 var groups  = new[] {       "U",     "P",  "HU", "HP", "SC" };
                 var prices  = new double[] { 187.5d, 180d, 125d, 50d,  30d }; // only first price for each group
                 var scraps  = new double[] { 30d, 75d, 187.48d, 468.72 };
                 var factors = new double[] { 3.125d, 3.3333333d, 3.75d, 5.0d };
-                for(byte i = 0; i <= 4; i++)
+                int[] batchTimes = new int[] { 1500, 1800, 625, 250, 150 };
+
+                for (byte i = 0; i <= 4; i++)
                 {
                     var g = groups[i];
-                    var title = g == "SC" ? "Scrap" : (g.EndsWith("U") ? "Pure" : "Product");
-                    title += g.StartsWith("H") ? " Honeycomb" : (g == "SC" ? "" :" Material");
+                    var isHc = g.StartsWith("H");
+                    var isSc = g == "SC";
+                    var title = isSc ? "Scrap" : (g.EndsWith("U") ? "Pure" : "Product");
+                    title += isHc ? " Honeycomb" : (g == "SC" ? "" :" Material");
                     var price = g == "SC" ? scraps[i-1] : prices[i];
+                    var bTime = batchTimes[i];
                     for(byte tier = 1; tier <= 5; tier++)
                     {
+                        var bs = (isHc || isSc) ? 25 : (60 - tier*10);
                         if ((g == "SC" || g.EndsWith("U")) && tier < 2) continue; // no schematics for T1 pures/scraps/hc-pures
                         var schem = new Schematic {
                             Name = $"Tier {tier} {title} Schematic",
                             Key = $"T{tier}{g}",
                             Level = tier,
-                            Cost = Math.Round(price, 2)
+                            Cost = Math.Round(price, 2),
+                            BatchSize = bs,
+                            BatchTime = bTime
                         };
                         Schematics.Add(schem.Key, schem);
                         if (tier < 5)
                         {
+                            bTime = (int)Math.Round(bTime * 2.5d,2);
                             price *= (g.StartsWith("H") ? 2.5d : factors[tier-1]);
                         }
                     }
@@ -113,30 +122,76 @@ namespace DU_Industry_Tool
 
                 // Element schematics
                 prices  = new double[] { 375d, 937.5d, 2343.7d, 5859.3d, 14648.4d };
-                factors = new double[] { 4d, 3.3333333d, 3d, 4d };
-                for(byte tier = 1; tier <= 5; tier++)
+                factors = new double[] { 4.000085d, 3.3333333d, 3d, 4d };
+                var batchSizes = new byte[] { 10, 5, 3, 2, 1 };
+                batchTimes = new int[] { 750, 1875, 4687, 11700, 29280 }; // seconds for XS per tier 1-5
+                var batchTimeFactors = new List<double[]>
                 {
-                    var price = prices[tier-1];
-                    for(byte size = 0; size < _sizeList.Count; size++)
+                    new double[] { 2.0, 2.0, 2.0, 2.0 },                    // factor of time between T1 sizes (XS->S->M...)
+                    new double[] { 2.5, 2.4997333, 2.496266, 2.502564 },    // factor of time between T2 sizes (XS->S->M...)
+                    new double[] { 1.997013, 1.997863, 1.996805, 2 },       // factor of time between T3 sizes (XS->S->M...)
+                    new double[] { 2.005128, 1.997442, 2.001280, 1.996161 },// factor of time between T4 sizes (XS->S->M...)
+                    new double[] { 2.002049, 1.998976, 1.996927, 2.0 }      // factor of time between T4 sizes (XS->S->M...)
+                };
+                for (byte tier = 1; tier <= 5; tier++)
+                {
+                    var timeFactors = batchTimeFactors[tier - 1];
+                    var price = prices[tier - 1];
+                    var btime = batchTimes[tier - 1];
+                    for (byte size = 0; size < _sizeList.Count; size++)
                     {
                         var schem = new Schematic {
                             Name  = $"Tier {tier} {_sizeList[size]} Element Schematic",
                             Key   = $"T{tier}E{_sizeList[size]}",
                             Level = tier,
-                            Cost  = Math.Round(price, 2)
+                            Cost  = Math.Round(price, 2),
+                            BatchSize = batchSizes[size],
+                            BatchTime = btime
                         };
                         Schematics.Add(schem.Key, schem);
-                        if (size < 4)
-                        {
-                            price = Math.Round(price * factors[size], 2);
-                        }
+                        if (size >= 4) continue;
+                        btime = (int)Math.Round(btime*timeFactors[size],2);
+                        price = Math.Round(price * factors[size], 2);
                     }
                 }
 
-                // Ammo schematics
-                prices = new double[] { 600d, 1500d, 3750d };
-                for(byte i = 2; i <= 4; i++) // Ammo T2 - T4, XS - L
+                // Add Construct Support and Core Units schematics
+                var csTime = 750;
+                var batchSizesCs = new byte[] { 25, 20, 15, 10 };
+                var batchSizesCu = new byte[] { 10, 5, 2, 1 };
+                var batchTimesCu = new int[] { 750, 5000, 25020, 145020 };
+                for (var idx = 0; idx <= 3; idx++) // XS - L
                 {
+                    var size = _sizeList[idx];
+                    // Construct Support
+                    var key = "CS-"+size;
+                    Schematics.Add(key, new Schematic()
+                    {
+                        Name = $"Construct Support {size} Schematic",
+                        Key = key,
+                        Cost = csPriceList[idx],
+                        BatchSize = batchSizesCs[idx],
+                        BatchTime = csTime
+                    });
+                    csTime *= 2;
+                    // Core Units
+                    key = "CU-"+size;
+                    Schematics.Add(key, new Schematic()
+                    {
+                        Name = $"Core Unit {size} Schematic",
+                        Key = key,
+                        Cost = cuPriceList[idx],
+                        BatchSize = batchSizesCu[idx],
+                        BatchTime = batchTimesCu[idx]
+                    });
+                }
+
+                // Ammo schematics, tiers T2-T4, sizes XS-L
+                prices = new double[] { 600d, 1500d, 3750d }; // starting prices per tier' XS
+                batchTimes = new int[] { 3000, 7500, 18780 }; // starting duration per tier' XS
+                for(byte i = 2; i <= 4; i++)
+                {
+                    var time = batchTimes[i - 2];
                     var price = prices[i - 2];
                     foreach (var size in _sizeList)
                     {
@@ -147,8 +202,11 @@ namespace DU_Industry_Tool
                             Key = key,
                             Name = $"Tier {i} Ammo {size} Schematic",
                             Level = i,
-                            Cost = price
+                            Cost = price,
+                            BatchSize = 25,
+                            BatchTime = time
                         });
+                        time  *= 2;
                         price *= 2;
                     }
                 }
@@ -158,21 +216,27 @@ namespace DU_Industry_Tool
                     Name = "Atmospheric Fuel Schematic",
                     Key = "AtmoFuel",
                     Level = 1,
-                    Cost = 60
+                    Cost = 60,
+                    BatchSize = 50,
+                    BatchTime = 600
                 };
                 Schematics.Add(schema.Key, schema);
                 schema = new Schematic {
                     Name = "Space Fuels Schematic",
                     Key = "SpaceFuels",
                     Level = 0,
-                    Cost = 150
+                    Cost = 150,
+                    BatchSize = 50,
+                    BatchTime = 1500
                 };
                 Schematics.Add(schema.Key, schema);
                 schema = new Schematic {
                     Name = "Rocket Fuels Schematic",
                     Key = "RocketFuels",
                     Level = 0,
-                    Cost = 375
+                    Cost = 375,
+                    BatchSize = 50,
+                    BatchTime = 3750
                 };
                 Schematics.Add(schema.Key, schema);
                 // Standalone schematics
@@ -180,52 +244,39 @@ namespace DU_Industry_Tool
                     Name = "Bonsai Schematic",
                     Key = "Bonsai",
                     Level = 0,
-                    Cost = 10000000
+                    Cost = 10000000,
+                    BatchSize = 1,
+                    BatchTime = 1
                 };
                 Schematics.Add(schema.Key, schema);
                 schema = new Schematic {
                     Name = "Territory Unit Schematic",
                     Key = "TerritoryUnit",
                     Level = 0,
-                    Cost = 20000
+                    Cost = 20000,
+                    BatchSize = 5,
+                    BatchTime = 19980
                 };
                 Schematics.Add(schema.Key, schema);
                 schema = new Schematic {
                     Name = "Warp Cell Schematic",
                     Key = "WarpCell",
                     Level = 3,
-                    Cost = 5000
+                    Cost = 5000,
+                    BatchSize = 10,
+                    BatchTime = 10020
                 };
                 Schematics.Add(schema.Key, schema);
                 schema = new Schematic {
                     Name = "Warp Beacon Schematic",
                     Key = "WarpBeacon",
                     Level = 0,
-                    Cost = 5000000
+                    Cost = 5000000,
+                    BatchSize = 1,
+                    BatchTime = 1000800
                 };
                 Schematics.Add(schema.Key, schema);
 
-                // Add Construct Support and Core Units schematics
-                for (var idx = 0; idx <= 3; idx++) // XS - L
-                {
-                    var size = _sizeList[idx];
-                    // Construct Support
-                    var key = "CS-"+size;
-                    Schematics.Add(key, new Schematic()
-                    {
-                        Name = $"Construct Support {size} Schematic",
-                        Key = key,
-                        Cost = csPriceList[idx]
-                    });
-                    // Core Units
-                    key = "CU-"+size;
-                    Schematics.Add(key, new Schematic()
-                    {
-                        Name = $"Core Unit {size} Schematic",
-                        Key = key,
-                        Cost = cuPriceList[idx]
-                    });
-                }
                 SaveSchematicValues();
             }
             if (progressBar != null)
@@ -872,6 +923,7 @@ namespace DU_Industry_Tool
                 _sumOres        = new SortedDictionary<string, double>();
                 _sumSchemClass  = new SortedDictionary<string, Tuple<int,double>>();
                 _schematicsCost = 0;
+                ApplicableTalents = new List<string>(160);
             }
             double totalCost = 0;
             if (key.StartsWith("Hydrogen") || key.StartsWith("Oxygen") || key.StartsWith("Catalyst"))
@@ -999,12 +1051,18 @@ namespace DU_Industry_Tool
             Debug.WriteLineIf(!silent, CostResults.ToString());
 
             CostResults.AppendLine();
-            CostResults.AppendLine("Schematics details:");
+            CostResults.AppendLine("----- Schematics details -----");
+            CostResults.AppendLine("Schema.  amount         cost    copy time (1 slot)");
             foreach (var schem in _sumSchemClass)
             {
+                var s = Schematics.FirstOrDefault(x => x.Key == schem.Key);
+                double numBatches = Math.Ceiling(schem.Value.Item1 / (double)s.Value.BatchSize);
+                double batchTime = s.Value.BatchTime * numBatches;
+                var sp = TimeSpan.FromSeconds(batchTime);
                 CostResults.AppendLine(schem.Key.PadRight(4)+
-                                       $"x{schem.Value.Item1:N0}".PadLeft(11)+
-                                       $"{schem.Value.Item2:N1}q".PadLeft(21));
+                                       $"x{schem.Value.Item1:N0}".PadLeft(8)+
+                                       $"{schem.Value.Item2:N1}q".PadLeft(19)+
+                                       " ("+sp.ToString(@"dd\.hh\:mm\:ss")+")");
             }
             return costx1;
         }
@@ -1017,6 +1075,10 @@ namespace DU_Industry_Tool
             outputAdder = 0;
             foreach (var talent in Talents.Where(t => t.ApplicableRecipes.Contains(key)))
             {
+                if (!ApplicableTalents.Contains(talent.Name))
+                {
+                    ApplicableTalents.Add(talent.Name);
+                }
                 if (talent.InputTalent)
                 {
                     inputMultiplier += talent.Multiplier * talent.Value; // Add each talent's multipler and adder so that we get values like 1.15 or 0.85, for pos/neg multipliers
@@ -1049,19 +1111,19 @@ namespace DU_Industry_Tool
                 var isOre    = recipe.ParentGroupName == "Ore";
                 var isT1Ore  = listType == "U" && isOre && recipe?.Level <= 1;
                 var isPlasma = recipe.ParentGroupName == "Consumables" && recipe.Key.StartsWith("Plasma");
-                if (listType == "U" && !isOre && recipe.Level < minLevel)
+                if (listType == "U" && !isOre && !isPlasma && recipe.Level < minLevel)
                 {
                     continue;
                 }
 
                 double orePrice = 0;
-                if (listType == "U" && isOre)
+                if (listType == "U" && (isPlasma || isOre))
                 {
                     orePrice = Ores.FirstOrDefault(o => o.Key == key)?.Value ?? 0;
                 }
                 double tmp = item.Value * quantity;
                 var output = $"{recipe.Name}: {tmp:N2}"+(isPlasma ? "" : " L");
-                if (isOre && orePrice > 0.00d)
+                if ((isPlasma || isOre) && orePrice > 0.00d)
                 {
                     tmp *= orePrice;
                     output += $" = {tmp:N2} q";
@@ -1144,7 +1206,7 @@ namespace DU_Industry_Tool
         {
             var group = Groups.Values.FirstOrDefault(g => g.Id == id);
             if (group == null) return null;
-            return group.ParentId != Guid.Empty ? Groups.Values.FirstOrDefault(g => g.Id == group.ParentId)?.Name : group.Name;
+            return group.ParentId != Guid.Empty ? Groups.Values.FirstOrDefault(g => g.Id == group.ParentId)?.Name ?? "xxx": group.Name;
         }
     }
 }

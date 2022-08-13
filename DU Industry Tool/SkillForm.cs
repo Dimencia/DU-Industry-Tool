@@ -28,7 +28,10 @@ namespace DU_Industry_Tool
                 panel.WrapContents = false;
                 panel.AutoSize = true;
                 panel.Margin = new System.Windows.Forms.Padding(0);
-
+                if (manager.ApplicableTalents?.Any() == true && manager.ApplicableTalents.Contains(talent.Name))
+                {
+                    panel.BackColor = Color.Aquamarine;
+                }
                 var label = new Label();
                 label.Text = talent.Name;
                 label.AutoSize = false;

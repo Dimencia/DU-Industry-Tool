@@ -16,7 +16,6 @@ namespace DU_Industry_Tool
         private bool MarketFiltered = false;
         private FlowLayoutPanel _costDetailsPanel;
         private TextBox _costDetailsLabel;
-        //private Label _costDetailsLabel;
         private Label _costDetailsTitleLabel;
         private int _costDetailsLineCount = 0;
         private List<string> _breadcrumbs = new List<string>();
@@ -37,7 +36,8 @@ namespace DU_Industry_Tool
             foreach(var group in manager.Groupnames)
             {
                 var groupNode = new TreeNode(group);
-                foreach(var recipe in manager._recipes.Where(x => x.Value.ParentGroupName == group).OrderBy(r => r.Value.Name).Select(x => x.Value))
+                foreach(var recipe in manager._recipes.Where(x => x.Value.ParentGroupName.Equals(group, StringComparison.CurrentCultureIgnoreCase)).
+                            OrderBy(r => r.Value.Name).Select(x => x.Value))
                 {
                     var recipeNode = new TreeNode(recipe.Name)
                     {
@@ -73,7 +73,7 @@ namespace DU_Industry_Tool
             infoPanel.BorderStyle = BorderStyle.FixedSingle;
 
             var header = new Label();
-            header.Text = recipe.Name;
+            header.Text = $"{recipe.Name} (T{recipe.Level})";
             header.Font = new Font(header.Font.FontFamily, 12, FontStyle.Bold);
             header.AutoSize = true;
             header.Padding = new Padding(header.Padding.Left, header.Padding.Top, header.Padding.Right, 20);

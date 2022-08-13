@@ -87,10 +87,11 @@ namespace DU_Industry_Tool
     {
         public string Key { get; set; }
         public string Name { get; set; }
-        public double Cost { get; set; }
+        public double Cost { get; set; }   // cost per 1 copy
         public int Level { get; set; }
+        public int BatchSize { get; set; } // copies per batch
+        public int BatchTime { get; set; } // seconds
     }
-
 
     public class TempSheet
     {
