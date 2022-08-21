@@ -15,6 +15,7 @@ namespace DU_Industry_Tool
         private System.Windows.Forms.ToolStripMenuItem skillLevelsToolStripMenuItem;
         private System.Windows.Forms.TextBox SearchBox;
         private System.Windows.Forms.Button SearchButton;
+        private System.Windows.Forms.Button PreviousButton;
         private System.Windows.Forms.ComboBox QuantityBox;
         private System.Windows.Forms.ToolStripMenuItem updateMarketValuesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem filterToMarketToolStripMenuItem;
@@ -62,6 +63,7 @@ namespace DU_Industry_Tool
             this.factoryBreakdownForSelectedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SearchBox = new System.Windows.Forms.TextBox();
             this.SearchButton = new System.Windows.Forms.Button();
+            this.PreviousButton = new System.Windows.Forms.Button();
             this.QuantityBox = new System.Windows.Forms.ComboBox();
             this.menuStrip1.SuspendLayout();
             this.leftPanel.SuspendLayout();
@@ -159,7 +161,7 @@ namespace DU_Industry_Tool
             this.SearchBox.Location = new System.Drawing.Point(12, 20);
             this.SearchBox.MaxLength = 50;
             this.SearchBox.Name = "SearchBox";
-            this.SearchBox.Size = new System.Drawing.Size(290, 28);
+            this.SearchBox.Size = new System.Drawing.Size(200, 28);
             this.SearchBox.TabIndex = 0;
             // 
             // SearchButton
@@ -188,16 +190,33 @@ namespace DU_Industry_Tool
             this.QuantityBox.Items.AddRange(new []
             {
                 "1",
+                "2",
+                "5",
                 "10",
+                "25",
                 "50",
                 "100",
                 "250",
                 "500",
                 "1000"
             });
-            this.QuantityBox.Text = "10";
-            this.QuantityBox.SelectedIndex = 1;
+            this.QuantityBox.Text = "1";
+            this.QuantityBox.SelectedIndex = 0;
             this.QuantityBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            // 
+            // PreviousButton
+            // 
+            this.PreviousButton.Parent = searchPanel;
+            this.PreviousButton.AutoSize = true;
+            this.PreviousButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.PreviousButton.Location = new System.Drawing.Point(410, 18);
+            this.PreviousButton.Name = "PreviousButton";
+            this.PreviousButton.Size = new System.Drawing.Size(20, 28);
+            this.PreviousButton.TabIndex = 3;
+            this.PreviousButton.Text = "<<";
+            this.PreviousButton.UseVisualStyleBackColor = true;
+            this.PreviousButton.Enabled = false;
+            this.PreviousButton.Click += new System.EventHandler(this.PreviousButton_Click);
             // 
             // treeView
             // 
@@ -223,7 +242,7 @@ namespace DU_Industry_Tool
             this.leftPanel.Dock = DockStyle.Fill;
             this.leftPanel.Location = new System.Drawing.Point(0, 40);
             this.leftPanel.Size = new System.Drawing.Size(486, 680);
-            this.leftPanel.Margin = new Padding(10,10,10,10);
+            this.leftPanel.Margin = new Padding(0,0,0,0);
             this.leftPanel.Anchor = ((System.Windows.Forms.AnchorStyles)
                 (System.Windows.Forms.AnchorStyles.Top
                  | System.Windows.Forms.AnchorStyles.Bottom
@@ -231,6 +250,7 @@ namespace DU_Industry_Tool
                  | System.Windows.Forms.AnchorStyles.Right
                  ));
             this.leftPanel.Name = "leftPanel";
+            this.leftPanel.SplitterDistance = 500;
             this.leftPanel.IsSplitterFixed = true;
             this.leftPanel.Panel1MinSize = 480;
             this.leftPanel.Panel1.AutoSizeMode = AutoSizeMode.GrowAndShrink;
@@ -244,8 +264,9 @@ namespace DU_Industry_Tool
             // 
             // infoPanel
             // 
-            this.infoPanel.AutoSize = true;
+            this.infoPanel.AutoScroll = true;
             this.infoPanel.Dock = DockStyle.Fill;
+            this.infoPanel.AutoSize = true;
             this.infoPanel.Anchor = ((System.Windows.Forms.AnchorStyles)
                 (System.Windows.Forms.AnchorStyles.Top
                  | System.Windows.Forms.AnchorStyles.Bottom
@@ -254,14 +275,13 @@ namespace DU_Industry_Tool
             this.infoPanel.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.infoPanel.Location = new System.Drawing.Point(0, 0);
             this.infoPanel.Size = new System.Drawing.Size(700, 800);
-            this.infoPanel.AutoScroll = true;
             this.infoPanel.Name = "infoPanel";
             this.infoPanel.TabIndex = 4;
 
             this.searchPanel.Controls.Add(SearchBox);
             this.searchPanel.Controls.Add(SearchButton);
             this.searchPanel.Controls.Add(QuantityBox);
-
+            this.searchPanel.Controls.Add(PreviousButton);
             this.leftPanel.Panel1.Controls.Add(searchPanel);
             this.leftPanel.Panel1.Controls.Add(treeView);
             this.leftPanel.Panel2.Controls.Add(infoPanel);
@@ -274,10 +294,10 @@ namespace DU_Industry_Tool
             this.AcceptButton = this.SearchButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(969, 700);
+            this.ClientSize = new System.Drawing.Size(969, 800);
             this.Font = new System.Drawing.Font("Verdana", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.MainMenuStrip = this.menuStrip1;
-            this.MinimumSize = new System.Drawing.Size(400, 500);
+            this.MinimumSize = new System.Drawing.Size(800, 500);
             this.Name = "MainForm";
             this.Text = "DU Industry Tool (Mercury)";
             this.leftPanel.ResumeLayout(false);

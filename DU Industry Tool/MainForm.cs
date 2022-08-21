@@ -14,6 +14,11 @@ namespace DU_Industry_Tool
         private IndustryManager Manager;
         private MarketManager Market;
         private bool MarketFiltered = false;
+        private FlowLayoutPanel _costDetailsPanel;
+        private TextBox _costDetailsLabel;
+        private Label _costDetailsTitleLabel;
+        private int _costDetailsLineCount = 0;
+        private List<string> _breadcrumbs = new List<string>();
 
         public MainForm(IndustryManager manager)
         {
@@ -21,7 +26,7 @@ namespace DU_Industry_Tool
 
             CultureInfo.CurrentCulture = new CultureInfo("en-us");
 
-            // Setup the trees.  One recipe on each main node
+            // Setup the trees. One recipe on each main node
             Manager = manager;
 
             Market = new MarketManager();
@@ -31,7 +36,8 @@ namespace DU_Industry_Tool
             foreach(var group in manager.Groupnames)
             {
                 var groupNode = new TreeNode(group);
-                foreach(var recipe in manager._recipes.Where(x => x.Value.ParentGroupName == group).OrderBy(r => r.Value.Name).Select(x => x.Value))
+                foreach(var recipe in manager._recipes.Where(x => x.Value.ParentGroupName.Equals(group, StringComparison.CurrentCultureIgnoreCase)).
+                            OrderBy(r => r.Value.Name).Select(x => x.Value))
                 {
                     var recipeNode = new TreeNode(recipe.Name)
                     {
@@ -40,141 +46,127 @@ namespace DU_Industry_Tool
                     recipe.Node = recipeNode;
                     groupNode.Nodes.Add(recipeNode);
                 }
-
                 treeView.Nodes.Add(groupNode);
             }
             treeView.EndUpdate();
+            OnMainformResize(null, null);
         }
 
         private void TreeView_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            if (!(e.Node.Tag is SchematicRecipe recipe))
+            if (!(e?.Node?.Tag is SchematicRecipe recipe))
+            {
                 return;
+            }
+
+            if (_breadcrumbs.Count == 0 || _breadcrumbs.LastOrDefault() != recipe.Name)
+            {
+                _breadcrumbs.Add(recipe.Name);
+            }
+            PreviousButton.Enabled = _breadcrumbs.Count > 0;
+
             // Display recipe info for the thing they have selected
+            Console.WriteLine(recipe.Name);
+            SearchBox.Text = recipe.Name;
 
             infoPanel.Controls.Clear();
+            infoPanel.BorderStyle = BorderStyle.FixedSingle;
 
             var header = new Label();
-            header.Text = recipe.Name;
+            header.Text = $"{recipe.Name} (T{recipe.Level})";
             header.Font = new Font(header.Font.FontFamily, 12, FontStyle.Bold);
             header.AutoSize = true;
             header.Padding = new Padding(header.Padding.Left, header.Padding.Top, header.Padding.Right, 20);
             header.TextAlign = ContentAlignment.MiddleCenter;
-
-            Console.WriteLine(recipe.Name);
-
             infoPanel.Controls.Add(header);
 
             FlowLayoutPanel costPanel = new FlowLayoutPanel();
             costPanel.FlowDirection = FlowDirection.LeftToRight;
             costPanel.AutoSize = true;
-            var costLabel = new Label();
-            costLabel.Text = "Cost To Make ";
-            costLabel.AutoSize = true;
-            costLabel.Padding = new Padding(0, 0, 0, 10);
-            costPanel.Controls.Add(costLabel);
             var totalCostLabel = new Label();
             Manager.ProductQuantity = int.Parse(QuantityBox.Text);
-            var costToMake = Manager.GetTotalCost(recipe.Key);
-            totalCostLabel.Text = costToMake.ToString("N02") + "q";
+            var costToMake = Manager.GetTotalCost(recipe.Key, silent: false);
+            totalCostLabel.Text = "Cost To Make " + costToMake.ToString("N02") + "q";
             totalCostLabel.AutoSize = true;
             costPanel.Controls.Add(totalCostLabel);
-
             infoPanel.Controls.Add(costPanel);
 
             costPanel = new FlowLayoutPanel();
             costPanel.FlowDirection = FlowDirection.LeftToRight;
             costPanel.AutoSize = true;
-            costLabel = new Label();
-            costLabel.Text = "Untalented (without schematics) ";
-            costLabel.AutoSize = true;
-            costLabel.Padding = new Padding(0, 0, 0, 10);
-            costPanel.Controls.Add(costLabel);
             totalCostLabel = new Label();
             var cost = Manager.GetBaseCost(recipe.Key);
-            totalCostLabel.Text = cost.ToString("N02") + "q";
+            totalCostLabel.Text = "Untalented (without schematics) " + cost.ToString("N02") + "q";
             totalCostLabel.AutoSize = true;
             costPanel.Controls.Add(totalCostLabel);
-
             infoPanel.Controls.Add(costPanel);
 
             costPanel = new FlowLayoutPanel();
             costPanel.FlowDirection = FlowDirection.LeftToRight;
             costPanel.AutoSize = true;
-            costLabel = new Label();
-            costLabel.Text = "Market ";
-            costLabel.AutoSize = true;
-            costLabel.Padding = new Padding(0, 0, 0, 10);
-            costPanel.Controls.Add(costLabel);
-            totalCostLabel = new Label();
 
             // IDK why sometimes prices are listed as 0
             var orders = Market.MarketOrders.Values.Where(o => o.ItemType == recipe.NqId &&
                                                                o.BuyQuantity < 0 &&
                                                                DateTime.Now < o.ExpirationDate &&
                                                                o.Price > 0);
-
             var mostRecentOrder = orders.OrderBy(o => o.Price).FirstOrDefault();
             cost = mostRecentOrder?.Price ?? 0;
 
-            totalCostLabel.Text = cost.ToString("N02") + "q";
+            totalCostLabel = new Label();
+            totalCostLabel.Text = "Market " + cost.ToString("N02") + "q";
             totalCostLabel.AutoSize = true;
             costPanel.Controls.Add(totalCostLabel);
-            infoPanel.Controls.Add(costPanel);
 
-            if (mostRecentOrder != null)
+            if (mostRecentOrder == null)
             {
-                costLabel = new Label();
-                costLabel.Text = "Until " + mostRecentOrder.ExpirationDate ?? "No expiration";
-                costPanel.Controls.Add(costLabel);
-
-                costPanel = new FlowLayoutPanel();
-                costPanel.FlowDirection = FlowDirection.LeftToRight;
-                costPanel.AutoSize = true;
-                costLabel = new Label();
-                costLabel.Text = "Profit Margin ";
-                costLabel.AutoSize = true;
-                costLabel.Padding = new Padding(0, 0, 0, 10);
-                costPanel.Controls.Add(costLabel);
-                totalCostLabel = new Label();
-                cost = ((mostRecentOrder.Price-costToMake)/mostRecentOrder.Price);
-                totalCostLabel.Text = cost.ToString("0%");
-                totalCostLabel.AutoSize = true;
-                costPanel.Controls.Add(totalCostLabel);
-
+                infoPanel.Controls.Add(costPanel);
+            }
+            else
+            {
+                var costLabela = new Label();
+                costLabela.Text = "Until " + mostRecentOrder.ExpirationDate ?? "No expiration";
+                costPanel.Controls.Add(costLabela);
                 infoPanel.Controls.Add(costPanel);
 
+                var costPanelm = new FlowLayoutPanel();
+                costPanelm.FlowDirection = FlowDirection.LeftToRight;
+                costPanelm.AutoSize = true;
+
+                var costLabelb = new Label();
+                costLabelb.Text = "Profit Margin ";
+                costLabelb.AutoSize = true;
+                //costLabelb.Padding = new Padding(0, 0, 0, 10);
+                costPanelm.Controls.Add(costLabelb);
+                var totalCostLabelm = new Label();
+                cost = ((mostRecentOrder.Price-costToMake)/mostRecentOrder.Price);
+                totalCostLabelm.Text = cost.ToString("0%");
+                totalCostLabelm.AutoSize = true;
+                costPanelm.Controls.Add(totalCostLabelm);
+                infoPanel.Controls.Add(costPanelm);
+
                 costPanel = new FlowLayoutPanel();
                 costPanel.FlowDirection = FlowDirection.LeftToRight;
                 costPanel.AutoSize = true;
-                costLabel = new Label();
-                costLabel.Text = "Profit/Day/Industry ";
-                costLabel.AutoSize = true;
-                costLabel.Padding = new Padding(0, 0, 0, 10);
-                costPanel.Controls.Add(costLabel);
                 totalCostLabel = new Label();
                 cost = (mostRecentOrder.Price - costToMake)*(86400/recipe.Time);
-                totalCostLabel.Text = cost.ToString("N02")+"q";
+                totalCostLabel.Text = "Profit/Day/Industry " + cost.ToString("N02")+"q";
                 totalCostLabel.AutoSize = true;
                 costPanel.Controls.Add(totalCostLabel);
-
                 infoPanel.Controls.Add(costPanel);
             }
 
-            costPanel = new FlowLayoutPanel();
-            costPanel.FlowDirection = FlowDirection.LeftToRight;
-            costPanel.AutoSize = true;
-            costLabel = new Label();
-            costLabel.Text = "Per Industry ";
-            costLabel.AutoSize = true;
-            costLabel.Padding = new Padding(0, 0, 0, 10);
-            costPanel.Controls.Add(costLabel);
-            totalCostLabel = new Label();
+            var costPanel2 = new FlowLayoutPanel();
+            costPanel2.FlowDirection = FlowDirection.LeftToRight;
+            costPanel2.AutoSize = false;
+            costPanel2.Size = new System.Drawing.Size(400, 40);
+
+            var totalCostLabel2 = new Label();
             cost = 86400/recipe.Time;
-            totalCostLabel.Text = cost.ToString("0.0") + "/Day";
-            totalCostLabel.AutoSize = true;
-            costPanel.Controls.Add(totalCostLabel);
-            infoPanel.Controls.Add(costPanel);
+            totalCostLabel2.Text = "Per Industry " + cost.ToString("0.0") + "/Day";
+            totalCostLabel2.AutoSize = true;
+            costPanel2.Controls.Add(totalCostLabel2);
+            infoPanel.Controls.Add(costPanel2);
 
             // ----- Ingredients -----
             costPanel = new FlowLayoutPanel();
@@ -240,58 +232,80 @@ namespace DU_Industry_Tool
                 grid.Controls.Add(label);
             }
             infoPanel.Controls.Add(grid);
+            _costDetailsTitleLabel = new Label();
+            _costDetailsTitleLabel.AutoSize = true;
+            _costDetailsTitleLabel.Text = "Cost Details";
+            _costDetailsTitleLabel.Font = new Font("Lucida Console", 10F, System.Drawing.FontStyle.Regular,
+                System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            _costDetailsTitleLabel.Size = new System.Drawing.Size(leftPanel.Panel2.Width, 24);
+            infoPanel.Controls.Add(_costDetailsTitleLabel);
 
-            costPanel = new FlowLayoutPanel();
-            costPanel.FlowDirection = FlowDirection.TopDown;
-            costPanel.Dock = DockStyle.Fill;
-            costPanel.Size = new System.Drawing.Size(800, 800);
-            costPanel.AutoSize = true;
-            costPanel.AutoScroll = true;
-            costPanel.Font = new System.Drawing.Font("Lucida Console", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            _costDetailsPanel = new FlowLayoutPanel();
+            try
+            {
+                _costDetailsPanel.SuspendLayout();
+                _costDetailsPanel.FlowDirection = FlowDirection.TopDown;
+                _costDetailsPanel.Dock = DockStyle.None;
+                _costDetailsPanel.Size = new System.Drawing.Size(400, 400);
+                _costDetailsPanel.AutoSize = false;
+                _costDetailsPanel.AutoScroll = true;
+                _costDetailsPanel.Font = new Font("Lucida Console", 10F, System.Drawing.FontStyle.Regular,
+                    System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 
-            costLabel.Padding = new Padding(0, 10, 10, 10);
-            costLabel = new Label();
-            costLabel.AutoSize = false;
-            costLabel.Text = "Cost Details";
-            costLabel.Font = new Font(costLabel.Font, FontStyle.Bold);
-            costLabel.Padding = new Padding(0, 0, 0, 10);
-            costPanel.Controls.Add(costLabel);
+                _costDetailsLabel = new TextBox();
+                _costDetailsLabel.AutoSize = false;
+                _costDetailsLabel.Size = new System.Drawing.Size(leftPanel.Panel2.Width, leftPanel.Panel2.Height-10);
+                _costDetailsLabel.Text = Manager.CostResults.ToString();
+                _costDetailsLabel.Multiline = true;
+                _costDetailsLabel.WordWrap = false;
 
-            costLabel = new Label();
-            costLabel.Text = Manager.CostResults.ToString();
-            costLabel.AutoSize = true;
-            costLabel.Size = new System.Drawing.Size(800, 800);
-            costPanel.Controls.Add(costLabel);
-
-            infoPanel.Controls.Add(costPanel);
+                _costDetailsLabel.ReadOnly = true;
+                _costDetailsPanel.Controls.Add(_costDetailsLabel);
+                infoPanel.Controls.Add(_costDetailsPanel);
+                _costDetailsLineCount = _costDetailsLabel.Text.Count(c => c == '\n');
+            }
+            finally
+            {
+                _costDetailsPanel.ResumeLayout();
+            }
 
             infoPanel.WrapContents = false;
             infoPanel.AutoScroll = true;
+            OnMainformResize(null, null);
         }
 
         private void Label_Click(object sender, EventArgs e)
         {
-            Label label = sender as Label;
+            var label = sender as Label;
+            if (!Manager._recipes.ContainsKey(label.Tag as string))
+            {
+                return;
+            }
             var recipe = Manager._recipes[label.Tag as string];
+
+            if (_breadcrumbs.Count == 0 || _breadcrumbs.LastOrDefault() != recipe.Name)
+            {
+                _breadcrumbs.Add(recipe.Name);
+            }
+            PreviousButton.Enabled = _breadcrumbs.Count > 0;
+
             var outerNodes = treeView.Nodes.OfType<TreeNode>();
             TreeNode targetNode = null;
             foreach(var outerNode in outerNodes)
             {
                 foreach(var innerNode in outerNode.Nodes.OfType<TreeNode>())
                 {
-                    if (innerNode.Text == recipe.Name) // Yes we have tags and keys but, this is easiest since tags are on input/output ones too
+                    if (innerNode.Text.Equals(recipe.Name, StringComparison.CurrentCultureIgnoreCase))
                     {
                         targetNode = innerNode;
                         break;
                     }
                 }
             }
-
-            if (targetNode != null)
-            {
-                treeView.SelectedNode = targetNode;
-                treeView.SelectedNode.EnsureVisible();
-            }
+            if (targetNode == null) return;
+            treeView.SelectedNode = targetNode;
+            treeView.SelectedNode.EnsureVisible();
+            SearchBox.Text = targetNode.Text;
         }
 
         private void inputOreValuesToolStripMenuItem_Click(object sender, EventArgs e)
@@ -312,26 +326,51 @@ namespace DU_Industry_Tool
             form.ShowDialog(this);
         }
 
+        private void PreviousButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (_breadcrumbs.Count == 0) return;
+                var entry = _breadcrumbs.LastOrDefault();
+                if (entry == SearchBox.Text)
+                {
+                    _breadcrumbs.Remove(entry);
+                    entry = _breadcrumbs.LastOrDefault();
+                }
+                if (string.IsNullOrEmpty(entry)) return;
+                SearchBox.Text = entry;
+                _breadcrumbs.Remove(entry);
+                SearchButton_Click(sender, null);
+            }
+            finally
+            {
+                PreviousButton.Enabled = _breadcrumbs.Count > 0;
+            }
+        }
+
         private void SearchButton_Click(object sender, EventArgs e)
         {
-            string searchValue = SearchBox.Text;
+            var searchValue = SearchBox.Text;
             if (string.IsNullOrWhiteSpace(searchValue))
             {
+                PreviousButton.Enabled = _breadcrumbs.Count > 0;
                 return; // Do nothing
             }
 
             var outerNodes = treeView.Nodes.OfType<TreeNode>();
             TreeNode firstResult = null;
+            treeView.BeginUpdate();
             treeView.CollapseAll();
             foreach (var outerNode in outerNodes)
             {
                 foreach (var innerNode in outerNode.Nodes.OfType<TreeNode>())
                 {
-                    if (innerNode.Text.ToLower().Contains(searchValue.ToLower())) // Yes we have tags and keys but, this is easiest since tags are on input/output ones too
+                    if (!innerNode.Text.ToLower().Contains(searchValue.ToLower()))
+                        continue;
+                    innerNode.EnsureVisible();
+                    if (firstResult == null)
                     {
-                        innerNode.EnsureVisible();
-                        if (firstResult == null)
-                            firstResult = innerNode;
+                        firstResult = innerNode;
                     }
                 }
             }
@@ -341,6 +380,7 @@ namespace DU_Industry_Tool
                 treeView.SelectedNode = firstResult;
                 treeView.SelectedNode.EnsureVisible();
             }
+            treeView.EndUpdate();
             treeView.Focus();
         }
 
@@ -542,9 +582,25 @@ namespace DU_Industry_Tool
 
         private void OnMainformResize(object sender, EventArgs e)
         {
-            leftPanel.Size = new System.Drawing.Size(this.ClientSize.Width-10, this.ClientSize.Height-46);
+            leftPanel.Height = this.ClientSize.Height-46;
             treeView.Height = leftPanel.Height-treeView.Top-10;
             treeView.Width = leftPanel.Panel1.Width-4;
+            infoPanel.Height = leftPanel.Panel2.Height-10;
+            infoPanel.Width = infoPanel.Parent.Width-10;
+            if (_costDetailsPanel == null) return;
+            _costDetailsPanel.SuspendLayout();
+            try
+            {
+                _costDetailsPanel.Height = leftPanel.Height - _costDetailsTitleLabel.Top - 40;
+                _costDetailsPanel.Width  = _costDetailsPanel.Parent.Width - 30;
+                _costDetailsTitleLabel.Width = _costDetailsPanel.Width - 4;
+                _costDetailsLabel.Width = _costDetailsPanel.Width - 10;
+                _costDetailsLabel.Height = _costDetailsLineCount * (_costDetailsTitleLabel.Height);
+            }
+            finally
+            {
+                _costDetailsPanel.ResumeLayout();
+            }
         }
     }
 }
