@@ -1392,17 +1392,17 @@
     },
     "VariableShieldGeneratorUnit":{
         "Id": "08d8a31f-4f44-467f-8e0f-9c0936cfd1ad",
-        "ParentId": "08d8a31f-4f44-467f-8e0f-ac0936cfd1ad",
+        "ParentId": "08d8a31f-4f44-467f-8e0f-ac0936cfd1ac",
         "Name": "Variable Shield Generators"
     },
     "VenterShieldGeneratorUnit":{
         "Id": "08d8a31f-4f44-467f-8e0f-9c0936cfd1ae",
-        "ParentId": "08d8a31f-4f44-467f-8e0f-ac0936cfd1ad",
+        "ParentId": "08d8a31f-4f44-467f-8e0f-ac0936cfd1ac",
         "Name": "Venter Shield Generators"
     },
     "AdvancedShieldGeneratorUnit":{
         "Id": "08d8a31f-4f44-467f-8e0f-9c0936cfd1a0",
-        "ParentId": "08d8a31f-4f44-467f-8e0f-ac0936cfd1ad",
+        "ParentId": "08d8a31f-4f44-467f-8e0f-ac0936cfd1ac",
         "Name": "Advanced Shield Generators"
     },
     "ShieldGenerators":{
