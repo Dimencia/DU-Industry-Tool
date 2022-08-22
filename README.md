@@ -1,3 +1,12 @@
+## Mercury edition
+Recipes have been updated in several places (as of 0.30 patch),
+but no guarantuee for full completeness.
+Schematic cost is now maintained and associated with the
+corresponding pures, products and elements.
+The calculated cost output now also lists schematic costs per
+tier and category as well as a new Total Ingredients List.
+Updated by tobitege
+
 # DU-Industry-Tool
 Basic WinForms project that allows you to view calculated values of all known in-game recipes. Has search bar, and ability to drill down through intermediates to find their recipes as well
 
