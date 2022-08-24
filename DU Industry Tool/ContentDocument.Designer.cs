@@ -42,9 +42,9 @@ namespace DU_Industry_Tool
             // 
             // infoPanel
             // 
-            this.infoPanel.AutoScroll = true;
+            this.infoPanel.AutoScroll = false;
             this.infoPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.infoPanel.AutoSize = true;
+            this.infoPanel.AutoSize = false;
             this.infoPanel.Anchor = ((System.Windows.Forms.AnchorStyles)
                 (System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom 
                                                        | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right));
@@ -71,13 +71,12 @@ namespace DU_Industry_Tool
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.kryptonPanel);
             this.Name = "ContentDocument";
-            this.Size = new System.Drawing.Size(620, 600);
+            this.Size = new System.Drawing.Size(610, 600);
             this.Load += new System.EventHandler(this.ContentDocument_Load);
             ((System.ComponentModel.ISupportInitialize)(this.kryptonPanel)).EndInit();
             this.kryptonPanel.ResumeLayout(false);
             this.ResumeLayout(false);
         }
-
         #endregion
     }
 }

@@ -1,10 +1,11 @@
 ## Mercury edition
-Recipes have been updated in several places (as of 0.30 patch),
-but no guarantuee for full completeness.
-Schematic cost is now maintained and associated with the
+- Major recipes update to be current with patch 0.31 "Mercury".
+- Schematic cost is now maintained and associated with the
 corresponding pures, products and elements.
-The calculated cost output now also lists schematic costs per
-tier and category as well as a new Total Ingredients List.
+- Calculated cost output now also lists schematic costs per
+tier and category
+- Display of Total Ingredients List.
+- Listing of all "superior" recipes which have the item as an ingredient.
 Updated by tobitege
 
 # DU-Industry-Tool
