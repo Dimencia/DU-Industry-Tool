@@ -1,11 +1,12 @@
 ﻿using Newtonsoft.Json;
 
 using System;
+using System.Data;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Runtime.Serialization;
+using System.Xml;
+// ReSharper disable InconsistentNaming
 
 namespace DU_Industry_Tool
 {
@@ -28,7 +29,7 @@ namespace DU_Industry_Tool
     {
         public int Level { get; set; }
         public string Name { get; set; }
-        public int id { get; set; }
+        public ulong id { get; set; }
         public List<ProductDetail> Products { get; set; } = new List<ProductDetail>();
         public float Time { get; set; }
         public List<ProductDetail> Ingredients { get; set; } = new List<ProductDetail>();
@@ -104,5 +105,37 @@ namespace DU_Industry_Tool
     public class Injection
     {
         public ulong NqId { get; set; }
+    }
+
+    public class DuLuaSchematic
+    {
+        [DataMember(Name="id")]
+        public string Id { get; set; }
+        [DataMember(Name="displayNameWithSize")]
+        public string DisplayNameWithSize { get; set; }
+    }
+
+    public class DuLuaItem
+    {
+        //[DataMember(Name="key")]
+        //public string Key { get; set; }
+        [DataMember(Name="id")]
+        public string Id { get; set; }
+        [DataMember(Name="tier")]
+        public int Tier { get; set; }
+        [DataMember(Name="displayNameWithSize")]
+        public string DisplayNameWithSize { get; set; }
+        [DataMember(Name="unitMass")]
+        public double UnitMass { get; set; }
+        [DataMember(Name="unitVolume")]
+        public double UnitVolume { get; set; }
+        [DataMember(Name="size")]
+        public string Size { get; set; }
+        [DataMember(Name="iconPath")]
+        public string IconPath { get; set; }
+        [DataMember(Name="description")]
+        public string Description { get; set; }
+        [DataMember(Name="schematics")]
+        public List<DuLuaSchematic> Schematics { get; set; }
     }
 }

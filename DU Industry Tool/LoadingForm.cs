@@ -12,7 +12,7 @@ namespace DU_Industry_Tool
 {
     public partial class LoadingForm : Form
     {
-        private MarketManager Market;
+        private readonly MarketManager Market;
 
         public bool DiscardOres { get; set; } = true;
         public LoadingForm(MarketManager market)
@@ -31,9 +31,7 @@ namespace DU_Industry_Tool
                     this.Close();
                 }
             });
-            
         }
-
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -43,7 +41,6 @@ namespace DU_Industry_Tool
             checkBox1.Enabled = false;
             DiscardOres = !checkBox1.Checked;
             Task.Run(() => Market.UpdateMarketData(this));
-
         }
     }
 }

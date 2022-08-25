@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -21,7 +22,8 @@ namespace DU_Industry_Tool
         private SortedDictionary<string, Tuple<int,double>> _sumSchemClass; // Sums for each schematic class
         private double _schematicsCost = 0;
 
-        public SortedDictionary<string, SchematicRecipe> _recipes; // Global list of all our recipes, from the json
+        private readonly SortedDictionary<string, DuLuaItem> _luaItems; // Full list of item Id's with name
+        public readonly SortedDictionary<string, SchematicRecipe> Recipes; // Global list of all our recipes, from the json
         public readonly Dictionary<string, Group> Groups;
         public List<Ore> Ores { get; } = new List<Ore>();
         public SortedDictionary<string, Schematic> Schematics { get; } = new SortedDictionary<string, Schematic>();
@@ -37,14 +39,16 @@ namespace DU_Industry_Tool
 
         public IndustryManager(ProgressBar progressBar = null)
         {
+            CultureInfo.CurrentCulture = new CultureInfo("en-us");
             if (!File.Exists("RecipesGroups.json") || !File.Exists("Groups.json"))
             {
+                MessageBox.Show("Files RecipesGroups.json and/or Groups.json are missing! Please re-download!");
                 return;
             }
 
             // On initialization, read all our data from files
             var json = File.ReadAllText("RecipesGroups.json");
-            _recipes = JsonConvert.DeserializeObject<SortedDictionary<string, SchematicRecipe>>(json);
+            Recipes = JsonConvert.DeserializeObject<SortedDictionary<string, SchematicRecipe>>(json);
 
             if (progressBar != null)
                 progressBar.Value = 20;
@@ -54,9 +58,9 @@ namespace DU_Industry_Tool
             if (progressBar != null)
                 progressBar.Value = 30;
 
-            if (_recipes?.Any() == true)
+            if (Recipes?.Any() == true)
             {
-                foreach (var recipe in _recipes.Values) // Set parent names
+                foreach (var recipe in Recipes.Values) // Set parent names
                 {
                     recipe.ParentGroupName = GetParentGroupName(recipe.GroupId);
                     if (!Groupnames.Contains(recipe.ParentGroupName))
@@ -284,11 +288,63 @@ namespace DU_Industry_Tool
             if (progressBar != null)
                 progressBar.Value = 50;
 
+            // Load @jericho's awesome list of ID's to be able to cross-check our recipes
+            // Item dump from https://du-lua.dev/#/items
+            var dmp = false;
+
+            // Conversion needs a manual fix, should only be used in special cases!
+            if (File.Exists("items_api_dump.lua") &&
+                MessageBox.Show("Convert items lua file to json?", "Conversion", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            {
+                var sb = new StringBuilder(File.ReadAllText("items_api_dump.lua"));
+                sb.Replace("_items=", "");
+                sb.Replace("[", "");
+                sb.Replace("]", "");
+                sb.Replace("displayNameWithSize=", "\"displayNameWithSize\"=");
+                sb.Replace("id=", "\"id\"=");
+                sb.Replace("tier=", "\"tier\"=");
+                sb.Replace("unitMass=", "\"unitMass\"=");
+                sb.Replace("unitVolume=", "\"unitVolume\"=");
+                sb.Replace("size=", "\"size\"=");
+                sb.Replace("description=", "\"description\"=");
+                sb.Replace("schematics=", "\"schematics\"=");
+                sb.Replace("products=", "\"products\"=");
+                sb.Replace("={}", "=[]");
+                sb.Replace("}}}", "}]}");
+                sb.Replace("}}", "}]");
+                sb.Replace("{{", "[{");
+                sb.Replace("=", ":");
+                File.WriteAllText("items_api_dump.json", sb.ToString());
+            }
+
+            if (File.Exists("items_api_dump.json"))
+            {
+                try
+                {
+                    _luaItems = JsonConvert.DeserializeObject<SortedDictionary<string, DuLuaItem>>(File.ReadAllText("items_api_dump.json"));
+                    dmp = true;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+            }
+
             // Populate Keys, fix products and assign schematics
             int ucount = 0;
             int pcount = 0;
-            foreach (var kvp in _recipes)
+            foreach (var kvp in Recipes)
             {
+                var itemId = kvp.Value.NqId.ToString();
+                if (dmp && !_luaItems.ContainsKey(itemId))
+                {
+                    Debug.WriteLine("NqId NOT FOUND: "+itemId+ " Key: " + kvp.Key);
+                    itemId = kvp.Value.id.ToString();
+                    if (dmp && !_luaItems.ContainsKey(itemId))
+                    {
+                        Debug.WriteLine("Id NOT FOUND: "+itemId+ " Key: " + kvp.Key);
+                    }
+                }
                 kvp.Value.Key = kvp.Key;
                 // Fix names and some other details
                 if (kvp.Value.Name.Equals("Territory Unit", StringComparison.InvariantCultureIgnoreCase) ||
@@ -314,7 +370,7 @@ namespace DU_Industry_Tool
                 {
                     kvp.Value.Level = 5;
                 }
-                var product = kvp.Value.Products.SingleOrDefault(p => p.Type == kvp.Key);
+                var product = kvp.Value.Products?.SingleOrDefault(p => p.Type == kvp.Key);
                 if (product == null && kvp.Value.Products.Count > 0)
                 {
                     // Key was wrong, happens for many honeycombs
@@ -323,7 +379,30 @@ namespace DU_Industry_Tool
                 }
                 if (product != null)
                 {
-                    product.Name = kvp.Value.Name;
+                    if (!string.IsNullOrEmpty(kvp.Value?.Name) && product.Name != kvp.Value.Name)
+                    {
+                        product.Name = kvp.Value.Name;
+                    }
+                    if (!string.IsNullOrEmpty(product.Type) && product.Type != kvp.Key)
+                    {
+                        product.Type = kvp.Key;
+                    }
+                }
+
+                if (dmp && kvp.Key.StartsWith("hc"))
+                {
+                    var luaItem = _luaItems.FirstOrDefault(x => x.Value.Description.StartsWith("Honeycomb") &&
+                        !x.Value.DisplayNameWithSize.EndsWith("Schematic Copy") &&
+                        x.Value.DisplayNameWithSize.Equals(kvp.Value.Name,
+                                    StringComparison.InvariantCultureIgnoreCase));
+                    if (luaItem.Key != null && luaItem.Key != kvp.Value.NqId.ToString())
+                    {
+                        if (ulong.TryParse(luaItem.Key, out var uTmp))
+                        {
+                            kvp.Value.NqId = uTmp;
+                            kvp.Value.id = uTmp;
+                        }
+                    }
                 }
 
                 if (string.IsNullOrEmpty(kvp.Value.ParentGroupName))
@@ -343,31 +422,82 @@ namespace DU_Industry_Tool
                     kvp.Value.SchemaType = null;
                     continue;
                 }
+
+                // LOTS of code below to cleanup old data, which might be removed again eventually --tobitege
+
                 // Preset "ParentGroupName" and "GroupId" for containers
-                if (kvp.Key.IndexOf("chemicalcont", StringComparison.InvariantCultureIgnoreCase) >= 0)
+                if (kvp.Key.StartsWith("chemicalcont", StringComparison.InvariantCultureIgnoreCase) ||
+                    kvp.Key.StartsWith("combustionchamber", StringComparison.InvariantCultureIgnoreCase) ||
+                    kvp.Key.StartsWith("electricengine", StringComparison.InvariantCultureIgnoreCase) ||
+                    kvp.Key.StartsWith("firingsystem", StringComparison.InvariantCultureIgnoreCase) ||
+                    kvp.Key.StartsWith("gazcylinder", StringComparison.InvariantCultureIgnoreCase) ||
+                    kvp.Key.StartsWith("laserchamber", StringComparison.InvariantCultureIgnoreCase) ||
+                    kvp.Key.StartsWith("light_", StringComparison.InvariantCultureIgnoreCase) ||
+                    kvp.Key.StartsWith("magneticrail", StringComparison.InvariantCultureIgnoreCase) ||
+                    kvp.Key.StartsWith("motherboard", StringComparison.InvariantCultureIgnoreCase) ||
+                    kvp.Key.StartsWith("orescanner", StringComparison.InvariantCultureIgnoreCase) ||
+                    kvp.Key.StartsWith("powerconvertor", StringComparison.InvariantCultureIgnoreCase) ||
+                    kvp.Key.StartsWith("roboticarm", StringComparison.InvariantCultureIgnoreCase) ||
+                    kvp.Key.StartsWith("silo_", StringComparison.InvariantCultureIgnoreCase) ||
+                    kvp.Key.StartsWith("controlsystem", StringComparison.InvariantCultureIgnoreCase))
                 {
                     kvp.Value.ParentGroupName = "Functional Parts";
                     kvp.Value.GroupId = new Guid("08d8a31f-5127-4f25-8138-779a7f0e5c8d");
                 }
-                else if (kvp.Key.StartsWith("AmmoContainer", StringComparison.InvariantCultureIgnoreCase))
+                else if (kvp.Key.StartsWith("ammocontainer", StringComparison.InvariantCultureIgnoreCase))
                 {
                     kvp.Value.ParentGroupName = "Containers";
                     kvp.Value.GroupId = new Guid("08d8a31f-4fcc-40fe-8e92-9fd90394d5c2");
                 }
-                else if (kvp.Key.StartsWith("MissionContainer", StringComparison.InvariantCultureIgnoreCase))
+                else if (kvp.Key.StartsWith("missioncontainer", StringComparison.InvariantCultureIgnoreCase))
                 {
                     kvp.Value.ParentGroupName = "Containers";
                     kvp.Value.GroupId = new Guid("08d8a31f-4fcc-40fe-8e92-9fd90394d5c3");
                 }
-                else if (kvp.Key.IndexOf("singularitycontainer", StringComparison.InvariantCultureIgnoreCase) >= 0)
+                else if (kvp.Key.StartsWith("antimattercapsule", StringComparison.InvariantCultureIgnoreCase) ||
+                    kvp.Key.StartsWith("igniter", StringComparison.InvariantCultureIgnoreCase) ||
+                    kvp.Key.StartsWith("processor", StringComparison.InvariantCultureIgnoreCase) ||
+                    kvp.Key.StartsWith("warhead_", StringComparison.InvariantCultureIgnoreCase) ||
+                    kvp.Key.StartsWith("singularitycontainer", StringComparison.InvariantCultureIgnoreCase)
+                    )
                 {
                     kvp.Value.ParentGroupName = "Complex parts";
                     kvp.Value.GroupId = new Guid("08d8a31f-5116-4472-84d8-1cf2de11b3a3");
+                }
+                else if (kvp.Key.StartsWith("antimattercore", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    kvp.Value.ParentGroupName = "Exceptional parts";
+                    kvp.Value.GroupId = new Guid("08d8a31f-511c-4062-8bcb-fd56f993d7ab");
                 }
                 else if (kvp.Key.IndexOf("container", StringComparison.InvariantCultureIgnoreCase) >= 0)
                 {
                     kvp.Value.ParentGroupName = "Containers";
                     kvp.Value.GroupId = new Guid("08d8a31f-4ff1-4b54-8484-9d05d3885b52");
+                }
+                else if (kvp.Value.Name.IndexOf("mining unit", StringComparison.InvariantCultureIgnoreCase) >= 0)
+                {
+                    kvp.Value.ParentGroupName = "Industry & infrastructure Elements";
+                    kvp.Value.GroupId = new Guid("08d8a31f-4fca-41ed-8134-ddaeff6f3cc8");
+                }
+                else if (
+                    kvp.Value.Name.IndexOf("hover engine ", StringComparison.InvariantCultureIgnoreCase) >= 0 ||
+                    kvp.Value.Name.IndexOf("vertical booster ", StringComparison.InvariantCultureIgnoreCase) >= 0
+                    )
+                {
+                    kvp.Value.ParentGroupName = "Ground Engines";
+                    kvp.Value.GroupId = new Guid("08d8a31f-5034-42d4-84e8-d23f90cc84af");
+                    var elSize = GetElementSize(kvp.Value.Name);
+                    if (elSize != "")
+                    {
+                        kvp.Value.SchemaType = "CS-" + elSize;
+                        kvp.Value.SchemaPrice = Schematics.FirstOrDefault(x =>
+                                x.Key.Equals(kvp.Value.SchemaType)).Value.Cost;
+                    }
+                }
+                else if (kvp.Key.StartsWith("industry", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    kvp.Value.ParentGroupName = "Industry";
+                    kvp.Value.GroupId = new Guid("08d8a31f-4ff2-4c9f-883c-0a8b2b6033e7");
                 }
 
                 // IF schematic is already assigned, skip further processing
@@ -377,7 +507,7 @@ namespace DU_Industry_Tool
                 }
                 // Skip entries without level and Catalysts
                 if (kvp.Value.Level < 1 ||
-                    kvp.Value.Name.StartsWith("Catalyst", StringComparison.InvariantCultureIgnoreCase))
+                    kvp.Value.Name.StartsWith("catalyst", StringComparison.InvariantCultureIgnoreCase))
                     continue;
 
                 var idx = "";
@@ -436,8 +566,7 @@ namespace DU_Industry_Tool
                         "Displays",
                         "Decorative Element",
                         " Parts",
-                        "Logic Operators",
-                        //"Furniture", ??
+                        "Logic Operators"
                     };
                     if (parentName != null && skipGroups.Any(x => parentName.EndsWith(x, StringComparison.InvariantCultureIgnoreCase)))
                     {
@@ -455,14 +584,12 @@ namespace DU_Industry_Tool
 
                     var elemGroups = new List<string>
                     {
-                        "Atmospheric Brakes",
                         "Atmospheric Engines",
                         "Cannons",
                         "Containers",
                         "Control Units",
                         "Electronics",
                         "Engines",
-                        //"Furniture & Appliances",
                         "Ground Engines",
                         "High-Tech Transportation",
                         "Industry",
@@ -476,7 +603,6 @@ namespace DU_Industry_Tool
                         "Screens",
                         "Sensors",
                         "Shield Generators",
-                        "Space Brakes",
                         "Space Engines",
                         "Space Radars",
                         "Support Tech",
@@ -488,7 +614,9 @@ namespace DU_Industry_Tool
                     {
                         "Adjustor",
                         "Aileron",
+                        "Atmospheric Brakes",
                         "Compact Aileron",
+                        "Space Brakes",
                         "Stabilizer",
                         "Wing",
                     };
@@ -585,7 +713,7 @@ namespace DU_Industry_Tool
                     {
                         kvp.Value.SchemaType  = schemaClass.Key;
                         kvp.Value.SchemaPrice = schemaClass.Value.Cost;
-                        Console.WriteLine($"{kvp.Value.Name} = {kvp.Value.SchemaPrice} ({parentName})");
+                        Console.WriteLine($@"{kvp.Value.Name} = {kvp.Value.SchemaPrice} ({parentName})");
                         ucount++;
                     }
                 }
@@ -598,13 +726,159 @@ namespace DU_Industry_Tool
                     {
                         kvp.Value.SchemaType  = schemaClass.Key;
                         kvp.Value.SchemaPrice = schemaClass.Value.Cost;
-                        Console.WriteLine($"{kvp.Value.Name} = {kvp.Value.SchemaPrice} ({parentName})");
+                        Console.WriteLine($@"{kvp.Value.Name} = {kvp.Value.SchemaPrice} ({parentName})");
                         pcount++;
                     }
                 }
             }
 
+            if (dmp)
+            {
+                var missingIds = new StringBuilder();
+                var idLine = "";
+                var idCount = 0;
+                foreach (var kvp in _luaItems)
+                {
+                    // Exclusion checks
+                    if (kvp.Value.DisplayNameWithSize.EndsWith("Schematic Copy")) continue; // schematics
+                    if (kvp.Value.DisplayNameWithSize.StartsWith("Model of")) continue; // reward
+                    if (kvp.Value.DisplayNameWithSize.Equals("Thoramine")) continue; // not in game
+                    if (kvp.Value.DisplayNameWithSize.Equals("Scanner result")) continue; // internal
+                    if (kvp.Value.DisplayNameWithSize.Equals("Package")) continue; // internal
+                    if (kvp.Value.DisplayNameWithSize.Equals("Information")) continue; // internal
+                    if (kvp.Value.DisplayNameWithSize.Equals("Market Pod")) continue; // internal
+                    if (kvp.Value.DisplayNameWithSize.Equals("Gravity changer")) continue; // internal
+                    if (kvp.Value.DisplayNameWithSize.Equals("Alarm light")) continue; // internal
+                    if (kvp.Value.DisplayNameWithSize.Equals("Speaker")) continue; // internal
+                    if (kvp.Value.DisplayNameWithSize.Equals("Weapon")) continue; // internal
+                    if (kvp.Value.DisplayNameWithSize.Equals("Battery")) continue; // internal
+                    if (kvp.Value.DisplayNameWithSize.Equals("Smoke")) continue; // internal
+                    if (kvp.Value.DisplayNameWithSize.Equals("Scanner")) continue; // internal
+                    if (kvp.Value.DisplayNameWithSize.Equals("Deployable light orb")) continue; // internal
+                    if (kvp.Value.DisplayNameWithSize.Equals("Deploy construct")) continue; // internal
+                    if (kvp.Value.DisplayNameWithSize.Equals("Alarm speaker", StringComparison.InvariantCultureIgnoreCase)) continue; // internal
+                    if (kvp.Value.DisplayNameWithSize.Equals("Construct key")) continue; // internal
+                    if (kvp.Value.DisplayNameWithSize.Equals("Territory key")) continue; // internal
+                    if (kvp.Value.DisplayNameWithSize.Equals("Cryogenic pod m")) continue; // internal
+                    if (kvp.Value.DisplayNameWithSize.Equals("Conveyor belt")) continue; // internal
+                    if (kvp.Value.DisplayNameWithSize.Equals("Fake Core Unit")) continue; // internal
+                    if (kvp.Value.DisplayNameWithSize.Equals("Teleportation Node")) continue; // internal
+                    if (kvp.Value.DisplayNameWithSize.Equals("Deploy ground Element")) continue; // internal
+                    if (kvp.Value.DisplayNameWithSize.Equals("Mission Reserved Space")) continue; // internal
+                    if (kvp.Value.DisplayNameWithSize.Equals("Directional detector")) continue; // internal
+                    if (kvp.Value.DisplayNameWithSize.Equals("Electricity generator")) continue; // not in game
+                    if (kvp.Value.DisplayNameWithSize.EndsWith(" tool", StringComparison.InvariantCultureIgnoreCase)) continue; // internal
+                    if (kvp.Value.DisplayNameWithSize.EndsWith(" Parts")) continue; // internal
+                    if (kvp.Value.DisplayNameWithSize.EndsWith(" 256m")) continue; // internal
+                    if (kvp.Value.DisplayNameWithSize.EndsWith(" 512m")) continue; // internal
+                    if (kvp.Value.DisplayNameWithSize.EndsWith(" 1024m")) continue; // internal
+                    if (kvp.Value.DisplayNameWithSize.EndsWith(" 2048m")) continue; // internal
+                    if (kvp.Value.DisplayNameWithSize.EndsWith(" 4096m")) continue; // internal
+                    if (kvp.Value.DisplayNameWithSize.StartsWith("Admin ")) continue; // not in game
+                    if (kvp.Value.DisplayNameWithSize.StartsWith("Alien Space Core")) continue; // not in game
+                    if (kvp.Value.DisplayNameWithSize.StartsWith("Basic Light")) continue; // not in game
+                    if (kvp.Value.DisplayNameWithSize.StartsWith("Artifact ")) continue; // not in game
+                    if (kvp.Value.DisplayNameWithSize.StartsWith("Repulsor")) continue; // not in game
+                    if (kvp.Value.DisplayNameWithSize.StartsWith("Deprecated")) continue; // not in game
+                    if (kvp.Value.DisplayNameWithSize.StartsWith("Decorative Territory Unit")) continue; // not in game
+                    if (kvp.Value.DisplayNameWithSize.StartsWith("Small depracated decorative gun")) continue; // not in game
+                    if (kvp.Value.DisplayNameWithSize.EndsWith("Teleportation Node")) continue; // not in game
+                    if (kvp.Value.Description.StartsWith("This is a non-valuable")) continue; // world material
+                    if (kvp.Value.Description.StartsWith("Deprecated")) continue; // Deprecated
+                    if (kvp.Value.DisplayNameWithSize.StartsWith("Firework")) continue; // Fireworks
+                    if (kvp.Value.DisplayNameWithSize.StartsWith("Obsidian")) continue; // Reward
+                    if (kvp.Value.DisplayNameWithSize.StartsWith("Art-deco")) continue; // not in game
+                    if (kvp.Value.Description.StartsWith("Admin")) continue; // internal stuff
+                    if (kvp.Value.DisplayNameWithSize.Contains("Hologram")) continue; // reward
+                    if (kvp.Value.DisplayNameWithSize.EndsWith("Mission Package")) continue; // missions item
+                    if (kvp.Value.DisplayNameWithSize.Contains("deprecated")) continue; // Deprecated
+                    if (kvp.Value.DisplayNameWithSize.Contains("Throne")) continue; // Reward
+                    if (kvp.Value.DisplayNameWithSize.Contains("Blueprint")) continue; // internal
+
+                    var itemId = kvp.Key;
+                    var item = Recipes.Values.FirstOrDefault(x => x.NqId.ToString() == itemId);
+                    if (item != null)
+                        continue;
+                    var rec = Recipes.FirstOrDefault(x => x.Value.Name.Equals(kvp.Value.DisplayNameWithSize, StringComparison.InvariantCultureIgnoreCase));
+                    if (rec.Key != null && rec.Value?.NqId.ToString() != kvp.Value.Id)
+                    {
+                        if (ulong.TryParse(kvp.Value.Id, out var uTmp))
+                        {
+                            rec.Value.NqId = uTmp;
+                            rec.Value.id = uTmp;
+                        }
+                        continue;
+                    }
+
+                    var category = "";
+                    //var newGroupId = Guid.Empty;
+                    //var newGroupName = "";
+                    //if (kvp.Value.Schematics.Count > 0)
+                    //{
+                    //    if (kvp.Value.Schematics[0].DisplayNameWithSize.Contains("Pure Honeycomb"))
+                    //    {
+                    //        category = "HU";
+                    //        newGroupId = new Guid("08d8a31f-5096-4b2e-8628-4658444b22b3");
+                    //        newGroupName = "Pure Honeycomb Materials";
+                    //    }
+                    //    else
+                    //    if (kvp.Value.Schematics[0].DisplayNameWithSize.Contains("Product Honeycomb"))
+                    //    {
+                    //        category = "HP";
+                    //        newGroupId = new Guid("08d8a31f-5052-4e93-8745-94083fae6f99");
+                    //        newGroupName = "Product Honeycomb Materials";
+                    //    }
+                    //    continue;
+                    //}
+                    if (category != "")
+                    {
+                        //    var r = Schematics.FirstOrDefault(x => x.Key == $"T{kvp.Value.Tier}{category}");
+                        //    if (r.Key != null)
+                        //    {
+                        //        var newItem = new SchematicRecipe
+                        //        {
+                        //            Key = kvp.Key,
+                        //            NqId = ulong.Parse(kvp.Key),
+                        //            Level = kvp.Value.Tier,
+                        //            Name = kvp.Value.DisplayNameWithSize,
+                        //            SchemaType = r.Key,
+                        //            SchemaPrice = r.Value.Cost,
+                        //            GroupId = newGroupId,
+                        //            ParentGroupName = newGroupName
+                        //        };
+                        //        Recipes.Add(kvp.Key, newItem);
+                        //        Debug.WriteLine("ADDED recipe: " + itemId + " Key: " + kvp.Value.DisplayNameWithSize);
+                        //        continue;
+                        //    }
+                    }
+                    idLine += itemId + ", ";
+                    idCount++;
+                    if (idCount > 5)
+                    {
+                        idCount = 0;
+                        missingIds.AppendLine(idLine);
+                        idLine = "";
+                    }
+                    Debug.WriteLine("NqId NOT IN RECIPES: " + itemId + " Key: " + kvp.Value.DisplayNameWithSize);
+                }
+                Debug.WriteLine(missingIds.ToString());
+            }
+
             SaveRecipes();
+
+            // Is this a "part", but not in any recipe?
+            //var invalidEntries = 0;
+            foreach (var kvp in Recipes.Values.Where(x => x.ParentGroupName.EndsWith(" parts", StringComparison.InvariantCultureIgnoreCase)))
+            {
+                var found = Recipes.Values.Any(x => x.Ingredients?.Any(y =>
+                                     y.Name.Equals(kvp.Name, StringComparison.InvariantCultureIgnoreCase)) == true);
+                if (!found)
+                {
+                    kvp.Name += " (!)";
+                    //invalidEntries++;
+                }
+            }
+            //MessageBox.Show(invalidEntries.ToString() + " unused recipes found!");
 
             if (progressBar != null)
                 progressBar.Value = 70;
@@ -617,7 +891,7 @@ namespace DU_Industry_Tool
             }
             else
             {
-                foreach (var recipe in _recipes.Values.Where(r => r.ParentGroupName == "Ore"))
+                foreach (var recipe in Recipes.Values.Where(r => r.ParentGroupName == "Ore"))
                 {
                     Ores.Add(new Ore() { Key = recipe.Key, Name = recipe.Name, Value = 25 * recipe.Level, Level = recipe.Level }); // BS some values
                 }
@@ -642,7 +916,8 @@ namespace DU_Industry_Tool
                 var plasmaKey = $"Plasma{i}";
                 if (Ores.Exists(x => x.Key == plasmaKey))
                     continue;
-                Ores.Add(new Ore() { Key = plasmaKey,
+                Ores.Add(new Ore() {
+                    Key = plasmaKey,
                     Name = plasmas[i-1],
                     Value = 10000000,
                     Level = 0
@@ -675,7 +950,7 @@ namespace DU_Industry_Tool
                     new Talent() { Name = "Rare Scrap Refinery",     Addition = -1, InputTalent = true }
                 };
 
-                foreach (var kvp in _recipes.Where(r => multiplierTalentGroups.Any(t => t == r.Value.ParentGroupName)))
+                foreach (var kvp in Recipes.Where(r => multiplierTalentGroups.Any(t => t == r.Value.ParentGroupName)))
                 {
                     // Iterate over every recipe that is part of one of the multiplierTalentGroups, "Pure", "Scraps", or "Product"
                     var recipe = kvp.Value;
@@ -708,7 +983,7 @@ namespace DU_Industry_Tool
                 // Generic gets -2% per level to inputs
                 var genericRefineryTalent = new Talent() { Name = "Fuel Refinery", Addition = 0, Multiplier = -0.02, InputTalent = true };
 
-                foreach (var groupList in _recipes.Values.Where(r => r.ParentGroupName == "Fuels").GroupBy(r => r.GroupId))
+                foreach (var groupList in Recipes.Values.Where(r => r.ParentGroupName == "Fuels").GroupBy(r => r.GroupId))
                 {
                     var groupName = Groups.Values.FirstOrDefault(g => g.Id == groupList.Key)?.Name;
                     var outTalent = new Talent() { Name = groupName + " Productivity", Addition = 0, Multiplier = 0.05 };
@@ -729,25 +1004,25 @@ namespace DU_Industry_Tool
                 Talents.Add(genericRefineryTalent);
 
                 // Intermediary talents
-                Talents.Add(new Talent() { Name = "Basic Intermediary Part Productivity", Addition = 1, Multiplier = 0, ApplicableRecipes = _recipes.Values.Where(r => r.ParentGroupName == "Intermediary parts" && r.Level == 1).Select(r => r.Key).ToList() });
-                Talents.Add(new Talent() { Name = "Uncommon Intermediary Part Productivity", Addition = 1, Multiplier = 0, ApplicableRecipes = _recipes.Values.Where(r => r.ParentGroupName == "Intermediary parts" && r.Level == 2).Select(r => r.Key).ToList() });
-                Talents.Add(new Talent() { Name = "Advanced Intermediary Part Productivity", Addition = 1, Multiplier = 0, ApplicableRecipes = _recipes.Values.Where(r => r.ParentGroupName == "Intermediary parts" && r.Level == 3).Select(r => r.Key).ToList() });
+                Talents.Add(new Talent() { Name = "Basic Intermediary Part Productivity", Addition = 1, Multiplier = 0, ApplicableRecipes = Recipes.Values.Where(r => r.ParentGroupName == "Intermediary parts" && r.Level == 1).Select(r => r.Key).ToList() });
+                Talents.Add(new Talent() { Name = "Uncommon Intermediary Part Productivity", Addition = 1, Multiplier = 0, ApplicableRecipes = Recipes.Values.Where(r => r.ParentGroupName == "Intermediary parts" && r.Level == 2).Select(r => r.Key).ToList() });
+                Talents.Add(new Talent() { Name = "Advanced Intermediary Part Productivity", Addition = 1, Multiplier = 0, ApplicableRecipes = Recipes.Values.Where(r => r.ParentGroupName == "Intermediary parts" && r.Level == 3).Select(r => r.Key).ToList() });
 
-                // Ammo talents... they have  uncommon, advanced of each of xs, s, m, l
-                var typeList = new string[] { "Uncommon", "Advanced" };
+                // Ammo talents... they have uncommon, advanced of each of xs, s, m, l
+                var typeList = new[] { "Uncommon", "Advanced" };
                 foreach (var type in typeList)
-                foreach (var size in _sizeList)
-                {
-                    if (size == "XL") continue;
-                    Talents.Add(new Talent()
+                    foreach (var size in _sizeList)
                     {
-                        Name = type + " Ammo " + size + " Productivity", Addition = 1, Multiplier = 0,
-                        ApplicableRecipes = _recipes.Values
-                            .Where(r => r.ParentGroupName.Contains("Ammo") && r.Level == (type == "Uncommon" ? 2 : 3) &&
-                                        r.Name.ToLower().EndsWith(" ammo " + size.ToLower())).Select(r => r.Key)
-                            .ToList()
-                    });
-                }
+                        if (size == "XL") continue;
+                        Talents.Add(new Talent()
+                        {
+                            Name = type + " Ammo " + size + " Productivity", Addition = 1, Multiplier = 0,
+                            ApplicableRecipes = Recipes.Values
+                                .Where(r => r.ParentGroupName.Contains("Ammo") && r.Level == (type == "Uncommon" ? 2 : 3) &&
+                                            r.Name.ToLower().EndsWith(" ammo " + size.ToLower())).Select(r => r.Key)
+                                .ToList()
+                        });
+                    }
 
                 SaveTalents();
             }
@@ -765,7 +1040,7 @@ namespace DU_Industry_Tool
         }
         public void SaveRecipes()
         {
-            File.WriteAllText("RecipesGroups.json", JsonConvert.SerializeObject(_recipes));
+            File.WriteAllText("RecipesGroups.json", JsonConvert.SerializeObject(Recipes));
         }
         public void SaveSchematicValues()
         {
@@ -811,7 +1086,7 @@ namespace DU_Industry_Tool
             double outputMultiplier = 0;
             double outputAdder = 0;
 
-            var recipe = _recipes[key];
+            var recipe = Recipes[key];
 
             // Skip catalysts entirely tho.
             if (Groups.Values.FirstOrDefault(g => g.Id == recipe.GroupId)?.Name == "Catalyst")
@@ -837,7 +1112,7 @@ namespace DU_Industry_Tool
 
             foreach (var ingredient in recipe.Ingredients)
             {
-                var resRecipe = JsonConvert.DeserializeObject<IngredientRecipe>(JsonConvert.SerializeObject(_recipes[ingredient.Type]));
+                var resRecipe = JsonConvert.DeserializeObject<IngredientRecipe>(JsonConvert.SerializeObject(Recipes[ingredient.Type]));
                 if (resRecipe == null)
                     continue;
 
@@ -856,9 +1131,9 @@ namespace DU_Industry_Tool
         public double GetBaseCost(string key)
         {
             // Just like the other one, but ignore talents.
-            if (!_recipes.Keys.Contains(key))
+            if (!Recipes.Keys.Contains(key))
                 return 0;
-            var recipe = _recipes[key];
+            var recipe = Recipes[key];
 
             // Skip catalysts entirely tho.
             if (Groups.Values.FirstOrDefault(g => g.Id == recipe.GroupId)?.Name == "Catalyst")
@@ -871,12 +1146,12 @@ namespace DU_Industry_Tool
 
             foreach (var ingredient in recipe.Ingredients)
             {
-                if (!_recipes.Keys.Contains(ingredient.Type))
+                if (!Recipes.Keys.Contains(ingredient.Type))
                 {
-                    Console.WriteLine($"Schematic {ingredient.Type} not found!");
+                    Console.WriteLine($@"Schematic {ingredient.Type} not found!");
                     continue;
                 }
-                if (_recipes.Keys.Contains(ingredient.Type) && _recipes[ingredient.Type].ParentGroupName == "Ore")
+                if (Recipes.Keys.Contains(ingredient.Type) && Recipes[ingredient.Type].ParentGroupName == "Ore")
                 {
                     //Console.WriteLine(ingredient.Name + " value: " + Ores.Where(o => o.Key == ingredient.Type).First().Value + "; Requires " + ingredient.Quantity + " to make " + recipe.Products.First().Quantity + " for a total of " + ((Ores.Where(o => o.Key == ingredient.Type).First().Value * ingredient.Quantity) / recipe.Products.First().Quantity));
                     //Console.WriteLine("Talents: " + ingredient.Name + " value: " + Ores.Where(o => o.Key == ingredient.Type).First().Value + "; Requires " + (ingredient.Quantity * inputMultiplier) + " to make " + (recipe.Products.First().Quantity * outputMultiplier) + " for a total of " + ((Ores.Where(o => o.Key == ingredient.Type).First().Value * ingredient.Quantity * inputMultiplier) / (recipe.Products.First().Quantity * outputMultiplier)));
@@ -925,15 +1200,14 @@ namespace DU_Industry_Tool
             double totalCost = 0;
             if (key.StartsWith("Hydrogen") || key.StartsWith("Oxygen") || key.StartsWith("Catalyst"))
                 return 0;
-            var err = "";
-            if (!_recipes.Keys.Contains(key))
+            if (!Recipes.Keys.Contains(key))
             {
-                err = $"*** MISSING: {key} !!!";
+                var err = $"*** MISSING: {key} !!!";
                 Debug.WriteLine(err);
                 MessageBox.Show(err);
                 return 0;
             }
-            var recipe  = _recipes[key];
+            var recipe  = Recipes[key];
             var product = recipe.Products?.FirstOrDefault();
             if (product == null) return 0;
             if (recipe.Ingredients == null)
@@ -953,9 +1227,9 @@ namespace DU_Industry_Tool
 
             foreach (var ingredient in recipe.Ingredients)
             {
-                if (string.IsNullOrEmpty(ingredient.Type) || !_recipes.ContainsKey(ingredient.Type))
+                if (string.IsNullOrEmpty(ingredient.Type) || !Recipes.ContainsKey(ingredient.Type))
                 {
-                    err = $"{curLevel}     MISSING: {recipe.Key}->{ingredient.Name} !!!";
+                    var err = $"{curLevel}     MISSING: {recipe.Key}->{ingredient.Name} !!!";
                     Debug.WriteLine(err);
                     MessageBox.Show(err);
                     continue;
@@ -964,7 +1238,7 @@ namespace DU_Industry_Tool
                 var cost     = 0d;
                 var qty      = 0d;
                 double factor = 1;
-                var myRecipe  = _recipes[ingredient.Type];
+                var myRecipe  = Recipes[ingredient.Type];
                 var isOre     = myRecipe.ParentGroupName.Equals("Ore", StringComparison.InvariantCultureIgnoreCase);
                 var isPure    = myRecipe.ParentGroupName.Equals("Pure", StringComparison.InvariantCultureIgnoreCase);
                 var isPart    = myRecipe.ParentGroupName.EndsWith("Parts", StringComparison.InvariantCultureIgnoreCase);
@@ -1098,30 +1372,32 @@ namespace DU_Industry_Tool
             CostResults.AppendLine("Cost x1:".PadRight(16)+$"{costx1:N1}q".PadLeft(20));
             Debug.WriteLineIf(!silent, CostResults.ToString());
 
-            CostResults.AppendLine();
-            CostResults.AppendLine("----- Schematics details -----");
-            CostResults.AppendLine("Schema.  amount         cost    copy time (1 slot)");
-            foreach (var schem in _sumSchemClass)
+            if (_sumSchemClass?.Any() == true)
             {
-                var s = Schematics.FirstOrDefault(x => x.Key == schem.Key);
-                double numBatches = Math.Ceiling(schem.Value.Item1 / (double)s.Value.BatchSize);
-                double batchTime = s.Value.BatchTime * numBatches;
-                var sp = TimeSpan.FromSeconds(batchTime);
-                CostResults.AppendLine(schem.Key.PadRight(4)+
-                                       $"x{schem.Value.Item1:N0}".PadLeft(8)+
-                                       $"{schem.Value.Item2:N1}q".PadLeft(19)+
-                                       " ("+sp.ToString(@"dd\.hh\:mm\:ss")+")");
+                CostResults.AppendLine();
+                CostResults.AppendLine("----- Schematics details -----");
+                CostResults.AppendLine("Schema.  amount              cost    copy time (1 slot)");
+                foreach (var schem in _sumSchemClass)
+                {
+                    var s = Schematics.FirstOrDefault(x => x.Key == schem.Key);
+                    var numBatches = Math.Ceiling(schem.Value.Item1 / (double)s.Value.BatchSize);
+                    var batchTime = (s.Value?.BatchTime ?? 0) * numBatches;
+                    var sp = TimeSpan.FromSeconds(batchTime);
+                    CostResults.AppendLine(schem.Key.PadRight(4)+
+                                           $"x{schem.Value.Item1:N0}".PadLeft(11)+
+                                           $"{schem.Value.Item2:N1}q".PadLeft(21)+
+                                           " ("+sp.ToString(@"dd\.hh\:mm\:ss")+")");
+                }
             }
-            CostResults.AppendLine();
-            CostResults.AppendLine("----- Total Ingredients List -----");
-            var maxlen = 20;
             if (_sumIngredients?.Any() == true)
             {
-                maxlen = 2 + _sumIngredients.Max(x => x.Key.Length);
-            }
-            foreach (var item in _sumIngredients)
-            {
-                CostResults.AppendLine(item.Key.PadRight(maxlen)+$"{item.Value:N0}".PadLeft(9));
+                CostResults.AppendLine();
+                CostResults.AppendLine("----- Total Ingredients List -----");
+                var maxlen = 2 + _sumIngredients.Max(x => x.Key.Length);
+                foreach (var item in _sumIngredients)
+                {
+                    CostResults.AppendLine(item.Key.PadRight(maxlen)+$"{item.Value:N0}".PadLeft(9));
+                }
             }
             return costx1;
         }
@@ -1173,11 +1449,11 @@ namespace DU_Industry_Tool
                 {
                     key = key.Substring(3);
                 }
-                if (!_recipes.ContainsKey(key))
+                if (!Recipes.ContainsKey(key))
                 {
                     continue;
                 }
-                var recipe   = _recipes[key];
+                var recipe   = Recipes[key];
                 var isOre    = recipe.ParentGroupName == "Ore";
                 var isT1Ore  = listType == "U" && isOre && recipe?.Level <= 1;
                 var isPlasma = recipe.ParentGroupName == "Consumables" && recipe.Key.StartsWith("Plasma");
@@ -1192,11 +1468,12 @@ namespace DU_Industry_Tool
                     orePrice = Ores.FirstOrDefault(o => o.Key == key)?.Value ?? 0;
                 }
                 var tmp = item.Value * quantity;
-                var output = $"{recipe.Name}: {tmp:N2}"+(isPlasma ? "" : " L");
+                var recName = recipe.Name.Substring(0,Math.Min(recipe.Name.Length, 29));
+                var output = $"{recName}:".PadRight(30)+$"{tmp:N2}".PadLeft(10)+(isPlasma ? "  " : " L");
                 if ((isPlasma || isOre) && orePrice > 0.00d)
                 {
                     tmp *= orePrice;
-                    output += $" = {tmp:N2} q";
+                    output += " = " + $"{tmp:N2} q".PadLeft(15);
                 }
 
                 var idx = recipe.SchemaType;
@@ -1230,7 +1507,7 @@ namespace DU_Industry_Tool
                     _sumSchemClass.Add(idx, new Tuple<int, double>(cnt, tmp));
                 if (outputDetails)
                 {
-                    output += $" | {cnt} sch. = {tmp:N2}q";
+                    output += " | "+$"{cnt} sch.".PadLeft(10)+" = "+$"{tmp:N2} q".PadLeft(14);
                     CostResults.AppendLine(orePrefix+output);
                 }
                 outSum += tmp;
@@ -1241,7 +1518,7 @@ namespace DU_Industry_Tool
         public List<ProductDetail> GetOreComponents(string key)
         { // Un-talented only
             var products = new List<ProductDetail>();
-            var recipe = _recipes[key];
+            var recipe = Recipes[key];
 
             // Skip catalysts entirely tho.
             if (Groups.Values.FirstOrDefault(g => g.Id == recipe.GroupId)?.Name == "Catalyst")
@@ -1249,7 +1526,7 @@ namespace DU_Industry_Tool
 
             foreach (var ingredient in recipe.Ingredients)
             {
-                if (_recipes[ingredient.Type].ParentGroupName == "Ore")
+                if (Recipes[ingredient.Type].ParentGroupName == "Ore")
                 {
                     products.Add(new ProductDetail() { Name = ingredient.Name, Quantity = ingredient.Quantity / recipe.Products[0].Quantity, Type = ingredient.Type });
                 }
