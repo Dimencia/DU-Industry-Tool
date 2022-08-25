@@ -12,7 +12,7 @@ using System.Windows.Forms;
 
 namespace DU_Industry_Tool
 {
-    // Should handle parsing and storing market data.  
+    // Should handle parsing and storing market data.
     // If it takes a while to parse the logfiles we'll store it ourselves
     // Hell, even if it doesn't we should store it and store which logfiles we've checked out so we don't check the same ones again?
     // But they might delete their logfiles, but we still want our data.

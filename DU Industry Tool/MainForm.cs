@@ -17,15 +17,14 @@ namespace DU_Industry_Tool
 {
     public partial class MainForm : KryptonForm
     {
-        private IndustryManager Manager;
-        private MarketManager Market;
-        private bool MarketFiltered = false;
-        private FlowLayoutPanel _costDetailsPanel;
+        private readonly IndustryManager _manager;
+        private readonly MarketManager _market;
+        private bool _marketFiltered;
         private TextBox _costDetailsLabel;
-        //private Label _costDetailsTitleLabel;
-        private int _costDetailsLineCount = 0;
-        private List<string> _breadcrumbs = new List<string>();
-        private FlowLayoutPanel infoPanel;
+        private int _costDetailsLineCount;
+        private readonly List<string> _breadcrumbs = new List<string>();
+        private FlowLayoutPanel _costDetailsPanel;
+        private FlowLayoutPanel _infoPanel;
 
         public MainForm(IndustryManager manager)
         {
@@ -35,9 +34,9 @@ namespace DU_Industry_Tool
             QuantityBox.SelectedIndex = 0;
 
             // Setup the trees. One recipe on each main node
-            Manager = manager;
+            _manager = manager;
 
-            Market = new MarketManager();
+            _market = new MarketManager();
             kryptonPage1.Flags = 0;
             kryptonPage1.ClearFlags(KryptonPageFlags.DockingAllowDocked);
             kryptonPage1.ClearFlags(KryptonPageFlags.DockingAllowClose);
@@ -48,8 +47,9 @@ namespace DU_Industry_Tool
             foreach(var group in manager.Groupnames)
             {
                 var groupNode = new TreeNode(group);
-                foreach(var recipe in manager._recipes.Where(x => x.Value?.ParentGroupName?.Equals(group, StringComparison.CurrentCultureIgnoreCase) == true)
-                            .OrderBy(r => r.Value.Name).Select(x => x.Value))
+                foreach(var recipe in manager.Recipes.Where(x => x.Value?.ParentGroupName?.Equals(group, StringComparison.CurrentCultureIgnoreCase) == true)
+                            .OrderBy(r => r.Value.Level).ThenBy(r => r.Value.Name)
+                            .Select(x => x.Value))
                 {
                     var recipeNode = new TreeNode(recipe.Name)
                     {
@@ -93,15 +93,14 @@ namespace DU_Industry_Tool
             // Display recipe info for the thing they have selected
             Console.WriteLine(recipe.Name);
             SearchBox.Text = recipe.Name;
-            if (NewDocument(recipe.Name) == null)
-                return;
-            if (infoPanel == null) return;
-            infoPanel.Controls.Clear();
-            infoPanel.BorderStyle = BorderStyle.None;// BorderStyle.FixedSingle;
+            var newDoc = NewDocument(recipe.Name);
+            if (newDoc == null || _infoPanel == null) return;
+            _infoPanel.Controls.Clear();
+            _infoPanel.BorderStyle = BorderStyle.None;
 
             //if (recipe.ParentGroupName.EndsWith(" Parts", StringComparison.InvariantCultureIgnoreCase))
             //{
-            //    var containedIn = Manager._recipes.Values.Any(x =>
+            //    var containedIn = Manager.Recipes.Values.Any(x =>
             //        true == x.Ingredients?.Any(y => y.Name.Equals(recipe.Name, StringComparison.InvariantCultureIgnoreCase)));
             //    if (containedIn)
             //    {
@@ -115,41 +114,42 @@ namespace DU_Industry_Tool
             //            Tag = recipe.Name
             //        };
             //        btn.Click += BtnPartOfClick;
-            //        infoPanel.Controls.Add(btn);
+            //        _infoPanel.Controls.Add(btn);
             //    }
             //}
 
             var header = new Label
             {
-                AutoSize = true,
-                Font = new Font(infoPanel.Font.FontFamily, 12, FontStyle.Bold),
-                Padding = new Padding(4, 10, 4, 10),
+                AutoSize = false,
+                Font = new Font(_infoPanel.Font.FontFamily, 12, FontStyle.Bold),
+                Padding = new Padding(0, 5, 4, 5),
                 Text = $"{recipe.Name} (T{recipe.Level})",
-                TextAlign = ContentAlignment.MiddleCenter
+                Height = 50,
+                Width = 370
             };
-            infoPanel.Controls.Add(header);
+            _infoPanel.Controls.Add(header);
 
             var costPanel = new FlowLayoutPanel
             {
-                FlowDirection = FlowDirection.LeftToRight,
+                FlowDirection = FlowDirection.TopDown,
                 AutoSize = true
             };
-            Manager.ProductQuantity = int.Parse(QuantityBox.Text);
+            _manager.ProductQuantity = int.Parse(QuantityBox.Text);
             if (!double.TryParse(QuantityBox.Text, out var cnt)) cnt = 1d;
-            var costToMake = Manager.GetTotalCost(recipe.Key, cnt, silent: false);
+            var costToMake = _manager.GetTotalCost(recipe.Key, cnt, silent: true);
             costPanel.Controls.Add(new Label
             {
                 AutoSize = true,
                 Text = "Cost To Make " + costToMake.ToString("N02") + "q"
             });
-            infoPanel.Controls.Add(costPanel);
+            _infoPanel.Controls.Add(costPanel);
 
             costPanel = new FlowLayoutPanel
             {
-                FlowDirection = FlowDirection.LeftToRight,
+                FlowDirection = FlowDirection.TopDown,
                 AutoSize = true
             };
-            var cost = Manager.GetBaseCost(recipe.Key);
+            var cost = _manager.GetBaseCost(recipe.Key);
             costPanel.Controls.Add(new Label
             {
                 Text = "Untalented (without schematics) " + cost.ToString("N02") + "q",
@@ -157,14 +157,14 @@ namespace DU_Industry_Tool
             });
 
             // IDK why sometimes prices are listed as 0
-            var orders = Market.MarketOrders.Values.Where(o => o.ItemType == recipe.NqId &&
+            var orders = _market.MarketOrders.Values.Where(o => o.ItemType == recipe.NqId &&
                                                                o.BuyQuantity < 0 &&
                                                                DateTime.Now < o.ExpirationDate &&
                                                                o.Price > 0);
             var mostRecentOrder = orders.OrderBy(o => o.Price).FirstOrDefault();
             if (mostRecentOrder == null)
             {
-                infoPanel.Controls.Add(costPanel);
+                _infoPanel.Controls.Add(costPanel);
             }
             else
             {
@@ -177,11 +177,11 @@ namespace DU_Industry_Tool
                 {
                     Text = "Until " + mostRecentOrder.ExpirationDate
                 });
-                infoPanel.Controls.Add(costPanel);
+                _infoPanel.Controls.Add(costPanel);
 
                 var costPanelm = new FlowLayoutPanel
                 {
-                    FlowDirection = FlowDirection.LeftToRight,
+                    FlowDirection = FlowDirection.TopDown,
                     AutoSize = true
                 };
                 costPanelm.Controls.Add(new Label
@@ -195,12 +195,12 @@ namespace DU_Industry_Tool
                     Text = cost.ToString("0%"),
                     AutoSize = true
                 });
-                infoPanel.Controls.Add(costPanelm);
+                _infoPanel.Controls.Add(costPanelm);
 
                 cost = (mostRecentOrder.Price - costToMake)*(86400/recipe.Time);
                 costPanel = new FlowLayoutPanel
                 {
-                    FlowDirection = FlowDirection.LeftToRight,
+                    FlowDirection = FlowDirection.TopDown,
                     AutoSize = true
                 };
                 costPanel.Controls.Add(new Label
@@ -208,14 +208,13 @@ namespace DU_Industry_Tool
                     Text = "Profit/Day/Industry " + cost.ToString("N02") + "q",
                     AutoSize = true
                 });
-                infoPanel.Controls.Add(costPanel);
+                _infoPanel.Controls.Add(costPanel);
             }
 
             var costPanel2 = new FlowLayoutPanel
             {
-                FlowDirection = FlowDirection.LeftToRight,
                 AutoSize = false,
-                Size = new Size(400, 40)
+                FlowDirection = FlowDirection.TopDown,
             };
 
             cost = recipe.Time > 0 ? 86400/recipe.Time : 0;
@@ -224,7 +223,7 @@ namespace DU_Industry_Tool
                 Text = "Per Industry " + cost.ToString("0.0") + "/Day",
                 AutoSize = true
             });
-            infoPanel.Controls.Add(costPanel2);
+            _infoPanel.Controls.Add(costPanel2);
 
             // ----- Ingredients -----
             costPanel = new FlowLayoutPanel
@@ -232,11 +231,11 @@ namespace DU_Industry_Tool
                 FlowDirection = FlowDirection.TopDown,
                 AutoSize = true
             };
-            infoPanel.Controls.Add(new Label
+            _infoPanel.Controls.Add(new Label
             {
                 AutoSize = true,
                 Text = "Ingredients",
-                Font = new Font(costPanel.Font, FontStyle.Bold)
+                Font = new Font(_infoPanel.Font, FontStyle.Bold)
             });
 
             var grid = new TableLayoutPanel
@@ -251,7 +250,7 @@ namespace DU_Industry_Tool
                 var label = new Label
                 {
                     AutoSize = true,
-                    Font = new Font(infoPanel.Font, FontStyle.Underline),
+                    Font = new Font(_infoPanel.Font, FontStyle.Underline),
                     Text = ingredient.Name,
                     ForeColor = Color.CornflowerBlue,
                     Tag = ingredient.Type
@@ -264,7 +263,7 @@ namespace DU_Industry_Tool
                     Text = ingredient.Quantity.ToString("0.0")
                 });
             }
-            infoPanel.Controls.Add(grid);
+            _infoPanel.Controls.Add(grid);
 
             // ----- Products -----
             var prodPanel = new FlowLayoutPanel
@@ -275,35 +274,39 @@ namespace DU_Industry_Tool
             var prodLabel = new Label
             {
                 AutoSize = true,
+                Font = new Font(_infoPanel.Font, FontStyle.Bold),
                 Text = "Products"
             };
-            prodLabel.Font = new Font(prodLabel.Font, FontStyle.Bold);
             prodPanel.Controls.Add(prodLabel);
-            infoPanel.Controls.Add(prodPanel);
+            _infoPanel.Controls.Add(prodPanel);
 
-            grid = new TableLayoutPanel();
-            grid.ColumnCount = 2;
-            grid.RowCount = recipe.Products.Count;
-            grid.AutoSize = true;
-            grid.Padding = new Padding(0, 0, 0, 10);
+            grid = new TableLayoutPanel
+            {
+                ColumnCount = 2,
+                RowCount = recipe.Products.Count,
+                AutoSize = true,
+                Padding = new Padding(0, 0, 0, 10)
+            };
             foreach (var ingredient in recipe.Products)
             {
                 grid.Controls.Add(new Label
                 {
                     AutoSize = true,
+                    Font = new Font(_infoPanel.Font, FontStyle.Regular),
                     Text = ingredient.Name
                 });
                 grid.Controls.Add(new Label
                 {
                     AutoSize = true,
+                    Font = new Font(_infoPanel.Font, FontStyle.Regular),
                     Text = ingredient.Quantity.ToString("0.0")
                 });
             }
-            infoPanel.Controls.Add(grid);
+            _infoPanel.Controls.Add(grid);
 
             if (recipe.ParentGroupName.EndsWith(" Parts", StringComparison.InvariantCultureIgnoreCase))
             {
-                var containedIn = Manager._recipes.Values.Where(x =>
+                var containedIn = _manager.Recipes.Values.Where(x =>
                     true == x.Ingredients?.Any(y => y.Name.Equals(recipe.Name, StringComparison.InvariantCultureIgnoreCase)));
                 if (containedIn?.Any() == true)
                 {
@@ -315,7 +318,7 @@ namespace DU_Industry_Tool
                     prodPanel.Controls.Add(new Label
                     {
                         AutoSize = true,
-                        Font = new Font(infoPanel.Font, FontStyle.Bold),
+                        Font = new Font(_infoPanel.Font, FontStyle.Bold),
                         Text = "Part of recipes:"
                     });
                     grid = new TableLayoutPanel
@@ -323,9 +326,9 @@ namespace DU_Industry_Tool
                         AutoScroll = true,
                         AutoSize = false,
                         ColumnCount = 1,
+                        Padding = new Padding(0, 0, 0, 0),
                         RowCount = containedIn.Count(),
-                        Padding = new Padding(0, 0, 0, 10),
-                        Width = 400,
+                        Width = 350,
                         Height = 400,
                         VerticalScroll = { Visible = true }
                     };
@@ -334,7 +337,7 @@ namespace DU_Industry_Tool
                         var label = new Label
                         {
                             AutoSize = true,
-                            Font = new Font(infoPanel.Font, FontStyle.Underline),
+                            Font = new Font(_infoPanel.Font, FontStyle.Underline),
                             Text = master.Name,
                             ForeColor = Color.CornflowerBlue,
                             Tag = master.Key
@@ -343,7 +346,7 @@ namespace DU_Industry_Tool
                         grid.Controls.Add(label);
                     }
                     prodPanel.Controls.Add(grid);
-                    infoPanel.Controls.Add(prodPanel);
+                    _infoPanel.Controls.Add(prodPanel);
                 }
             }
 
@@ -352,7 +355,7 @@ namespace DU_Industry_Tool
             try
             {
                 _costDetailsPanel.FlowDirection = FlowDirection.TopDown;
-                _costDetailsPanel.BorderStyle = BorderStyle.None;// FixedSingle;
+                _costDetailsPanel.BorderStyle = BorderStyle.None;
                 _costDetailsPanel.Dock = DockStyle.None;
                 _costDetailsPanel.AutoSize = true;
                 _costDetailsPanel.AutoScroll = true;
@@ -361,46 +364,36 @@ namespace DU_Industry_Tool
                 _costDetailsLabel = new TextBox
                 {
                     AutoSize = true,
+                    BorderStyle = BorderStyle.None,
                     ScrollBars = ScrollBars.Both,
                     Size = new Size(600, 500),
-                    Text = Manager.CostResults.ToString(),
+                    Text = _manager.CostResults.ToString(),
                     Multiline = true,
                     WordWrap = false,
                     ReadOnly = true
                 };
                 _costDetailsPanel.Controls.Add(_costDetailsLabel);
-                infoPanel.Controls.Add(_costDetailsPanel);
+                _infoPanel.Controls.Add(_costDetailsPanel);
                 _costDetailsLineCount = _costDetailsLabel.Text.Count(c => c == '\n');
             }
             finally
             {
                 _costDetailsPanel.ResumeLayout();
+                newDoc.CostDetailsPanel = _costDetailsPanel;
             }
 
-            infoPanel.AutoScroll = false;
+            _infoPanel.AutoScroll = false;
             OnMainformResize(null, null);
-        }
-
-        private void BtnPartOfClick(object sender, EventArgs e)
-        {
-            var recipeName = (string)(sender as Button).Tag;
-            var containedIn = Manager._recipes.Where(x =>
-                x.Value?.Ingredients != null &&
-                x.Value.Ingredients.Any(y => y.Name.Equals(recipeName, StringComparison.InvariantCultureIgnoreCase)));
-            if (containedIn?.Any() != true)
-                return;
-            var msg = containedIn.ToList().Aggregate("", (current, kvp) => current + ("- "+kvp.Value.Name + "\r\n"));
-            MessageBox.Show(recipeName+" is ingredient in the following recipes:\r\n"+msg, "Ingredient");
         }
 
         private void Label_Click(object sender, EventArgs e)
         {
             var label = sender as Label;
-            if (!Manager._recipes.ContainsKey(label.Tag as string))
+            if (!_manager.Recipes.ContainsKey(label.Tag as string))
             {
                 return;
             }
-            var recipe = Manager._recipes[label.Tag as string];
+            var recipe = _manager.Recipes[label.Tag as string];
 
             if (_breadcrumbs.Count == 0 || _breadcrumbs.LastOrDefault() != recipe.Name)
             {
@@ -429,19 +422,19 @@ namespace DU_Industry_Tool
 
         private void InputOreValuesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var form = new OreValueForm(Manager);
+            var form = new OreValueForm(_manager);
             form.ShowDialog(this);
         }
 
         private void SkillLevelsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var form = new SkillForm(Manager);
+            var form = new SkillForm(_manager);
             form.ShowDialog(this);
         }
 
         private void SchematicValuesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var form = new SchematicValueForm(Manager);
+            var form = new SchematicValueForm(_manager);
             form.ShowDialog(this);
         }
 
@@ -505,35 +498,35 @@ namespace DU_Industry_Tool
 
         private void UpdateMarketValuesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var loadForm = new LoadingForm(Market);
+            var loadForm = new LoadingForm(_market);
             loadForm.ShowDialog(this);
             if (loadForm.DiscardOres)
             {
                 // Get rid of them
                 List<ulong> toRemove = new List<ulong>();
-                foreach(var order in Market.MarketOrders)
+                foreach(var order in _market.MarketOrders)
                 {
-                    var recipe = Manager._recipes.Values.Where(r => r.NqId == order.Value.ItemType).FirstOrDefault();
+                    var recipe = _manager.Recipes.Values.Where(r => r.NqId == order.Value.ItemType).FirstOrDefault();
                     if (recipe != null && recipe.ParentGroupName == "Ore")
                         toRemove.Add(order.Key);
 
                 }
                 foreach (var key in toRemove)
-                    Market.MarketOrders.Remove(key);
-                Market.SaveData();
+                    _market.MarketOrders.Remove(key);
+                _market.SaveData();
             }
             else
             {
                 // Process them and leave them so they show in exports
-                foreach (var order in Market.MarketOrders)
+                foreach (var order in _market.MarketOrders)
                 {
-                    var recipe = Manager._recipes.Values.Where(r => r.NqId == order.Value.ItemType).FirstOrDefault();
+                    var recipe = _manager.Recipes.Values.Where(r => r.NqId == order.Value.ItemType).FirstOrDefault();
                     if (recipe != null && recipe.ParentGroupName == "Ore")
                     {
-                        var ore = Manager.Ores.Where(o => o.Key.ToLower() == recipe.Key.ToLower()).FirstOrDefault();
+                        var ore = _manager.Ores.Where(o => o.Key.ToLower() == recipe.Key.ToLower()).FirstOrDefault();
                         if (ore != null)
                         {
-                            var orders = Market.MarketOrders.Values.Where(o => o.ItemType == recipe.NqId && o.BuyQuantity < 0 && DateTime.Now < o.ExpirationDate && o.Price > 0);
+                            var orders = _market.MarketOrders.Values.Where(o => o.ItemType == recipe.NqId && o.BuyQuantity < 0 && DateTime.Now < o.ExpirationDate && o.Price > 0);
 
                             var bestOrder = orders.OrderBy(o => o.Price).FirstOrDefault();
                             if (bestOrder != null)
@@ -542,21 +535,21 @@ namespace DU_Industry_Tool
                     }
 
                 }
-                Manager.SaveOreValues();
+                _manager.SaveOreValues();
             }
             loadForm.Dispose();
         }
 
         private void FilterToMarketToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (MarketFiltered)
+            if (_marketFiltered)
             {
-                MarketFiltered = false;
+                _marketFiltered = false;
                 if (sender is ToolStripMenuItem tsItem) tsItem.Text = "Filter to Market";
                 else
                 if (sender is KryptonContextMenuItem kBtn) kBtn.Text = "Filter to Market";
                 treeView.Nodes.Clear();
-                foreach (var group in Manager._recipes.Values.GroupBy(r => r.ParentGroupName))
+                foreach (var group in _manager.Recipes.Values.GroupBy(r => r.ParentGroupName))
                 {
                     var groupNode = new TreeNode(group.Key);
                     foreach (var recipe in group)
@@ -572,12 +565,12 @@ namespace DU_Industry_Tool
             }
             else
             {
-                MarketFiltered = true;
+                _marketFiltered = true;
                 if (sender is ToolStripMenuItem tsItem) tsItem.Text = "Unfilter Market";
                     else
                 if (sender is KryptonContextMenuItem kBtn) kBtn.Text = "Unfilter Market";
                 treeView.Nodes.Clear();
-                foreach (var group in Manager._recipes.Values.Where(r => Market.MarketOrders.Values.Any(v => v.ItemType == r.NqId)).GroupBy(r => r.ParentGroupName))
+                foreach (var group in _manager.Recipes.Values.Where(r => _market.MarketOrders.Values.Any(v => v.ItemType == r.NqId)).GroupBy(r => r.ParentGroupName))
                 {
                     var groupNode = new TreeNode(group.Key);
                     foreach (var recipe in group)
@@ -615,20 +608,20 @@ namespace DU_Industry_Tool
 
                 int row = 2;
 
-                var recipes = Manager._recipes.Values.ToList();
-                if (MarketFiltered)
+                var recipes = _manager.Recipes.Values.ToList();
+                if (_marketFiltered)
                 {
-                    recipes = Manager._recipes.Values
-                        .Where(r => Market.MarketOrders.Values.Any(v => v.ItemType == r.NqId)).ToList();
+                    recipes = _manager.Recipes.Values
+                        .Where(r => _market.MarketOrders.Values.Any(v => v.ItemType == r.NqId)).ToList();
                 }
 
                 foreach(var recipe in recipes)
                 {
                     worksheet.Cell(row, 1).Value = recipe.Name;
-                    var costToMake = Manager.GetTotalCost(recipe.Key, silent: true);
+                    var costToMake = _manager.GetTotalCost(recipe.Key, silent: true);
                     worksheet.Cell(row, 2).Value = Math.Round(costToMake,2);
 
-                    var orders = Market.MarketOrders.Values.Where(o => o.ItemType == recipe.NqId && o.BuyQuantity < 0 && DateTime.Now < o.ExpirationDate && o.Price > 0);
+                    var orders = _market.MarketOrders.Values.Where(o => o.ItemType == recipe.NqId && o.BuyQuantity < 0 && DateTime.Now < o.ExpirationDate && o.Price > 0);
 
                     var mostRecentOrder = orders.OrderBy(o => o.Price).FirstOrDefault();
                     var cost = mostRecentOrder?.Price ?? 0d;
@@ -672,21 +665,23 @@ namespace DU_Industry_Tool
                 worksheet.Row(1).Style.Font.SetBold();
 
                 int row = 2;
-                var ingredients = Manager.GetIngredientRecipes(recipe.Key).OrderByDescending(i => i.Level).GroupBy(i => i.Name);
+                var ingredients = _manager.GetIngredientRecipes(recipe.Key).OrderByDescending(i => i.Level).GroupBy(i => i.Name);
                 if (!ingredients?.Any() == true) return;
                 foreach(var group in ingredients)
                 {
                     worksheet.Cell(row, 3).Value = group.First().Name;
                     worksheet.Cell(row, 4).FormulaA1 = $"=B2*{group.Sum(g => g.Quantity)}";
                     double outputMult = 1;
-                    var talents = Manager.Talents.Where(t => t.InputTalent == false && t.ApplicableRecipes.Contains(group.First().Name));
+                    var talents = _manager.Talents.Where(t => t.InputTalent == false && t.ApplicableRecipes.Contains(group.First().Name));
                     if (talents?.Any() == true)
                         outputMult += talents.Sum(t => t.Multiplier);
                     if (group.First().ParentGroupName != "Ore")
-                        worksheet.Cell(row, 5).Value = (86400 / group.First().Time)*group.First().Products.First().Quantity*outputMult;
-                    worksheet.Cell(row, 6).FormulaR1C1 = "=R[0]C[-2]/R[0]C[-1]";
-                    worksheet.Cell(row, 7).FormulaR1C1 = "=ROUNDUP(R[0]C[-1])";
-
+                    {
+                        worksheet.Cell(row, 5).Value = (86400 / group.First().Time) *
+                                                       group.First().Products.First().Quantity * outputMult;
+                        worksheet.Cell(row, 6).FormulaR1C1 = "=R[0]C[-2]/R[0]C[-1]";
+                        worksheet.Cell(row, 7).FormulaR1C1 = "=ROUNDUP(R[0]C[-1])";
+                    }
                     row++;
                 }
 
@@ -698,25 +693,28 @@ namespace DU_Industry_Tool
 
         private void OnMainformResize(object sender, EventArgs e)
         {
-            treeView.Height = kryptonPage1.Height - treeView.Top;
-            treeView.Width = kryptonPage1.Width-4;
-
             if (kryptonNavigator1.SelectedPage == null) return;
-
+            _costDetailsLabel = null;
             if (kryptonNavigator1.SelectedPage.Controls.Count > 0 &&
                 kryptonNavigator1.SelectedPage.Controls[0] is ContentDocument xDoc)
             {
-                _costDetailsPanel = xDoc.InfoPanel;
+                _costDetailsPanel = xDoc.CostDetailsPanel;
+                if (_costDetailsPanel?.Controls.Count > 0)
+                {
+                    _costDetailsLabel = _costDetailsPanel.Controls[0] as TextBox;
+                }
             }
             if (_costDetailsPanel == null) return;
             _costDetailsPanel.SuspendLayout();
             try
             {
-                _costDetailsPanel.Height = Math.Max(500, kryptonNavigator1.SelectedPage.Height - 10);
-                _costDetailsPanel.Width = kryptonNavigator1.SelectedPage.Width - 4;
-                _costDetailsLabel.Width = kryptonNavigator1.SelectedPage.Width - 430;
-                _costDetailsLabel.Height = _costDetailsPanel.Height - 10;
-                //_costDetailsTitleLabel.Width = _costDetailsPanel.Width - 10;
+                _costDetailsPanel.AutoSize = false;
+                _costDetailsPanel.Height = kryptonNavigator1.SelectedPage.Height - 6;
+                _costDetailsPanel.Width = kryptonNavigator1.SelectedPage.Width - 380;
+                if (_costDetailsLabel == null) return;
+                _costDetailsLabel.AutoSize = false;
+                _costDetailsLabel.Width  = _costDetailsPanel.Width  - 8;
+                _costDetailsLabel.Height = _costDetailsPanel.Height - 8;
             }
             finally
             {
@@ -739,7 +737,7 @@ namespace DU_Industry_Tool
                             KryptonPageFlags.DockingAllowClose);
         }
 
-        private static KryptonPage NewPage(string name, int image, Control content)
+        private static KryptonPage NewPage(string name, Control content)
         {
             var p = new KryptonPage(name)
             {
@@ -748,32 +746,35 @@ namespace DU_Industry_Tool
                 Flags = 0
             };
             p.SetFlags(KryptonPageFlags.DockingAllowDocked | KryptonPageFlags.DockingAllowClose);
-            content.Dock = DockStyle.Fill;
-            p.Controls.Add(content);
+            if (content != null)
+            {
+                content.Dock = DockStyle.Fill;
+                p.Controls.Add(content);
+            }
             return p;
         }
 
-        private KryptonPage NewDocument(string title = null)
+        private ContentDocument NewDocument(string title = null)
         {
-            infoPanel = null;
+            _infoPanel = null;
+            _costDetailsPanel = null;
             if (kryptonNavigator1 == null) return null;
             var oldPage = kryptonNavigator1.Pages.FirstOrDefault(x => x.Text == title);
             if (oldPage != null)
             {
-                kryptonNavigator1.SelectedPage = oldPage;
                 if (oldPage.Controls.Count > 0 && oldPage.Controls[0] is ContentDocument xDoc)
                 {
-                    infoPanel = xDoc.InfoPanel;
+                    _infoPanel = xDoc.InfoPanel;
+                    kryptonNavigator1.SelectedPage = oldPage;
+                    return xDoc;
                 }
-                return oldPage;
             }
-            var tmp = new ContentDocument();
-            //tmp.Resize += OnMainformResize;
-            infoPanel = tmp.InfoPanel;
-            var page = NewPage(title ?? "Cost", 0, tmp);
+            var newDoc = new ContentDocument();
+            _infoPanel = newDoc.InfoPanel;
+            var page = NewPage(title ?? "Cost", newDoc);
             kryptonNavigator1.Pages.Add(page);
             kryptonNavigator1.SelectedPage = page;
-            return page;
+            return newDoc;
         }
 
         private void RibbonAppButtonExit_Click(object sender, EventArgs e)
@@ -790,5 +791,9 @@ namespace DU_Industry_Tool
             e.Cell.Button.PreviousButtonDisplay = ButtonDisplay.Hide;
         }
 
+        private void KryptonNavigator1OnSelectedPageChanged(object sender, EventArgs e)
+        {
+            OnMainformResize(sender, e);
+        }
     } // Mainform
 }

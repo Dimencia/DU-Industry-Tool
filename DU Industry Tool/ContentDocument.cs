@@ -19,11 +19,12 @@ namespace DU_Industry_Tool
             InitializeComponent();
         }
 
-        public FlowLayoutPanel InfoPanel => this.infoPanel;
+        public FlowLayoutPanel InfoPanel { get; private set; }
+        public FlowLayoutPanel CostDetailsPanel { get; set; }
 
         private void ContentDocument_Load(object sender, EventArgs e)
         {
-            Console.WriteLine("ContentDocument_Load");
+            //Console.WriteLine("ContentDocument_Load");
         }
     }
 }

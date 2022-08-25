@@ -861,7 +861,8 @@
     },
     "MiningUnits":{
         "Id": "08d8a31f-4ff8-49fc-8db6-ac6e49ab44d3",
-        "ParentId": "08d8a31f-4ff2-4c9f-883c-0a8b2b6033e7",
+        "ParentId-OLD": "08d8a31f-4ff2-4c9f-883c-0a8b2b6033e7",
+        "ParentId": "08d8a31f-4f3a-485c-8c71-4d0379da4e2e",
         "Name": "Mining Units"
     },
     "Industry5":{
@@ -1642,7 +1643,7 @@
     "AmmoMissileSmall":{
         "Id": "08d8a31f-4f28-4e61-8a5b-b547d929897b",
         "ParentId": "08d8a31f-4f24-4003-8f22-36b20b656792",
-        "Name": "Missile S Ammo"
+        "Name": "Missile Ammo S"
     },
     "AmmoMissileMediumKinetic":{
         "Id": "08d8a31f-4f28-46f5-81af-ffdb1a69f60a",
@@ -1657,7 +1658,7 @@
     "AmmoMissileMedium":{
         "Id": "08d8a31f-4f27-487e-8833-89885bf191b0",
         "ParentId": "08d8a31f-4f24-4003-8f22-36b20b656792",
-        "Name": "Missile M Ammo"
+        "Name": "Missile Ammo M"
     },
     "AmmoMissileLargeKinetic":{
         "Id": "08d8a31f-4f27-419d-8247-d7b99f7d6200",
@@ -1707,7 +1708,7 @@
     "AmmoLaserSmall":{
         "Id": "08d8a31f-4f22-4c7b-8da6-bfe32e428fde",
         "ParentId": "08d8a31f-4f1e-407b-8b4c-db4b164afa90",
-        "Name": "Laser S Ammo"
+        "Name": "Laser Ammo S"
     },
     "AmmoLaserMediumThermic":{
         "Id": "08d8a31f-4f22-4615-87de-ac192a16114b",
