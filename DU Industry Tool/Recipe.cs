@@ -42,6 +42,10 @@ namespace DU_Industry_Tool
         public ulong NqId { get; set; } // Different from Id... for markets
         public string SchemaType { get; set; }
         public double SchemaPrice { get; set; }
+        public double? UnitMass { get; set; }
+        public double? UnitVolume { get; set; }
+        public bool Nanocraftable { get; set; }
+        public string Size { get; set; }
     }
 
     public class IngredientRecipe : SchematicRecipe
@@ -94,19 +98,6 @@ namespace DU_Industry_Tool
         public int BatchTime { get; set; } // seconds
     }
 
-    public class TempSheet
-    {
-        public string Name { get; set; }
-        public string RecordId { get; set; }
-        public List<ProductDetail> Products { get; set; }
-        public string Key { get; set; }
-    }
-
-    public class Injection
-    {
-        public ulong NqId { get; set; }
-    }
-
     public class DuLuaSchematic
     {
         [DataMember(Name="id")]
@@ -117,8 +108,6 @@ namespace DU_Industry_Tool
 
     public class DuLuaItem
     {
-        //[DataMember(Name="key")]
-        //public string Key { get; set; }
         [DataMember(Name="id")]
         public string Id { get; set; }
         [DataMember(Name="tier")]
@@ -137,5 +126,31 @@ namespace DU_Industry_Tool
         public string Description { get; set; }
         [DataMember(Name="schematics")]
         public List<DuLuaSchematic> Schematics { get; set; }
+    }
+
+    public class DuLuaRecipe
+    {
+        [DataMember(Name="id")]
+        public string Id { get; set; }
+        [DataMember(Name="tier")]
+        public int Tier { get; set; }
+        [DataMember(Name="time")]
+        public int Time { get; set; }
+        [DataMember(Name="nanocraftable")]
+        public bool Nanocraftable { get; set; }
+        [DataMember(Name="ingredients")]
+        public List<DuLuaSubItem> Ingredients { get; set; }
+        [DataMember(Name="products")]
+        public List<DuLuaSubItem> Products { get; set; }
+    }
+
+    public class DuLuaSubItem
+    {
+        [DataMember(Name="quantity")]
+        public double Quantity { get; set; }
+        [DataMember(Name="id")]
+        public ulong Id { get; set; }
+        [DataMember(Name="displayNameWithSize")]
+        public string DisplayNameWithSize { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Windows.Forms;
 using ComponentFactory.Krypton.Navigator;
 
@@ -42,6 +43,7 @@ namespace DU_Industry_Tool
             this.buttonFilterToMarket = new ComponentFactory.Krypton.Toolkit.KryptonContextMenuItem();
             this.buttonExportToSpreadsheet = new ComponentFactory.Krypton.Toolkit.KryptonContextMenuItem();
             this.buttonFactoryBreakdownForSelected = new ComponentFactory.Krypton.Toolkit.KryptonContextMenuItem();
+            this.buttonConvertLua2JsonFile = new ComponentFactory.Krypton.Toolkit.KryptonContextMenuItem();
             this.ribbonAppButtonExit = new ComponentFactory.Krypton.Toolkit.KryptonContextMenuItem();
             this.kryptonDockableWorkspace = new ComponentFactory.Krypton.Docking.KryptonDockableWorkspace();
             this.kryptonWorkspaceCell1 = new ComponentFactory.Krypton.Workspace.KryptonWorkspaceCell();
@@ -82,6 +84,7 @@ namespace DU_Industry_Tool
             this.buttonFilterToMarket,
             this.buttonExportToSpreadsheet,
             this.buttonFactoryBreakdownForSelected,
+            this.buttonConvertLua2JsonFile,
             this.ribbonAppButtonExit});
             this.kryptonRibbon.RibbonAppButton.AppButtonShowRecentDocs = false;
             this.kryptonRibbon.SelectedContext = null;
@@ -124,6 +127,11 @@ namespace DU_Industry_Tool
             // 
             this.buttonFactoryBreakdownForSelected.Text = "&Factory Breakdown for Selected";
             this.buttonFactoryBreakdownForSelected.Click += new System.EventHandler(this.FactoryBreakdownForSelectedToolStripMenuItem_Click);
+            // 
+            // buttonConvertLua2JsonFile
+            // 
+            this.buttonConvertLua2JsonFile.Text = "&Convert LUA table file to JSON file";
+            this.buttonConvertLua2JsonFile.Click += new System.EventHandler(this.ConvertLua2JsonFile_Click);
             // 
             // ribbonAppButtonExit
             // 
@@ -349,6 +357,7 @@ namespace DU_Industry_Tool
         private ComponentFactory.Krypton.Toolkit.KryptonContextMenuItem buttonFilterToMarket;
         private ComponentFactory.Krypton.Toolkit.KryptonContextMenuItem buttonExportToSpreadsheet;
         private ComponentFactory.Krypton.Toolkit.KryptonContextMenuItem buttonFactoryBreakdownForSelected;
+        private ComponentFactory.Krypton.Toolkit.KryptonContextMenuItem buttonConvertLua2JsonFile;
         private ComponentFactory.Krypton.Toolkit.KryptonManager kryptonManager;
         private ComponentFactory.Krypton.Navigator.KryptonNavigator kryptonNavigator1;
         private ComponentFactory.Krypton.Docking.KryptonDockingManager kryptonDockingManager;

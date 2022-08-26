@@ -22,7 +22,8 @@ namespace DU_Industry_Tool
         private SortedDictionary<string, Tuple<int,double>> _sumSchemClass; // Sums for each schematic class
         private double _schematicsCost = 0;
 
-        private readonly SortedDictionary<string, DuLuaItem> _luaItems; // Full list of item Id's with name
+        private readonly SortedDictionary<string, DuLuaItem> _luaItems; // List of items from du-lua.dev
+        private readonly SortedDictionary<string, DuLuaRecipe> _luaRecipes; // List of recipes from du-lua.dev
         public readonly SortedDictionary<string, SchematicRecipe> Recipes; // Global list of all our recipes, from the json
         public readonly Dictionary<string, Group> Groups;
         public List<Ore> Ores { get; } = new List<Ore>();
@@ -31,7 +32,7 @@ namespace DU_Industry_Tool
 
         public List<Talent> Talents { get; } = new List<Talent>();
 
-        public List<string> Groupnames { get; } = new List<string>(200);
+        public List<string> Groupnames { get; } = new List<string>(370);
 
         public StringBuilder CostResults { get; private set; }
 
@@ -291,30 +292,18 @@ namespace DU_Industry_Tool
             // Load @jericho's awesome list of ID's to be able to cross-check our recipes
             // Item dump from https://du-lua.dev/#/items
             var dmp = false;
+            var dmpRcp = false;
 
-            // Conversion needs a manual fix, should only be used in special cases!
+            // NOTE: conversion needs a manual fix, should only be used in special cases!
             if (File.Exists("items_api_dump.lua") &&
                 MessageBox.Show("Convert items lua file to json?", "Conversion", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
-                var sb = new StringBuilder(File.ReadAllText("items_api_dump.lua"));
-                sb.Replace("_items=", "");
-                sb.Replace("[", "");
-                sb.Replace("]", "");
-                sb.Replace("displayNameWithSize=", "\"displayNameWithSize\"=");
-                sb.Replace("id=", "\"id\"=");
-                sb.Replace("tier=", "\"tier\"=");
-                sb.Replace("unitMass=", "\"unitMass\"=");
-                sb.Replace("unitVolume=", "\"unitVolume\"=");
-                sb.Replace("size=", "\"size\"=");
-                sb.Replace("description=", "\"description\"=");
-                sb.Replace("schematics=", "\"schematics\"=");
-                sb.Replace("products=", "\"products\"=");
-                sb.Replace("={}", "=[]");
-                sb.Replace("}}}", "}]}");
-                sb.Replace("}}", "}]");
-                sb.Replace("{{", "[{");
-                sb.Replace("=", ":");
-                File.WriteAllText("items_api_dump.json", sb.ToString());
+                dmp = ConvertLua2Json("items_api_dump");
+            }
+            if (File.Exists("recipes_api_dump.lua") &&
+                MessageBox.Show("Convert recipes lua file to json?", "Conversion", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            {
+                dmpRcp = ConvertLua2Json("recipes_api_dump");
             }
 
             if (File.Exists("items_api_dump.json"))
@@ -330,22 +319,96 @@ namespace DU_Industry_Tool
                 }
             }
 
+            if (File.Exists("recipes_api_dump.json"))
+            {
+                try
+                {
+                    _luaRecipes = JsonConvert.DeserializeObject<SortedDictionary<string, DuLuaRecipe>>(File.ReadAllText("recipes_api_dump.json"));
+                    dmpRcp = true;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+            }
+
             // Populate Keys, fix products and assign schematics
-            int ucount = 0;
-            int pcount = 0;
             foreach (var kvp in Recipes)
             {
+                kvp.Value.Key = kvp.Key;
                 var itemId = kvp.Value.NqId.ToString();
-                if (dmp && !_luaItems.ContainsKey(itemId))
+
+                // Check against Items from du-lua.dev (optional)
+                if (dmp)
                 {
-                    Debug.WriteLine("NqId NOT FOUND: "+itemId+ " Key: " + kvp.Key);
-                    itemId = kvp.Value.id.ToString();
-                    if (dmp && !_luaItems.ContainsKey(itemId))
+                    var dmpItem = _luaItems.FirstOrDefault(x => x.Key == itemId);
+                    if (dmpItem.Value != null)
                     {
-                        Debug.WriteLine("Id NOT FOUND: "+itemId+ " Key: " + kvp.Key);
+                        // Transfer updateable values and only protocol to debug console
+                        if (dmpItem.Value.DisplayNameWithSize != null && kvp.Value.Name != dmpItem.Value.DisplayNameWithSize)
+                        {
+                            Debug.WriteLine($"{kvp.Value.Name} Name to {dmpItem.Value.DisplayNameWithSize}");
+                            kvp.Value.Name = dmpItem.Value.DisplayNameWithSize;
+                        }
+                        if (kvp.Value.Level != dmpItem.Value.Tier)
+                        {
+                            Debug.WriteLine($"{kvp.Value.Name} Level {kvp.Value.Level} to {dmpItem.Value.Tier}");
+                        }
+                        kvp.Value.Level = dmpItem.Value.Tier;
+                        if (!string.IsNullOrEmpty(dmpItem.Value.Size) && kvp.Value.Size != dmpItem.Value.Size)
+                        {
+                            Debug.WriteLine($"{kvp.Value.Name} Size {kvp.Value.Size} to {dmpItem.Value.Size}");
+                        }
+                        kvp.Value.Size = dmpItem.Value.Size;
+                        if (kvp.Value.UnitMass != 0 && kvp.Value.UnitMass != dmpItem.Value.UnitMass)
+                        {
+                            Debug.WriteLine($"{kvp.Value.Name} UnitMass {kvp.Value.UnitMass:N2} to {dmpItem.Value.UnitMass:N2}");
+                        }
+                        kvp.Value.UnitMass = dmpItem.Value.UnitMass;
+                        if (kvp.Value.UnitVolume != 0 && kvp.Value.UnitVolume != dmpItem.Value.UnitVolume)
+                        {
+                            Debug.WriteLine($"{kvp.Value.Name} UnitVolume {kvp.Value.UnitVolume:N2} to {dmpItem.Value.UnitVolume:N2}");
+                        }
+                        kvp.Value.UnitVolume = dmpItem.Value.UnitVolume;
+                    }
+                    else
+                    {
+                        Debug.WriteLine("NqId NOT FOUND: "+itemId+ " Key: " + kvp.Key);
+                        itemId = kvp.Value.id.ToString();
+                        if (dmp && !_luaItems.ContainsKey(itemId))
+                        {
+                            Debug.WriteLine("Id NOT FOUND: "+itemId+ " Key: " + kvp.Key);
+                        }
                     }
                 }
-                kvp.Value.Key = kvp.Key;
+                // Check against Recipes from du-lua.dev (optional)
+                // and transfer usable values
+                if (dmpRcp)
+                {
+                    var dmpItem = _luaRecipes.FirstOrDefault(x =>
+                        x.Value.Products?.Count > 0 &&
+                        x.Value.Products[0].Id == kvp.Value.NqId);
+                    if (dmpItem.Value != null)
+                    {
+                        // Transfer updateable values and only protocol to debug console
+                        if (kvp.Value.Level != dmpItem.Value.Tier)
+                        {
+                            Debug.WriteLine($"{kvp.Value.Name} Level {kvp.Value.Level} to {dmpItem.Value.Tier}");
+                        }
+                        kvp.Value.Level = dmpItem.Value.Tier;
+                        if ((int)kvp.Value.Time != dmpItem.Value.Time)
+                        {
+                            Debug.WriteLine($"{kvp.Value.Name} Time {kvp.Value.Time} to {dmpItem.Value.Time}");
+                        }
+                        kvp.Value.Time = dmpItem.Value.Time;
+                        if (kvp.Value.Nanocraftable != dmpItem.Value.Nanocraftable)
+                        {
+                            Debug.WriteLine($"{kvp.Value.Name} Nanocraftable {kvp.Value.Nanocraftable} to {dmpItem.Value.Nanocraftable}");
+                        }
+                        kvp.Value.Nanocraftable = dmpItem.Value.Nanocraftable;
+                    }
+                }
+
                 // Fix names and some other details
                 if (kvp.Value.Name.Equals("Territory Unit", StringComparison.InvariantCultureIgnoreCase) ||
                     kvp.Value.Name.Equals("Territory Scanner", StringComparison.InvariantCultureIgnoreCase) ||
@@ -362,20 +425,12 @@ namespace DU_Industry_Tool
                 {
                     kvp.Value.Name += " XS";
                 }
-                if (kvp.Key.Equals("AmmoMissileExtraSmallAntimatterUncommon", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    kvp.Value.Level = 3;
-                }
-                if (kvp.Key.Equals("TerritoryUnitBasicSanctuary", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    kvp.Value.Level = 5;
-                }
+
                 var product = kvp.Value.Products?.SingleOrDefault(p => p.Type == kvp.Key);
                 if (product == null && kvp.Value.Products.Count > 0)
                 {
                     // Key was wrong, happens for many honeycombs
                     product = kvp.Value.Products.First();
-                    //Console.WriteLine(kvp.Value.Name +" key fixed.");
                 }
                 if (product != null)
                 {
@@ -389,6 +444,7 @@ namespace DU_Industry_Tool
                     }
                 }
 
+                // If item dump exists, do a special honeycomb check for wrong ID's
                 if (dmp && kvp.Key.StartsWith("hc"))
                 {
                     var luaItem = _luaItems.FirstOrDefault(x => x.Value.Description.StartsWith("Honeycomb") &&
@@ -413,6 +469,8 @@ namespace DU_Industry_Tool
                     MessageBox.Show(err);
                     continue;
                 }
+
+                //if (kvp.Value.Nanocraftable) Debug.WriteLine($"{kvp.Value.Name}");
 
                 if (kvp.Key.StartsWith("Catalyst") ||
                     kvp.Value.ParentGroupName == "Ore" ||
@@ -714,7 +772,6 @@ namespace DU_Industry_Tool
                         kvp.Value.SchemaType  = schemaClass.Key;
                         kvp.Value.SchemaPrice = schemaClass.Value.Cost;
                         Console.WriteLine($@"{kvp.Value.Name} = {kvp.Value.SchemaPrice} ({parentName})");
-                        ucount++;
                     }
                 }
                 else
@@ -727,7 +784,6 @@ namespace DU_Industry_Tool
                         kvp.Value.SchemaType  = schemaClass.Key;
                         kvp.Value.SchemaPrice = schemaClass.Value.Cost;
                         Console.WriteLine($@"{kvp.Value.Name} = {kvp.Value.SchemaPrice} ({parentName})");
-                        pcount++;
                     }
                 }
             }
@@ -809,48 +865,6 @@ namespace DU_Industry_Tool
                         }
                         continue;
                     }
-
-                    var category = "";
-                    //var newGroupId = Guid.Empty;
-                    //var newGroupName = "";
-                    //if (kvp.Value.Schematics.Count > 0)
-                    //{
-                    //    if (kvp.Value.Schematics[0].DisplayNameWithSize.Contains("Pure Honeycomb"))
-                    //    {
-                    //        category = "HU";
-                    //        newGroupId = new Guid("08d8a31f-5096-4b2e-8628-4658444b22b3");
-                    //        newGroupName = "Pure Honeycomb Materials";
-                    //    }
-                    //    else
-                    //    if (kvp.Value.Schematics[0].DisplayNameWithSize.Contains("Product Honeycomb"))
-                    //    {
-                    //        category = "HP";
-                    //        newGroupId = new Guid("08d8a31f-5052-4e93-8745-94083fae6f99");
-                    //        newGroupName = "Product Honeycomb Materials";
-                    //    }
-                    //    continue;
-                    //}
-                    if (category != "")
-                    {
-                        //    var r = Schematics.FirstOrDefault(x => x.Key == $"T{kvp.Value.Tier}{category}");
-                        //    if (r.Key != null)
-                        //    {
-                        //        var newItem = new SchematicRecipe
-                        //        {
-                        //            Key = kvp.Key,
-                        //            NqId = ulong.Parse(kvp.Key),
-                        //            Level = kvp.Value.Tier,
-                        //            Name = kvp.Value.DisplayNameWithSize,
-                        //            SchemaType = r.Key,
-                        //            SchemaPrice = r.Value.Cost,
-                        //            GroupId = newGroupId,
-                        //            ParentGroupName = newGroupName
-                        //        };
-                        //        Recipes.Add(kvp.Key, newItem);
-                        //        Debug.WriteLine("ADDED recipe: " + itemId + " Key: " + kvp.Value.DisplayNameWithSize);
-                        //        continue;
-                        //    }
-                    }
                     idLine += itemId + ", ";
                     idCount++;
                     if (idCount > 5)
@@ -864,10 +878,19 @@ namespace DU_Industry_Tool
                 Debug.WriteLine(missingIds.ToString());
             }
 
+            if (dmpRcp)
+            {
+                var missingRec = _luaRecipes.Values.Where(x =>
+                    x.Products?.Count > 0 && Recipes.Values.All(y => y.NqId != x.Products[0].Id)).OrderBy(x => x.Products[0].DisplayNameWithSize);
+                foreach (var missing in missingRec)
+                {
+                    Debug.WriteLine(missing.Products[0].Id.ToString().PadRight(30)+" "+missing.Products[0].DisplayNameWithSize);
+                }
+            }
+
             SaveRecipes();
 
             // Is this a "part", but not in any recipe?
-            //var invalidEntries = 0;
             foreach (var kvp in Recipes.Values.Where(x => x.ParentGroupName.EndsWith(" parts", StringComparison.InvariantCultureIgnoreCase)))
             {
                 var found = Recipes.Values.Any(x => x.Ingredients?.Any(y =>
@@ -875,10 +898,8 @@ namespace DU_Industry_Tool
                 if (!found)
                 {
                     kvp.Name += " (!)";
-                    //invalidEntries++;
                 }
             }
-            //MessageBox.Show(invalidEntries.ToString() + " unused recipes found!");
 
             if (progressBar != null)
                 progressBar.Value = 70;
@@ -1081,31 +1102,13 @@ namespace DU_Industry_Tool
         public List<IngredientRecipe> GetIngredientRecipes(string key, double quantity = 1)
         {
             var results = new List<IngredientRecipe>();
-
-            double inputMultiplier = 0;
-            double outputMultiplier = 0;
-            double outputAdder = 0;
-
             var recipe = Recipes[key];
 
             // Skip catalysts entirely tho.
-            if (Groups.Values.FirstOrDefault(g => g.Id == recipe.GroupId)?.Name == "Catalyst")
+            if (key.StartsWith("catalyst", StringComparison.InvariantCultureIgnoreCase))
                 return results;
 
-            foreach (var talent in Talents.Where(t => t.ApplicableRecipes.Contains(recipe.Key)))
-            {
-                if (talent.InputTalent)
-                {
-                    inputMultiplier += talent.Multiplier * talent.Value;
-                    //Console.WriteLine("Applying talent " + talent.Name + " to " + recipe.Name + " for input mult " + (talent.Multiplier * talent.Value));
-                }
-                else
-                {
-                    //Console.WriteLine("Applying talent " + talent.Name + " to " + recipe.Name + " for output mult " + (talent.Multiplier * talent.Value) + " and adder " + (talent.Addition * talent.Value));
-                    outputMultiplier += talent.Multiplier * talent.Value;
-                    outputAdder += talent.Addition * talent.Value;
-                }
-            }
+            GetTalentsForKey(key, out var inputMultiplier, out var inputAdder, out var outputMultiplier, out var outputAdder);
 
             inputMultiplier += 1;
             outputMultiplier += 1;
@@ -1117,7 +1120,8 @@ namespace DU_Industry_Tool
                     continue;
 
                 var entry = Groups.Values.FirstOrDefault(g => g.Id != Guid.Empty && g.Id == resRecipe.GroupId);
-                if (string.IsNullOrEmpty(entry?.Name) || entry.Name == "Catalyst")
+                if (string.IsNullOrEmpty(entry?.Name) || entry.Name.StartsWith("catalyst", StringComparison.InvariantCultureIgnoreCase) ||
+                    recipe.Products?.Any() != true)
                     continue;
 
                 resRecipe.Quantity = (ingredient.Quantity * inputMultiplier / (recipe.Products.First().Quantity * outputMultiplier + outputAdder)) * quantity;
@@ -1410,7 +1414,7 @@ namespace DU_Industry_Tool
                 _sumIngredients.Add(name, amount);
         }
 
-        private void GetTalentsForKey(string key, out double inputMultiplier, out double inputAdder, out double outputMultiplier, out double outputAdder)
+        public void GetTalentsForKey(string key, out double inputMultiplier, out double inputAdder, out double outputMultiplier, out double outputAdder)
         {
             inputMultiplier = 1;
             inputAdder = 0;
@@ -1554,6 +1558,48 @@ namespace DU_Industry_Tool
             var group = Groups.Values.FirstOrDefault(g => g.Id == id);
             if (group == null) return null;
             return group.ParentId != Guid.Empty ? Groups.Values.FirstOrDefault(g => g.Id == group.ParentId)?.Name ?? "xxx": group.Name;
+        }
+
+        private static bool ConvertLua2Json(string filename)
+        {
+            try
+            {
+                var sb = new StringBuilder(File.ReadAllText(filename+".lua"));
+                sb.Replace("_items=", "");
+                sb.Replace("_recipes=", "");
+                sb.Replace("[", "");
+                sb.Replace("]", "");
+                sb.Replace("id=", "\"id\"=");
+                sb.Replace("displayNameWithSize=", "\"displayNameWithSize\"=");
+                sb.Replace("description=", "\"description\"=");
+                sb.Replace("size=", "\"size\"=");
+                sb.Replace("tier=", "\"tier\"=");
+                sb.Replace("time=", "\"time\"=");
+                sb.Replace("quantity=", "\"quantity\"=");
+                sb.Replace("iconPath=", "\"iconPath\"=");
+                sb.Replace("nanocraftable=", "\"nanocraftable\"=");
+                sb.Replace("unitMass=", "\"unitMass\"=");
+                sb.Replace("unitVolume=", "\"unitVolume\"=");
+                sb.Replace("size=", "\"size\"=");
+                sb.Replace("description=", "\"description\"=");
+                sb.Replace("ingredients=", "\"ingredients\"=");
+                sb.Replace("products=", "\"products\"=");
+                sb.Replace("schematics=", "\"schematics\"=");
+                sb.Replace("={}", "=[]");
+                sb.Replace("}}}", "}]}");
+                sb.Replace("}}", "}]");
+                sb.Replace("{{", "[{");
+                sb.Replace("=", ":");
+                sb.Remove(sb.Length - 1, 1);
+                sb.Append("}");
+                File.WriteAllText(filename+".json", sb.ToString());
+                return true;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return false;
+            }
         }
     }
 }
