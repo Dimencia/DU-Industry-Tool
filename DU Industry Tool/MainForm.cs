@@ -98,36 +98,22 @@ namespace DU_Industry_Tool
             _infoPanel.Controls.Clear();
             _infoPanel.BorderStyle = BorderStyle.None;
 
-            //if (recipe.ParentGroupName.EndsWith(" Parts", StringComparison.InvariantCultureIgnoreCase))
-            //{
-            //    var containedIn = Manager.Recipes.Values.Any(x =>
-            //        true == x.Ingredients?.Any(y => y.Name.Equals(recipe.Name, StringComparison.InvariantCultureIgnoreCase)));
-            //    if (containedIn)
-            //    {
-            //        var btn = new Button
-            //        {
-            //            Left = 4,
-            //            Top = 4,
-            //            Text = "Part of...",
-            //            Height = 24,
-            //            Width = 80,
-            //            Tag = recipe.Name
-            //        };
-            //        btn.Click += BtnPartOfClick;
-            //        _infoPanel.Controls.Add(btn);
-            //    }
-            //}
-
-            var header = new Label
+            _infoPanel.Controls.Add(new Label
             {
                 AutoSize = false,
-                Font = new Font(_infoPanel.Font.FontFamily, 12, FontStyle.Bold),
-                Padding = new Padding(0, 5, 4, 5),
+                Font = new Font(_infoPanel.Font.FontFamily, 12f, FontStyle.Bold),
+                Padding = new Padding(2, 5, 4, 2),
                 Text = $"{recipe.Name} (T{recipe.Level})",
-                Height = 50,
+                Height = 30,
                 Width = 370
-            };
-            _infoPanel.Controls.Add(header);
+            });
+            _infoPanel.Controls.Add(new Label
+            {
+                AutoSize = true,
+                Font = new Font(_infoPanel.Font.FontFamily, 9f),
+                Padding = new Padding(4, 0, 4, 5),
+                Text = $"Mass: {recipe.UnitMass:N1} Volume: {recipe.UnitVolume:N1}"+(recipe.Nanocraftable ? "  Nanocraftable!" : "")
+            });
 
             var costPanel = new FlowLayoutPanel
             {
@@ -667,28 +653,41 @@ namespace DU_Industry_Tool
                 int row = 2;
                 var ingredients = _manager.GetIngredientRecipes(recipe.Key).OrderByDescending(i => i.Level).GroupBy(i => i.Name);
                 if (!ingredients?.Any() == true) return;
-                foreach(var group in ingredients)
+                try
                 {
-                    worksheet.Cell(row, 3).Value = group.First().Name;
-                    worksheet.Cell(row, 4).FormulaA1 = $"=B2*{group.Sum(g => g.Quantity)}";
-                    double outputMult = 1;
-                    var talents = _manager.Talents.Where(t => t.InputTalent == false && t.ApplicableRecipes.Contains(group.First().Name));
-                    if (talents?.Any() == true)
-                        outputMult += talents.Sum(t => t.Multiplier);
-                    if (group.First().ParentGroupName != "Ore")
+                    foreach(var group in ingredients)
                     {
-                        worksheet.Cell(row, 5).Value = (86400 / group.First().Time) *
-                                                       group.First().Products.First().Quantity * outputMult;
-                        worksheet.Cell(row, 6).FormulaR1C1 = "=R[0]C[-2]/R[0]C[-1]";
-                        worksheet.Cell(row, 7).FormulaR1C1 = "=ROUNDUP(R[0]C[-1])";
+                        var groupSum = group.Sum(g => g.Quantity);
+                        worksheet.Cell(row, 3).Value = group.First().Name;
+                        worksheet.Cell(row, 4).FormulaA1 = $"=B2*{groupSum}";
+                        double outputMult = 1;
+                        var talents = _manager.Talents.Where(t => t.InputTalent == false && t.ApplicableRecipes.Contains(group.First().Name));
+                        if (talents?.Any() == true)
+                            outputMult += talents.Sum(t => t.Multiplier);
+                        if (group.First().ParentGroupName != "Ore")
+                        {
+                            worksheet.Cell(row, 5).Value = (86400 / group.First().Time) * group.First().Products.First().Quantity * outputMult;
+                            worksheet.Cell(row, 6).FormulaR1C1 = "=R[0]C[-2]/R[0]C[-1]";
+                            worksheet.Cell(row, 7).FormulaR1C1 = "=ROUNDUP(R[0]C[-1])";
+                        }
+                        row++;
                     }
-                    row++;
-                }
 
-                worksheet.ColumnsUsed().AdjustToContents();
-                workbook.SaveAs($"Factory Plan {recipe.Name} {DateTime.Now.ToString("yyyy-MM-dd")}.xlsx");
-                MessageBox.Show($"Exported to 'Factory Plan {recipe.Name} { DateTime.Now.ToString("yyyy-MM-dd")}.xlsx' in the same folder as the exe!");
+                    worksheet.ColumnsUsed().AdjustToContents();
+                    workbook.SaveAs($"Factory Plan {recipe.Name} {DateTime.Now.ToString("yyyy-MM-dd")}.xlsx");
+                    MessageBox.Show($"Exported to 'Factory Plan {recipe.Name} { DateTime.Now.ToString("yyyy-MM-dd")}.xlsx' in the same folder as the exe!");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Sorry, an error occured during calculation!", "ERROR", MessageBoxButtons.OK);
+                    Console.WriteLine(ex);
+                }
             }
+        }
+
+        private void ConvertLua2JsonFile_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Coming soon... ;)");
         }
 
         private void OnMainformResize(object sender, EventArgs e)

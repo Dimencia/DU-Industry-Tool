@@ -3,9 +3,14 @@
 - Schematic cost is now maintained and associated with the
 corresponding pures, products and elements.
 - Calculated cost output now also lists schematic costs per
-tier and category
+tier and category.
 - Display of Total Ingredients List.
 - Listing of all "superior" recipes which have the item as an ingredient.
+- Display of mass, volume and nanocraftable status.
+
+Big thanks to Jericho1060 for making available item/recipe data dumps via
+his website https://du-lua.dev which helped me a lot to update the data displayed!
+
 Updated by tobitege
 
 # DU-Industry-Tool

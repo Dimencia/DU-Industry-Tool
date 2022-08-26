@@ -1340,6 +1340,31 @@
         "ParentId": "08d8a31f-4f48-4300-8654-9df9d94ac9b7",
         "Name": "Cannons"
     },
+    "WeaponStasisExtraSmall":{
+        "Id": "08d8a31f-4f5a-4d90-837a-1d4438685371",
+        "ParentId": "08d8a31f-4f5a-4d90-837a-1d443868537a",
+        "Name": "Statis Weapon XS"
+    },
+    "WeaponStasisSmall":{
+        "Id": "08d8a31f-4f5a-4d90-837a-1d4438685372",
+        "ParentId": "08d8a31f-4f5a-4d90-837a-1d443868537a",
+        "Name": "Stasis Weapons S"
+    },
+    "WeaponStasisMedium":{
+        "Id": "08d8a31f-4f5a-4d90-837a-1d4438685373",
+        "ParentId": "08d8a31f-4f5a-4d90-837a-1d443868537a",
+        "Name": "Stasis Weapons M"
+    },
+    "WeaponStasisLarge":{
+        "Id": "08d8a31f-4f5a-4d90-837a-1d4438685374",
+        "ParentId": "08d8a31f-4f5a-4d90-837a-1d443868537a",
+        "Name": "Stasis Weapons L"
+    },
+    "WeaponStasis":{
+        "Id": "08d8a31f-4f5a-4d90-837a-1d443868537a",
+        "ParentId": "08d8a31f-4f48-4300-8654-9df9d94ac9b7",
+        "Name": "Stasis Weapons"
+    },
     "GunUnit":{
         "Id": "08d8a31f-4f59-462b-8a16-e188296bc455",
         "ParentId": "08d8a31f-4f48-4300-8654-9df9d94ac9b7",
@@ -1578,7 +1603,7 @@
     "AmmoRailgunSmall":{
         "Id": "08d8a31f-4f2f-4997-872c-301999174196",
         "ParentId": "08d8a31f-4f2a-464a-8e66-b3418339c6a0",
-        "Name": "Railgun S Ammo"
+        "Name": "Railgun Ammo S"
     },
     "AmmoRailgunMediumElectromagnetic":{
         "Id": "08d8a31f-4f2f-40da-8e9b-bbbfeda8b3c9",
@@ -1608,7 +1633,7 @@
     "AmmoRailgunLarge":{
         "Id": "08d8a31f-4f2c-4608-8eb0-0e008c9a09a7",
         "ParentId": "08d8a31f-4f2a-464a-8e66-b3418339c6a0",
-        "Name": "Railgun L Ammo"
+        "Name": "Railgun Ammo L"
     },
     "AmmoRailgunExtraSmallElectromagnetic":{
         "Id": "08d8a31f-4f2b-4e09-89c7-5cb964e28d87",
@@ -1773,7 +1798,7 @@
     "AmmoCannonSmall":{
         "Id": "08d8a31f-4f1d-40cb-8a97-d2dcdf3b74cb",
         "ParentId": "08d8a31f-4f19-493e-81ab-79281894af58",
-        "Name": "Cannon S Ammo"
+        "Name": "Cannon Ammo S"
     },
     "AmmoCannonMediumThermic":{
         "Id": "08d8a31f-4f1c-4b6f-8418-a697f901f64a",
@@ -1824,6 +1849,31 @@
         "Id": "08d8a31f-4f19-493e-81ab-79281894af58",
         "ParentId": "08d8a31f-4f19-43b4-8283-170f6728bfd9",
         "Name": "Cannon Ammo"
+    },
+    "AmmoStasisExtraSmall":{
+        "Id": "08d8a31f-4f2a-464a-8e66-a3418339c6a1",
+        "ParentId": "08d8a31f-4f2a-464a-8e66-a3418339c6a0",
+        "Name": "Stasis Ammo XS"
+    },
+    "AmmoStasisSmall":{
+        "Id": "08d8a31f-4f2a-464a-8e66-a3418339c6a2",
+        "ParentId": "08d8a31f-4f2a-464a-8e66-a3418339c6a0",
+        "Name": "Stasis Ammo S"
+    },
+    "AmmoStasisMedium":{
+        "Id": "08d8a31f-4f2a-464a-8e66-a3418339c6a3",
+        "ParentId": "08d8a31f-4f2a-464a-8e66-a3418339c6a0",
+        "Name": "Stasis Ammo M"
+    },
+    "AmmoStasisLarge":{
+        "Id": "08d8a31f-4f2a-464a-8e66-a3418339c6a4",
+        "ParentId": "08d8a31f-4f2a-464a-8e66-a3418339c6a0",
+        "Name": "Stasis Ammo L"
+    },
+    "AmmoStasis":{
+        "Id": "08d8a31f-4f2a-464a-8e66-a3418339c6a0",
+        "ParentId": "08d8a31f-4f19-43b4-8283-170f6728bfd9",
+        "Name": "Stasis Ammo"
     },
     "Ammo":{
         "Id": "08d8a31f-4f19-43b4-8283-170f6728bfd9",
