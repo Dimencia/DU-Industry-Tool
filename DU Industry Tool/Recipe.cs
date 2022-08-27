@@ -60,6 +60,7 @@ namespace DU_Industry_Tool
         public string Name { get; set; }
         [JsonIgnore]
         public string SchemaType { get; set; }
+        public int Level { get; set; }
     }
 
     public class Group

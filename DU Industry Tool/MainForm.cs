@@ -79,7 +79,7 @@ namespace DU_Industry_Tool
 
         private void SelectRecipe(object sender, TreeNode e)
         {
-            if (!(e.Tag is SchematicRecipe recipe))
+            if (!(e?.Tag is SchematicRecipe recipe))
             {
                 return;
             }
@@ -112,7 +112,7 @@ namespace DU_Industry_Tool
                 AutoSize = true,
                 Font = new Font(_infoPanel.Font.FontFamily, 9f),
                 Padding = new Padding(4, 0, 4, 5),
-                Text = $"Mass: {recipe.UnitMass:N1} Volume: {recipe.UnitVolume:N1}"+(recipe.Nanocraftable ? "  Nanocraftable!" : "")
+                Text = $"Unit mass: {recipe.UnitMass:N1} volume: {recipe.UnitVolume:N1}"+(recipe.Nanocraftable ? "  *nanocraftable*" : "")
             });
 
             var costPanel = new FlowLayoutPanel
@@ -290,7 +290,10 @@ namespace DU_Industry_Tool
             }
             _infoPanel.Controls.Add(grid);
 
-            if (recipe.ParentGroupName.EndsWith(" Parts", StringComparison.InvariantCultureIgnoreCase))
+            if (recipe.ParentGroupName.EndsWith("Ore", StringComparison.InvariantCultureIgnoreCase) ||
+                recipe.ParentGroupName.EndsWith("Parts", StringComparison.InvariantCultureIgnoreCase) ||
+                recipe.ParentGroupName.EndsWith("Product", StringComparison.InvariantCultureIgnoreCase) ||
+                recipe.ParentGroupName.EndsWith("Pure", StringComparison.InvariantCultureIgnoreCase))
             {
                 var containedIn = _manager.Recipes.Values.Where(x =>
                     true == x.Ingredients?.Any(y => y.Name.Equals(recipe.Name, StringComparison.InvariantCultureIgnoreCase)));
