@@ -4,7 +4,7 @@ namespace DU_Industry_Tool
 {
     partial class ContentDocument
     {
-        private ComponentFactory.Krypton.Toolkit.KryptonPanel kryptonPanel;
+        private Krypton.Toolkit.KryptonPanel kryptonPanel;
 
         /// <summary> 
         /// Required designer variable.
@@ -34,7 +34,7 @@ namespace DU_Industry_Tool
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ContentDocument));
             this.InfoPanel = new System.Windows.Forms.FlowLayoutPanel();
-            this.kryptonPanel = new ComponentFactory.Krypton.Toolkit.KryptonPanel();
+            this.kryptonPanel = new Krypton.Toolkit.KryptonPanel();
             ((System.ComponentModel.ISupportInitialize)(this.kryptonPanel)).BeginInit();
             this.kryptonPanel.SuspendLayout();
             this.SuspendLayout();
@@ -60,7 +60,7 @@ namespace DU_Industry_Tool
             this.kryptonPanel.Location = new System.Drawing.Point(0, 0);
             this.kryptonPanel.Name = "kryptonPanel";
             this.kryptonPanel.Padding = new System.Windows.Forms.Padding(0);
-            this.kryptonPanel.PanelBackStyle = ComponentFactory.Krypton.Toolkit.PaletteBackStyle.ControlClient;
+            this.kryptonPanel.PanelBackStyle = Krypton.Toolkit.PaletteBackStyle.ControlClient;
             this.kryptonPanel.Size = new System.Drawing.Size(600, 600);
             this.kryptonPanel.TabIndex = 1;
             // 

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using ComponentFactory.Krypton.Toolkit;
+using Krypton.Toolkit;
 
 namespace DU_Industry_Tool
 {
@@ -35,7 +35,7 @@ namespace DU_Industry_Tool
                     if (noBrowser.ErrorCode==-2147467259)
                         KryptonMessageBox.Show(noBrowser.Message,"Error",MessageBoxButtons.OK,MessageBoxIcon.Error);
                 }
-                catch (System.Exception other)
+                catch (System.Exception)
                 {
                     KryptonMessageBox.Show("Sorry, could not open the URL!","Error",MessageBoxButtons.OK,MessageBoxIcon.Error);
                 }

@@ -30,16 +30,16 @@ namespace DU_Industry_Tool
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AboutForm));
-            this.panelLeft = new ComponentFactory.Krypton.Toolkit.KryptonPanel();
+            this.panelLeft = new Krypton.Toolkit.KryptonPanel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.TobiReleasesLink = new ComponentFactory.Krypton.Toolkit.KryptonLinkLabel();
-            this.kryptonLabel1 = new ComponentFactory.Krypton.Toolkit.KryptonLabel();
-            this.kryptonLabel2 = new ComponentFactory.Krypton.Toolkit.KryptonLabel();
-            this.discordLink = new ComponentFactory.Krypton.Toolkit.KryptonLinkLabel();
-            this.OkButton = new ComponentFactory.Krypton.Toolkit.KryptonButton();
-            this.labelMain = new ComponentFactory.Krypton.Toolkit.KryptonLabel();
-            this.kryptonLabel4 = new ComponentFactory.Krypton.Toolkit.KryptonLabel();
-            this.DimenciaGithubLink = new ComponentFactory.Krypton.Toolkit.KryptonLinkLabel();
+            this.TobiReleasesLink = new Krypton.Toolkit.KryptonLinkLabel();
+            this.kryptonLabel1 = new Krypton.Toolkit.KryptonLabel();
+            this.kryptonLabel2 = new Krypton.Toolkit.KryptonLabel();
+            this.discordLink = new Krypton.Toolkit.KryptonLinkLabel();
+            this.OkButton = new Krypton.Toolkit.KryptonButton();
+            this.labelMain = new Krypton.Toolkit.KryptonLabel();
+            this.kryptonLabel4 = new Krypton.Toolkit.KryptonLabel();
+            this.DimenciaGithubLink = new Krypton.Toolkit.KryptonLinkLabel();
             ((System.ComponentModel.ISupportInitialize)(this.panelLeft)).BeginInit();
             this.panelLeft.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -51,7 +51,7 @@ namespace DU_Industry_Tool
             this.panelLeft.Dock = System.Windows.Forms.DockStyle.Left;
             this.panelLeft.Location = new System.Drawing.Point(0, 0);
             this.panelLeft.Name = "panelLeft";
-            this.panelLeft.PanelBackStyle = ComponentFactory.Krypton.Toolkit.PaletteBackStyle.FormMain;
+            this.panelLeft.PanelBackStyle = Krypton.Toolkit.PaletteBackStyle.FormMain;
             this.panelLeft.Size = new System.Drawing.Size(90, 415);
             this.panelLeft.TabIndex = 0;
             // 
@@ -117,7 +117,7 @@ namespace DU_Industry_Tool
             // 
             // labelMain
             // 
-            this.labelMain.LabelStyle = ComponentFactory.Krypton.Toolkit.LabelStyle.TitleControl;
+            this.labelMain.LabelStyle = Krypton.Toolkit.LabelStyle.TitleControl;
             this.labelMain.Location = new System.Drawing.Point(96, 12);
             this.labelMain.Name = "labelMain";
             this.labelMain.Size = new System.Drawing.Size(545, 155);
@@ -175,15 +175,15 @@ namespace DU_Industry_Tool
 
         #endregion
 
-        private ComponentFactory.Krypton.Toolkit.KryptonPanel panelLeft;
+        private Krypton.Toolkit.KryptonPanel panelLeft;
         private System.Windows.Forms.PictureBox pictureBox1;
-        private ComponentFactory.Krypton.Toolkit.KryptonLinkLabel TobiReleasesLink;
-        private ComponentFactory.Krypton.Toolkit.KryptonLabel kryptonLabel1;
-        private ComponentFactory.Krypton.Toolkit.KryptonLabel kryptonLabel2;
-        private ComponentFactory.Krypton.Toolkit.KryptonLinkLabel discordLink;
-        private ComponentFactory.Krypton.Toolkit.KryptonButton OkButton;
-        private ComponentFactory.Krypton.Toolkit.KryptonLabel labelMain;
-        private ComponentFactory.Krypton.Toolkit.KryptonLabel kryptonLabel4;
-        private ComponentFactory.Krypton.Toolkit.KryptonLinkLabel DimenciaGithubLink;
+        private Krypton.Toolkit.KryptonLinkLabel TobiReleasesLink;
+        private Krypton.Toolkit.KryptonLabel kryptonLabel1;
+        private Krypton.Toolkit.KryptonLabel kryptonLabel2;
+        private Krypton.Toolkit.KryptonLinkLabel discordLink;
+        private Krypton.Toolkit.KryptonButton OkButton;
+        private Krypton.Toolkit.KryptonLabel labelMain;
+        private Krypton.Toolkit.KryptonLabel kryptonLabel4;
+        private Krypton.Toolkit.KryptonLinkLabel DimenciaGithubLink;
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Windows.Forms;
-using ComponentFactory.Krypton.Navigator;
+using Krypton.Navigator;
 
 namespace DU_Industry_Tool
 {
@@ -35,33 +35,33 @@ namespace DU_Industry_Tool
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            this.kryptonRibbon = new ComponentFactory.Krypton.Ribbon.KryptonRibbon();
-            this.kryptonRibbonTab2 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab();
-            this.kryptonRibbonGroup5 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup();
-            this.kryptonRibbonGroupLines1 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines();
-            this.kryptonRibbonGroupButton19 = new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton();
-            this.buttonOreValues = new ComponentFactory.Krypton.Toolkit.KryptonContextMenuItem();
-            this.buttonSchematicValues = new ComponentFactory.Krypton.Toolkit.KryptonContextMenuItem();
-            this.buttonSkillLevels = new ComponentFactory.Krypton.Toolkit.KryptonContextMenuItem();
-            this.buttonUpdateMarketValues = new ComponentFactory.Krypton.Toolkit.KryptonContextMenuItem();
-            this.buttonFilterToMarket = new ComponentFactory.Krypton.Toolkit.KryptonContextMenuItem();
-            this.buttonExportToSpreadsheet = new ComponentFactory.Krypton.Toolkit.KryptonContextMenuItem();
-            this.buttonFactoryBreakdownForSelected = new ComponentFactory.Krypton.Toolkit.KryptonContextMenuItem();
-            this.buttonConvertLua2JsonFile = new ComponentFactory.Krypton.Toolkit.KryptonContextMenuItem();
-            this.ribbonAppButtonExit = new ComponentFactory.Krypton.Toolkit.KryptonContextMenuItem();
-            this.kryptonDockableWorkspace = new ComponentFactory.Krypton.Docking.KryptonDockableWorkspace();
-            this.kryptonWorkspaceCell1 = new ComponentFactory.Krypton.Workspace.KryptonWorkspaceCell();
-            this.kryptonPage1 = new ComponentFactory.Krypton.Navigator.KryptonPage();
+            this.kryptonRibbon = new Krypton.Ribbon.KryptonRibbon();
+            this.kryptonRibbonTab2 = new Krypton.Ribbon.KryptonRibbonTab();
+            this.kryptonRibbonGroup5 = new Krypton.Ribbon.KryptonRibbonGroup();
+            this.kryptonRibbonGroupLines1 = new Krypton.Ribbon.KryptonRibbonGroupLines();
+            this.kryptonRibbonGroupButton19 = new Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.buttonOreValues = new Krypton.Toolkit.KryptonContextMenuItem();
+            this.buttonSchematicValues = new Krypton.Toolkit.KryptonContextMenuItem();
+            this.buttonSkillLevels = new Krypton.Toolkit.KryptonContextMenuItem();
+            this.buttonUpdateMarketValues = new Krypton.Toolkit.KryptonContextMenuItem();
+            this.buttonFilterToMarket = new Krypton.Toolkit.KryptonContextMenuItem();
+            this.buttonExportToSpreadsheet = new Krypton.Toolkit.KryptonContextMenuItem();
+            this.buttonFactoryBreakdownForSelected = new Krypton.Toolkit.KryptonContextMenuItem();
+            this.buttonConvertLua2JsonFile = new Krypton.Toolkit.KryptonContextMenuItem();
+            this.ribbonAppButtonExit = new Krypton.Toolkit.KryptonContextMenuItem();
+            this.kryptonDockableWorkspace = new Krypton.Docking.KryptonDockableWorkspace();
+            this.kryptonWorkspaceCell1 = new Krypton.Workspace.KryptonWorkspaceCell();
+            this.kryptonPage1 = new Krypton.Navigator.KryptonPage();
             this.searchPanel = new System.Windows.Forms.FlowLayoutPanel();
             this.SearchBox = new System.Windows.Forms.TextBox();
             this.SearchButton = new System.Windows.Forms.Button();
             this.QuantityBox = new System.Windows.Forms.ComboBox();
             this.PreviousButton = new System.Windows.Forms.Button();
             this.treeView = new System.Windows.Forms.TreeView();
-            this.kryptonNavigator1 = new ComponentFactory.Krypton.Navigator.KryptonNavigator();
+            this.kryptonNavigator1 = new Krypton.Navigator.KryptonNavigator();
             this.imageListSmall = new System.Windows.Forms.ImageList(this.components);
-            this.kryptonDockingManager = new ComponentFactory.Krypton.Docking.KryptonDockingManager();
-            this.kryptonManager = new ComponentFactory.Krypton.Toolkit.KryptonManager(this.components);
+            this.kryptonDockingManager = new Krypton.Docking.KryptonDockingManager();
+            this.kryptonManager = new Krypton.Toolkit.KryptonManager(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.kryptonRibbon)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.kryptonDockableWorkspace)).BeginInit();
             this.kryptonDockableWorkspace.SuspendLayout();
@@ -80,7 +80,7 @@ namespace DU_Industry_Tool
             this.kryptonRibbon.InDesignHelperMode = true;
             this.kryptonRibbon.MinimizedMode = true;
             this.kryptonRibbon.Name = "kryptonRibbon";
-            this.kryptonRibbon.RibbonAppButton.AppButtonMenuItems.AddRange(new ComponentFactory.Krypton.Toolkit.KryptonContextMenuItemBase[] {
+            this.kryptonRibbon.RibbonAppButton.AppButtonMenuItems.AddRange(new Krypton.Toolkit.KryptonContextMenuItemBase[] {
             this.buttonOreValues,
             this.buttonSchematicValues,
             this.buttonSkillLevels,
@@ -90,7 +90,7 @@ namespace DU_Industry_Tool
             this.buttonFactoryBreakdownForSelected,
             this.buttonConvertLua2JsonFile,
             this.ribbonAppButtonExit});
-            this.kryptonRibbon.RibbonTabs.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonTab[] {
+            this.kryptonRibbon.RibbonTabs.AddRange(new Krypton.Ribbon.KryptonRibbonTab[] {
                 this.kryptonRibbonTab2});
             this.kryptonRibbon.RibbonAppButton.AppButtonShowRecentDocs = false;
             this.kryptonRibbon.SelectedContext = null;
@@ -101,7 +101,7 @@ namespace DU_Industry_Tool
             // 
             // kryptonRibbonTab2
             // 
-            this.kryptonRibbonTab2.Groups.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup[] {
+            this.kryptonRibbonTab2.Groups.AddRange(new Krypton.Ribbon.KryptonRibbonGroup[] {
                 this.kryptonRibbonGroup5});
             this.kryptonRibbonTab2.KeyTip = "O";
             this.kryptonRibbonTab2.Text = "Options";
@@ -109,7 +109,7 @@ namespace DU_Industry_Tool
             // kryptonRibbonGroup5
             // 
             this.kryptonRibbonGroup5.Image = ((System.Drawing.Image)(resources.GetObject("Blocks.Image")));
-            this.kryptonRibbonGroup5.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupContainer[] {
+            this.kryptonRibbonGroup5.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupContainer[] {
                 this.kryptonRibbonGroupLines1});
             this.kryptonRibbonGroup5.KeyTipDialogLauncher = "OA";
             this.kryptonRibbonGroup5.KeyTipGroup = "A";
@@ -117,9 +117,9 @@ namespace DU_Industry_Tool
             // 
             // kryptonRibbonGroupLines1
             // 
-            this.kryptonRibbonGroupLines1.Items.AddRange(new ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupItem[] {
+            this.kryptonRibbonGroupLines1.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupItem[] {
                 this.kryptonRibbonGroupButton19});
-            this.kryptonRibbonGroupLines1.MinimumSize = ComponentFactory.Krypton.Ribbon.GroupItemSize.Large;
+            this.kryptonRibbonGroupLines1.MinimumSize = Krypton.Ribbon.GroupItemSize.Large;
             // 
             // kryptonRibbonGroupButton19
             // 
@@ -176,24 +176,24 @@ namespace DU_Industry_Tool
             // kryptonDockableWorkspace
             // 
             this.kryptonDockableWorkspace.AutoHiddenHost = false;
-            this.kryptonDockableWorkspace.CompactFlags = ComponentFactory.Krypton.Workspace.CompactFlags.AtLeastOneVisibleCell;
-            this.kryptonDockableWorkspace.ContainerBackStyle = ComponentFactory.Krypton.Toolkit.PaletteBackStyle.TabDock;
+            this.kryptonDockableWorkspace.CompactFlags = Krypton.Workspace.CompactFlags.AtLeastOneVisibleCell;
+            this.kryptonDockableWorkspace.ContainerBackStyle = Krypton.Toolkit.PaletteBackStyle.TabDock;
             this.kryptonDockableWorkspace.Dock = System.Windows.Forms.DockStyle.Left;
             this.kryptonDockableWorkspace.Location = new System.Drawing.Point(0, 134);
             this.kryptonDockableWorkspace.MinimumSize = new System.Drawing.Size(300, 400);
             this.kryptonDockableWorkspace.Name = "kryptonDockableWorkspace";
-            this.kryptonDockableWorkspace.PaletteMode = ComponentFactory.Krypton.Toolkit.PaletteMode.Office2007Blue;
+            this.kryptonDockableWorkspace.PaletteMode = Krypton.Toolkit.PaletteMode.Office2007Blue;
             this.kryptonDockableWorkspace.Root.Children.AddRange(new System.ComponentModel.Component[] {
             this.kryptonWorkspaceCell1});
             this.kryptonDockableWorkspace.Root.UniqueName = "D51970B3EA2C496AD51970B3EA2C496A";
             this.kryptonDockableWorkspace.Root.WorkspaceControl = this.kryptonDockableWorkspace;
-            this.kryptonDockableWorkspace.SeparatorStyle = ComponentFactory.Krypton.Toolkit.SeparatorStyle.HighProfile;
+            this.kryptonDockableWorkspace.SeparatorStyle = Krypton.Toolkit.SeparatorStyle.HighProfile;
             this.kryptonDockableWorkspace.ShowMaximizeButton = false;
             this.kryptonDockableWorkspace.Size = new System.Drawing.Size(420, 1120);
             this.kryptonDockableWorkspace.SplitterWidth = 8;
             this.kryptonDockableWorkspace.TabIndex = 0;
             this.kryptonDockableWorkspace.TabStop = true;
-            this.kryptonDockableWorkspace.WorkspaceCellAdding += new System.EventHandler<ComponentFactory.Krypton.Workspace.WorkspaceCellEventArgs>(this.KryptonDockableWorkspace_WorkspaceCellAdding);
+            this.kryptonDockableWorkspace.WorkspaceCellAdding += new System.EventHandler<Krypton.Workspace.WorkspaceCellEventArgs>(this.KryptonDockableWorkspace_WorkspaceCellAdding);
             // 
             // kryptonWorkspaceCell1
             // 
@@ -201,19 +201,19 @@ namespace DU_Industry_Tool
             this.kryptonWorkspaceCell1.AllowPageReorder = false;
             this.kryptonWorkspaceCell1.AllowTabFocus = false;
             this.kryptonWorkspaceCell1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.kryptonWorkspaceCell1.Button.ButtonDisplayLogic = ComponentFactory.Krypton.Navigator.ButtonDisplayLogic.None;
-            this.kryptonWorkspaceCell1.Button.CloseButtonAction = ComponentFactory.Krypton.Navigator.CloseButtonAction.None;
-            this.kryptonWorkspaceCell1.Button.CloseButtonDisplay = ComponentFactory.Krypton.Navigator.ButtonDisplay.Hide;
-            this.kryptonWorkspaceCell1.Button.ContextButtonAction = ComponentFactory.Krypton.Navigator.ContextButtonAction.None;
-            this.kryptonWorkspaceCell1.Button.ContextButtonDisplay = ComponentFactory.Krypton.Navigator.ButtonDisplay.Hide;
-            this.kryptonWorkspaceCell1.Button.NextButtonAction = ComponentFactory.Krypton.Navigator.DirectionButtonAction.None;
-            this.kryptonWorkspaceCell1.Button.NextButtonDisplay = ComponentFactory.Krypton.Navigator.ButtonDisplay.Hide;
-            this.kryptonWorkspaceCell1.Button.PreviousButtonAction = ComponentFactory.Krypton.Navigator.DirectionButtonAction.None;
-            this.kryptonWorkspaceCell1.Button.PreviousButtonDisplay = ComponentFactory.Krypton.Navigator.ButtonDisplay.Hide;
+            this.kryptonWorkspaceCell1.Button.ButtonDisplayLogic = Krypton.Navigator.ButtonDisplayLogic.None;
+            this.kryptonWorkspaceCell1.Button.CloseButtonAction = Krypton.Navigator.CloseButtonAction.None;
+            this.kryptonWorkspaceCell1.Button.CloseButtonDisplay = Krypton.Navigator.ButtonDisplay.Hide;
+            this.kryptonWorkspaceCell1.Button.ContextButtonAction = Krypton.Navigator.ContextButtonAction.None;
+            this.kryptonWorkspaceCell1.Button.ContextButtonDisplay = Krypton.Navigator.ButtonDisplay.Hide;
+            this.kryptonWorkspaceCell1.Button.NextButtonAction = Krypton.Navigator.DirectionButtonAction.None;
+            this.kryptonWorkspaceCell1.Button.NextButtonDisplay = Krypton.Navigator.ButtonDisplay.Hide;
+            this.kryptonWorkspaceCell1.Button.PreviousButtonAction = Krypton.Navigator.DirectionButtonAction.None;
+            this.kryptonWorkspaceCell1.Button.PreviousButtonDisplay = Krypton.Navigator.ButtonDisplay.Hide;
             this.kryptonWorkspaceCell1.MaximumSize = new System.Drawing.Size(500, 0);
             this.kryptonWorkspaceCell1.Name = "kryptonWorkspaceCell1";
-            this.kryptonWorkspaceCell1.NavigatorMode = ComponentFactory.Krypton.Navigator.NavigatorMode.BarCheckButtonGroupOutside;
-            this.kryptonWorkspaceCell1.Pages.AddRange(new ComponentFactory.Krypton.Navigator.KryptonPage[] {
+            this.kryptonWorkspaceCell1.NavigatorMode = Krypton.Navigator.NavigatorMode.BarCheckButtonGroupOutside;
+            this.kryptonWorkspaceCell1.Pages.AddRange(new Krypton.Navigator.KryptonPage[] {
             this.kryptonPage1});
             this.kryptonWorkspaceCell1.SelectedIndex = 0;
             this.kryptonWorkspaceCell1.Size = new System.Drawing.Size(420, 1120);
@@ -324,15 +324,15 @@ namespace DU_Industry_Tool
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.kryptonNavigator1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.kryptonNavigator1.Bar.BarMultiline = ComponentFactory.Krypton.Navigator.BarMultiline.Multiline;
-            this.kryptonNavigator1.Bar.TabBorderStyle = ComponentFactory.Krypton.Toolkit.TabBorderStyle.RoundedEqualMedium;
+            this.kryptonNavigator1.Bar.BarMultiline = Krypton.Navigator.BarMultiline.Multiline;
+            this.kryptonNavigator1.Bar.TabBorderStyle = Krypton.Toolkit.TabBorderStyle.RoundedEqualMedium;
             this.kryptonNavigator1.Location = new System.Drawing.Point(422, 62);
             this.kryptonNavigator1.Name = "kryptonNavigator1";
             this.kryptonNavigator1.Size = new System.Drawing.Size(1422, 930);
-            this.kryptonNavigator1.StateCommon.CheckButton.Content.Image.ImageH = ComponentFactory.Krypton.Toolkit.PaletteRelativeAlign.Center;
-            this.kryptonNavigator1.StateCommon.CheckButton.Content.Image.ImageV = ComponentFactory.Krypton.Toolkit.PaletteRelativeAlign.Center;
-            this.kryptonNavigator1.StateCommon.CheckButton.Content.ShortText.TextH = ComponentFactory.Krypton.Toolkit.PaletteRelativeAlign.Center;
-            this.kryptonNavigator1.StateCommon.CheckButton.Content.ShortText.TextV = ComponentFactory.Krypton.Toolkit.PaletteRelativeAlign.Far;
+            this.kryptonNavigator1.StateCommon.CheckButton.Content.Image.ImageH = Krypton.Toolkit.PaletteRelativeAlign.Center;
+            this.kryptonNavigator1.StateCommon.CheckButton.Content.Image.ImageV = Krypton.Toolkit.PaletteRelativeAlign.Center;
+            this.kryptonNavigator1.StateCommon.CheckButton.Content.ShortText.TextH = Krypton.Toolkit.PaletteRelativeAlign.Center;
+            this.kryptonNavigator1.StateCommon.CheckButton.Content.ShortText.TextV = Krypton.Toolkit.PaletteRelativeAlign.Far;
             this.kryptonNavigator1.TabIndex = 7;
             this.kryptonNavigator1.Text = "kryptonNavigator1";
             this.kryptonNavigator1.SelectedPageChanged += KryptonNavigator1OnSelectedPageChanged;
@@ -347,7 +347,7 @@ namespace DU_Industry_Tool
             // 
             // kryptonManager
             // 
-            this.kryptonManager.GlobalPaletteMode = ComponentFactory.Krypton.Toolkit.PaletteModeManager.Office2010Silver;
+            this.kryptonManager.GlobalPaletteMode = Krypton.Toolkit.PaletteModeManager.Office2010Silver;
             // 
             // MainForm
             // 
@@ -383,26 +383,26 @@ namespace DU_Industry_Tool
         #endregion
 
         private System.Windows.Forms.ImageList imageListSmall;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbon kryptonRibbon;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonTab kryptonRibbonTab2;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroup kryptonRibbonGroup5;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupLines kryptonRibbonGroupLines1;
-        private ComponentFactory.Krypton.Ribbon.KryptonRibbonGroupButton kryptonRibbonGroupButton19;
-        private ComponentFactory.Krypton.Toolkit.KryptonContextMenuItem ribbonAppButtonExit;
-        private ComponentFactory.Krypton.Toolkit.KryptonContextMenuItem buttonOreValues;
-        private ComponentFactory.Krypton.Toolkit.KryptonContextMenuItem buttonSchematicValues;
-        private ComponentFactory.Krypton.Toolkit.KryptonContextMenuItem buttonSkillLevels;
-        private ComponentFactory.Krypton.Toolkit.KryptonContextMenuItem buttonUpdateMarketValues;
-        private ComponentFactory.Krypton.Toolkit.KryptonContextMenuItem buttonFilterToMarket;
-        private ComponentFactory.Krypton.Toolkit.KryptonContextMenuItem buttonExportToSpreadsheet;
-        private ComponentFactory.Krypton.Toolkit.KryptonContextMenuItem buttonFactoryBreakdownForSelected;
-        private ComponentFactory.Krypton.Toolkit.KryptonContextMenuItem buttonConvertLua2JsonFile;
-        private ComponentFactory.Krypton.Toolkit.KryptonManager kryptonManager;
-        private ComponentFactory.Krypton.Navigator.KryptonNavigator kryptonNavigator1;
-        private ComponentFactory.Krypton.Docking.KryptonDockingManager kryptonDockingManager;
-        private ComponentFactory.Krypton.Docking.KryptonDockableWorkspace kryptonDockableWorkspace;
-        private ComponentFactory.Krypton.Workspace.KryptonWorkspaceCell kryptonWorkspaceCell1;
-        private ComponentFactory.Krypton.Navigator.KryptonPage kryptonPage1;
+        private Krypton.Ribbon.KryptonRibbon kryptonRibbon;
+        private Krypton.Ribbon.KryptonRibbonTab kryptonRibbonTab2;
+        private Krypton.Ribbon.KryptonRibbonGroup kryptonRibbonGroup5;
+        private Krypton.Ribbon.KryptonRibbonGroupLines kryptonRibbonGroupLines1;
+        private Krypton.Ribbon.KryptonRibbonGroupButton kryptonRibbonGroupButton19;
+        private Krypton.Toolkit.KryptonContextMenuItem ribbonAppButtonExit;
+        private Krypton.Toolkit.KryptonContextMenuItem buttonOreValues;
+        private Krypton.Toolkit.KryptonContextMenuItem buttonSchematicValues;
+        private Krypton.Toolkit.KryptonContextMenuItem buttonSkillLevels;
+        private Krypton.Toolkit.KryptonContextMenuItem buttonUpdateMarketValues;
+        private Krypton.Toolkit.KryptonContextMenuItem buttonFilterToMarket;
+        private Krypton.Toolkit.KryptonContextMenuItem buttonExportToSpreadsheet;
+        private Krypton.Toolkit.KryptonContextMenuItem buttonFactoryBreakdownForSelected;
+        private Krypton.Toolkit.KryptonContextMenuItem buttonConvertLua2JsonFile;
+        private Krypton.Toolkit.KryptonManager kryptonManager;
+        private Krypton.Navigator.KryptonNavigator kryptonNavigator1;
+        private Krypton.Docking.KryptonDockingManager kryptonDockingManager;
+        private Krypton.Docking.KryptonDockableWorkspace kryptonDockableWorkspace;
+        private Krypton.Workspace.KryptonWorkspaceCell kryptonWorkspaceCell1;
+        private Krypton.Navigator.KryptonPage kryptonPage1;
         private System.Windows.Forms.TreeView treeView;
         private System.Windows.Forms.FlowLayoutPanel searchPanel;
         private System.Windows.Forms.TextBox SearchBox;
