@@ -22,6 +22,7 @@ jobs:
           run: |
             set /p Version=<Version.txt
             echo ::set-output name=VERSION::%Version%
+            echo ${{ steps.get_version.outputs.VERSION }}
 
         - name: Restore Packages
           run: nuget restore DU-Industry-Tool.sln
