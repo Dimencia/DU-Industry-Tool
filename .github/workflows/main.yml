@@ -33,6 +33,7 @@ jobs:
         - name: Archive Release
           uses: thedoctor0/zip-release@main
           with:
+             path: DU-Industry-Tool
              type: 'zip'
              filename: DU-Industry-Tool${{steps.versionReader.outputs.VERSION}}.zip
              exclusions: '*.git* /*node_modules/* *.vs* *.user .editorconfig'
