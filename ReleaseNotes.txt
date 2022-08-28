@@ -1,3 +1,8 @@
+Version 0.700
+
+- Renamed solution and application (dashes instead of blanks)
+- Preparing for build actions
+
 Version 0.640
 
 - Byproducts are now linked as well
