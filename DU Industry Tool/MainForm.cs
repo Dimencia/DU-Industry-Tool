@@ -10,6 +10,7 @@ using ComponentFactory.Krypton.Navigator;
 using ComponentFactory.Krypton.Workspace;
 using ComponentFactory.Krypton.Docking;
 using DocumentFormat.OpenXml.Drawing.ChartDrawing;
+using DU_Industry_Tool.Properties;
 
 // ReSharper disable LocalizableElement
 
@@ -79,7 +80,7 @@ namespace DU_Industry_Tool
 
         private void SelectRecipe(object sender, TreeNode e)
         {
-            if (!(e.Tag is SchematicRecipe recipe))
+            if (!(e?.Tag is SchematicRecipe recipe))
             {
                 return;
             }
@@ -112,7 +113,7 @@ namespace DU_Industry_Tool
                 AutoSize = true,
                 Font = new Font(_infoPanel.Font.FontFamily, 9f),
                 Padding = new Padding(4, 0, 4, 5),
-                Text = $"Mass: {recipe.UnitMass:N1} Volume: {recipe.UnitVolume:N1}"+(recipe.Nanocraftable ? "  Nanocraftable!" : "")
+                Text = $"Unit mass: {recipe.UnitMass:N1} volume: {recipe.UnitVolume:N1}"+(recipe.Nanocraftable ? "  *nanocraftable*" : "")
             });
 
             var costPanel = new FlowLayoutPanel
@@ -290,7 +291,11 @@ namespace DU_Industry_Tool
             }
             _infoPanel.Controls.Add(grid);
 
-            if (recipe.ParentGroupName.EndsWith(" Parts", StringComparison.InvariantCultureIgnoreCase))
+            if (recipe.ParentGroupName.EndsWith("Ore", StringComparison.InvariantCultureIgnoreCase) ||
+                recipe.ParentGroupName.EndsWith("Parts", StringComparison.InvariantCultureIgnoreCase) ||
+                recipe.ParentGroupName.EndsWith("Product", StringComparison.InvariantCultureIgnoreCase) ||
+                recipe.ParentGroupName.EndsWith("Pure", StringComparison.InvariantCultureIgnoreCase) ||
+                recipe.Name.StartsWith("Relic Plasma", StringComparison.InvariantCultureIgnoreCase))
             {
                 var containedIn = _manager.Recipes.Values.Where(x =>
                     true == x.Ingredients?.Any(y => y.Name.Equals(recipe.Name, StringComparison.InvariantCultureIgnoreCase)));
@@ -725,6 +730,7 @@ namespace DU_Industry_Tool
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            this.buttonConvertLua2JsonFile.Visible = false;
             // Setup docking functionality
             var w = kryptonDockingManager.ManageWorkspace(kryptonDockableWorkspace);
             kryptonDockingManager.ManageControl(kryptonPage1, w);
@@ -793,6 +799,12 @@ namespace DU_Industry_Tool
         private void KryptonNavigator1OnSelectedPageChanged(object sender, EventArgs e)
         {
             OnMainformResize(sender, e);
+        }
+
+        private void RibbonButtonAboutClick(object sender, EventArgs e)
+        {
+            var form = new AboutForm();
+            form.ShowDialog(this);
         }
     } // Mainform
 }

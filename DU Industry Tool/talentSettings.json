@@ -1,5 +1,171 @@
 [
     {
+        "Name": "Advanced Ammo L Productivity",
+        "Multiplier": 0.0,
+        "Addition": 1,
+        "ApplicableRecipes": [
+        
+            "AmmoCannonLargeKineticAdvancedAgile",
+            "AmmoCannonLargeKineticAdvancedDefense",
+            "AmmoCannonLargeKineticAdvancedHeavy",
+            "AmmoCannonLargeKineticAdvancedPrecision",
+            "AmmoCannonLargeThermicAdvancedAgile",
+            "AmmoCannonLargeThermicAdvancedDefense",
+            "AmmoCannonLargeThermicAdvancedHeavy",
+            "AmmoCannonLargeThermicAdvancedPrecision",
+            "AmmoLaserLargeElectromagneticAdvancedAgile",
+            "AmmoLaserLargeElectromagneticAdvancedDefense",
+            "AmmoLaserLargeElectromagneticAdvancedHeavy",
+            "AmmoLaserLargeElectromagneticAdvancedPrecision",
+            "AmmoLaserLargeThermicAdvancedAgile",
+            "AmmoLaserLargeThermicAdvancedDefense",
+            "AmmoLaserLargeThermicAdvancedHeavy",
+            "AmmoLaserLargeThermicAdvancedPrecision",
+            "AmmoMissileLargeAntimatterAdvancedAgile",
+            "AmmoMissileLargeAntimatterAdvancedDefense",
+            "AmmoMissileLargeAntimatterAdvancedHeavy",
+            "AmmoMissileLargeAntimatterAdvancedPrecision",
+            "AmmoMissileLargeKineticAdvancedAgile",
+            "AmmoMissileLargeKineticAdvancedDefense",
+            "AmmoMissileLargeKineticAdvancedHeavy",
+            "AmmoMissileLargeKineticAdvancedPrecision",
+            "AmmoRailgunLargeAntimatterAdvancedAgile",
+            "AmmoRailgunLargeAntimatterAdvancedDefense",
+            "AmmoRailgunLargeAntimatterAdvancedHeavy",
+            "AmmoRailgunLargeAntimatterAdvancedPrecision",
+            "AmmoRailgunLargeElectromagneticAdvancedAgile",
+            "AmmoRailgunLargeElectromagneticAdvancedDefense",
+            "AmmoRailgunLargeElectromagneticAdvancedHeavy",
+            "AmmoRailgunLargeElectromagneticAdvancedPrecision"
+        ],
+        "Value": 0,
+        "InputTalent": false
+    },
+    {
+        "Name": "Advanced Ammo M Productivity",
+        "Multiplier": 0.0,
+        "Addition": 1,
+        "ApplicableRecipes": [
+            "AmmoCannonMediumKineticAdvancedAgile",
+            "AmmoCannonMediumKineticAdvancedDefense",
+            "AmmoCannonMediumKineticAdvancedHeavy",
+            "AmmoCannonMediumKineticAdvancedPrecision",
+            "AmmoCannonMediumThermicAdvancedAgile",
+            "AmmoCannonMediumThermicAdvancedDefense",
+            "AmmoCannonMediumThermicAdvancedHeavy",
+            "AmmoCannonMediumThermicAdvancedPrecision",
+            "AmmoLaserMediumElectromagneticAdvancedAgile",
+            "AmmoLaserMediumElectromagneticAdvancedDefense",
+            "AmmoLaserMediumElectromagneticAdvancedHeavy",
+            "AmmoLaserMediumElectromagneticAdvancedPrecision",
+            "AmmoLaserMediumThermicAdvancedAgile",
+            "AmmoLaserMediumThermicAdvancedDefense",
+            "AmmoLaserMediumThermicAdvancedHeavy",
+            "AmmoLaserMediumThermicAdvancedPrecision",
+            "AmmoMissileMediumAntimatterAdvancedAgile",
+            "AmmoMissileMediumAntimatterAdvancedDefense",
+            "AmmoMissileMediumAntimatterAdvancedHeavy",
+            "AmmoMissileMediumAntimatterAdvancedPrecision",
+            "AmmoMissileMediumKineticAdvancedAgile",
+            "AmmoMissileMediumKineticAdvancedDefense",
+            "AmmoMissileMediumKineticAdvancedHeavy",
+            "AmmoMissileMediumKineticAdvancedPrecision",
+            "AmmoRailgunMediumAntimatterAdvancedAgile",
+            "AmmoRailgunMediumAntimatterAdvancedDefense",
+            "AmmoRailgunMediumAntimatterAdvancedHeavy",
+            "AmmoRailgunMediumAntimatterAdvancedPrecision",
+            "AmmoRailgunMediumElectromagneticAdvancedAgile",
+            "AmmoRailgunMediumElectromagneticAdvancedDefense",
+            "AmmoRailgunMediumElectromagneticAdvancedHeavy",
+            "AmmoRailgunMediumElectromagneticAdvancedPrecision"
+        ],
+        "Value": 0,
+        "InputTalent": false
+    },
+    {
+        "Name": "Advanced Ammo S Productivity",
+        "Multiplier": 0.0,
+        "Addition": 1,
+        "ApplicableRecipes": [
+            "AmmoCannonSmallKineticAdvancedAgile",
+            "AmmoCannonSmallKineticAdvancedDefense",
+            "AmmoCannonSmallKineticAdvancedHeavy",
+            "AmmoCannonSmallKineticAdvancedPrecision",
+            "AmmoCannonSmallThermicAdvancedAgile",
+            "AmmoCannonSmallThermicAdvancedDefense",
+            "AmmoCannonSmallThermicAdvancedHeavy",
+            "AmmoCannonSmallThermicAdvancedPrecision",
+            "AmmoLaserSmallElectromagneticAdvancedAgile",
+            "AmmoLaserSmallElectromagneticAdvancedDefense",
+            "AmmoLaserSmallElectromagneticAdvancedHeavy",
+            "AmmoLaserSmallElectromagneticAdvancedPrecision",
+            "AmmoLaserSmallThermicAdvancedAgile",
+            "AmmoLaserSmallThermicAdvancedDefense",
+            "AmmoLaserSmallThermicAdvancedHeavy",
+            "AmmoLaserSmallThermicAdvancedPrecision",
+            "AmmoMissileSmallAntimatterAdvancedAgile",
+            "AmmoMissileSmallAntimatterAdvancedDefense",
+            "AmmoMissileSmallAntimatterAdvancedHeavy",
+            "AmmoMissileSmallAntimatterAdvancedPrecision",
+            "AmmoMissileSmallKineticAdvancedAgile",
+            "AmmoMissileSmallKineticAdvancedDefense",
+            "AmmoMissileSmallKineticAdvancedHeavy",
+            "AmmoMissileSmallKineticAdvancedPrecision",
+            "AmmoRailgunSmallAntimatterAdvancedAgile",
+            "AmmoRailgunSmallAntimatterAdvancedDefense",
+            "AmmoRailgunSmallAntimatterAdvancedHeavy",
+            "AmmoRailgunSmallAntimatterAdvancedPrecision",
+            "AmmoRailgunSmallElectromagneticAdvancedAgile",
+            "AmmoRailgunSmallElectromagneticAdvancedDefense",
+            "AmmoRailgunSmallElectromagneticAdvancedHeavy",
+            "AmmoRailgunSmallElectromagneticAdvancedPrecision"
+        ],
+        "Value": 0,
+        "InputTalent": false
+    },
+    {
+        "Name": "Advanced Ammo XS Productivity",
+        "Multiplier": 0.0,
+        "Addition": 1,
+        "ApplicableRecipes": [
+            "AmmoCannonExtraSmallKineticAdvancedAgile",
+            "AmmoCannonExtraSmallKineticAdvancedDefense",
+            "AmmoCannonExtraSmallKineticAdvancedHeavy",
+            "AmmoCannonExtraSmallKineticAdvancedPrecision",
+            "AmmoCannonExtraSmallThermicAdvancedAgile",
+            "AmmoCannonExtraSmallThermicAdvancedDefense",
+            "AmmoCannonExtraSmallThermicAdvancedHeavy",
+            "AmmoCannonExtraSmallThermicAdvancedPrecision",
+            "AmmoLaserExtraSmallElectromagneticAdvancedAgile",
+            "AmmoLaserExtraSmallElectromagneticAdvancedDefense",
+            "AmmoLaserExtraSmallElectromagneticAdvancedHeavy",
+            "AmmoLaserExtraSmallElectromagneticAdvancedPrecision",
+            "AmmoLaserExtraSmallThermicAdvancedAgile",
+            "AmmoLaserExtraSmallThermicAdvancedDefense",
+            "AmmoLaserExtraSmallThermicAdvancedHeavy",
+            "AmmoLaserExtraSmallThermicAdvancedPrecision",
+            "AmmoMissileExtraSmallAntimatterAdvancedAgile",
+            "AmmoMissileExtraSmallAntimatterAdvancedDefense",
+            "AmmoMissileExtraSmallAntimatterAdvancedHeavy",
+            "AmmoMissileExtraSmallAntimatterAdvancedPrecision",
+            "AmmoMissileExtraSmallAntimatterUncommon",
+            "AmmoMissileExtraSmallKineticAdvancedAgile",
+            "AmmoMissileExtraSmallKineticAdvancedDefense",
+            "AmmoMissileExtraSmallKineticAdvancedHeavy",
+            "AmmoMissileExtraSmallKineticAdvancedPrecision",
+            "AmmoRailgunExtraSmallAntimatterAdvancedAgile",
+            "AmmoRailgunExtraSmallAntimatterAdvancedDefense",
+            "AmmoRailgunExtraSmallAntimatterAdvancedHeavy",
+            "AmmoRailgunExtraSmallAntimatterAdvancedPrecision",
+            "AmmoRailgunExtraSmallElectromagneticAdvancedAgile",
+            "AmmoRailgunExtraSmallElectromagneticAdvancedDefense",
+            "AmmoRailgunExtraSmallElectromagneticAdvancedHeavy",
+            "AmmoRailgunExtraSmallElectromagneticAdvancedPrecision"
+        ],
+        "Value": 0,
+        "InputTalent": false
+    },
+    {
         "Name": "Advanced glass product Productivity",
         "Multiplier": 0.03,
         "Addition": 0,
@@ -15,6 +181,34 @@
         "Addition": 0,
         "ApplicableRecipes": [
             "AdvancedGlassProduct"
+        ],
+        "Value": 0,
+        "InputTalent": true
+    },
+    {
+        "Name": "Advanced Intermediary Part Productivity",
+        "Multiplier": 0.0,
+        "Addition": 1,
+        "ApplicableRecipes": [
+            "component_3",
+            "connector_3",
+            "fixation_3",
+            "led_3",
+            "pipe_3",
+            "screw_3"
+        ],
+        "Value": 0,
+        "InputTalent": false
+    },
+    {
+        "Name": "Advanced Scrap Refinery",
+        "Multiplier": 0.0,
+        "Addition": -1,
+        "ApplicableRecipes": [
+            "LithiumScrap",
+            "NickelScrap",
+            "SilverScrap",
+            "SulfurScrap"
         ],
         "Value": 0,
         "InputTalent": true
@@ -80,26 +274,6 @@
         "InputTalent": true
     },
     {
-        "Name": "Pure Aluminium Productivity",
-        "Multiplier": 0.03,
-        "Addition": 0,
-        "ApplicableRecipes": [
-            "AluminiumPure"
-        ],
-        "Value": 0,
-        "InputTalent": false
-    },
-    {
-        "Name": "Pure Aluminium Ore Refining",
-        "Multiplier": -0.03,
-        "Addition": 0,
-        "ApplicableRecipes": [
-            "AluminiumPure"
-        ],
-        "Value": 0,
-        "InputTalent": true
-    },
-    {
         "Name": "Aluminium Scrap Productivity",
         "Multiplier": 0.03,
         "Addition": 0,
@@ -120,21 +294,49 @@
         "InputTalent": true
     },
     {
-        "Name": "Pure Calcium Productivity",
-        "Multiplier": 0.03,
+        "Name": "Atmospheric Fuels Productivity",
+        "Multiplier": 0.05,
         "Addition": 0,
         "ApplicableRecipes": [
-            "CalciumPure"
+            "Nitron"
         ],
         "Value": 0,
         "InputTalent": false
     },
     {
-        "Name": "Pure Calcium Ore Refining",
+        "Name": "Atmospheric Fuels Refinery",
         "Multiplier": -0.03,
         "Addition": 0,
         "ApplicableRecipes": [
-            "CalciumPure"
+            "Nitron"
+        ],
+        "Value": 0,
+        "InputTalent": true
+    },
+    {
+        "Name": "Basic Intermediary Part Productivity",
+        "Multiplier": 0.0,
+        "Addition": 1,
+        "ApplicableRecipes": [
+            "component_1",
+            "connector_1",
+            "fixation_1",
+            "led_1",
+            "pipe_1",
+            "screw_1"
+        ],
+        "Value": 0,
+        "InputTalent": false
+    },
+    {
+        "Name": "Basic Scrap Refinery",
+        "Multiplier": 0.0,
+        "Addition": -1,
+        "ApplicableRecipes": [
+            "AluminiumScrap",
+            "CarbonScrap",
+            "IronScrap",
+            "SiliconScrap"
         ],
         "Value": 0,
         "InputTalent": true
@@ -180,26 +382,6 @@
         "InputTalent": true
     },
     {
-        "Name": "Pure Carbon Productivity",
-        "Multiplier": 0.03,
-        "Addition": 0,
-        "ApplicableRecipes": [
-            "CarbonPure"
-        ],
-        "Value": 0,
-        "InputTalent": false
-    },
-    {
-        "Name": "Pure Carbon Ore Refining",
-        "Multiplier": -0.03,
-        "Addition": 0,
-        "ApplicableRecipes": [
-            "CarbonPure"
-        ],
-        "Value": 0,
-        "InputTalent": true
-    },
-    {
         "Name": "Carbon Scrap Productivity",
         "Multiplier": 0.03,
         "Addition": 0,
@@ -215,26 +397,6 @@
         "Addition": -2,
         "ApplicableRecipes": [
             "CarbonScrap"
-        ],
-        "Value": 0,
-        "InputTalent": true
-    },
-    {
-        "Name": "Pure Chromium Productivity",
-        "Multiplier": 0.03,
-        "Addition": 0,
-        "ApplicableRecipes": [
-            "ChromiumPure"
-        ],
-        "Value": 0,
-        "InputTalent": false
-    },
-    {
-        "Name": "Pure Chromium Ore Refining",
-        "Multiplier": -0.03,
-        "Addition": 0,
-        "ApplicableRecipes": [
-            "ChromiumPure"
         ],
         "Value": 0,
         "InputTalent": true
@@ -260,26 +422,6 @@
         "InputTalent": true
     },
     {
-        "Name": "Pure Cobalt Productivity",
-        "Multiplier": 0.03,
-        "Addition": 0,
-        "ApplicableRecipes": [
-            "CobaltPure"
-        ],
-        "Value": 0,
-        "InputTalent": false
-    },
-    {
-        "Name": "Pure Cobalt Ore Refining",
-        "Multiplier": -0.03,
-        "Addition": 0,
-        "ApplicableRecipes": [
-            "CobaltPure"
-        ],
-        "Value": 0,
-        "InputTalent": true
-    },
-    {
         "Name": "Cobalt Scrap Productivity",
         "Multiplier": 0.03,
         "Addition": 0,
@@ -295,26 +437,6 @@
         "Addition": -2,
         "ApplicableRecipes": [
             "CobaltScrap"
-        ],
-        "Value": 0,
-        "InputTalent": true
-    },
-    {
-        "Name": "Pure Copper Productivity",
-        "Multiplier": 0.03,
-        "Addition": 0,
-        "ApplicableRecipes": [
-            "CopperPure"
-        ],
-        "Value": 0,
-        "InputTalent": false
-    },
-    {
-        "Name": "Pure Copper Ore Refining",
-        "Multiplier": -0.03,
-        "Addition": 0,
-        "ApplicableRecipes": [
-            "CopperPure"
         ],
         "Value": 0,
         "InputTalent": true
@@ -380,26 +502,6 @@
         "InputTalent": true
     },
     {
-        "Name": "Pure Fluorine Productivity",
-        "Multiplier": 0.03,
-        "Addition": 0,
-        "ApplicableRecipes": [
-            "FluorinePure"
-        ],
-        "Value": 0,
-        "InputTalent": false
-    },
-    {
-        "Name": "Pure Fluorine Ore Refining",
-        "Multiplier": -0.03,
-        "Addition": 0,
-        "ApplicableRecipes": [
-            "FluorinePure"
-        ],
-        "Value": 0,
-        "InputTalent": true
-    },
-    {
         "Name": "Fluorine Scrap Productivity",
         "Multiplier": 0.03,
         "Addition": 0,
@@ -440,6 +542,21 @@
         "InputTalent": true
     },
     {
+        "Name": "Fuel Refinery",
+        "Multiplier": -0.02,
+        "Addition": 0,
+        "ApplicableRecipes": [
+            "Kergon1",
+            "Kergon2",
+            "Kergon3",
+            "Kergon4",
+            "Nitron",
+            "Xeron"
+        ],
+        "Value": 0,
+        "InputTalent": true
+    },
+    {
         "Name": "Glass product Productivity",
         "Multiplier": 0.03,
         "Addition": 0,
@@ -460,46 +577,6 @@
         "InputTalent": true
     },
     {
-        "Name": "Gold-Coated glass product Productivity",
-        "Multiplier": 0.03,
-        "Addition": 0,
-        "ApplicableRecipes": [
-            "GoldCoatedGlassProduct"
-        ],
-        "Value": 0,
-        "InputTalent": false
-    },
-    {
-        "Name": "Gold-Coated glass product Refining",
-        "Multiplier": -0.03,
-        "Addition": 0,
-        "ApplicableRecipes": [
-            "GoldCoatedGlassProduct"
-        ],
-        "Value": 0,
-        "InputTalent": true
-    },
-    {
-        "Name": "Pure Gold Productivity",
-        "Multiplier": 0.03,
-        "Addition": 0,
-        "ApplicableRecipes": [
-            "GoldPure"
-        ],
-        "Value": 0,
-        "InputTalent": false
-    },
-    {
-        "Name": "Pure Gold Ore Refining",
-        "Multiplier": -0.03,
-        "Addition": 0,
-        "ApplicableRecipes": [
-            "GoldPure"
-        ],
-        "Value": 0,
-        "InputTalent": true
-    },
-    {
         "Name": "Gold Scrap Productivity",
         "Multiplier": 0.03,
         "Addition": 0,
@@ -515,6 +592,26 @@
         "Addition": -2,
         "ApplicableRecipes": [
             "GoldScrap"
+        ],
+        "Value": 0,
+        "InputTalent": true
+    },
+    {
+        "Name": "Gold-Coated glass product Productivity",
+        "Multiplier": 0.03,
+        "Addition": 0,
+        "ApplicableRecipes": [
+            "GoldCoatedGlassProduct"
+        ],
+        "Value": 0,
+        "InputTalent": false
+    },
+    {
+        "Name": "Gold-Coated glass product Refining",
+        "Multiplier": -0.03,
+        "Addition": 0,
+        "ApplicableRecipes": [
+            "GoldCoatedGlassProduct"
         ],
         "Value": 0,
         "InputTalent": true
@@ -560,26 +657,6 @@
         "InputTalent": true
     },
     {
-        "Name": "Pure Iron Productivity",
-        "Multiplier": 0.03,
-        "Addition": 0,
-        "ApplicableRecipes": [
-            "IronPure"
-        ],
-        "Value": 0,
-        "InputTalent": false
-    },
-    {
-        "Name": "Pure Iron Ore Refining",
-        "Multiplier": -0.03,
-        "Addition": 0,
-        "ApplicableRecipes": [
-            "IronPure"
-        ],
-        "Value": 0,
-        "InputTalent": true
-    },
-    {
         "Name": "Iron Scrap Productivity",
         "Multiplier": 0.03,
         "Addition": 0,
@@ -595,26 +672,6 @@
         "Addition": -2,
         "ApplicableRecipes": [
             "IronScrap"
-        ],
-        "Value": 0,
-        "InputTalent": true
-    },
-    {
-        "Name": "Pure Lithium Productivity",
-        "Multiplier": 0.03,
-        "Addition": 0,
-        "ApplicableRecipes": [
-            "LithiumPure"
-        ],
-        "Value": 0,
-        "InputTalent": false
-    },
-    {
-        "Name": "Pure Lithium Ore Refining",
-        "Multiplier": -0.03,
-        "Addition": 0,
-        "ApplicableRecipes": [
-            "LithiumPure"
         ],
         "Value": 0,
         "InputTalent": true
@@ -655,26 +712,6 @@
         "Addition": 0,
         "ApplicableRecipes": [
             "MangalloyProduct"
-        ],
-        "Value": 0,
-        "InputTalent": true
-    },
-    {
-        "Name": "Pure Manganese Productivity",
-        "Multiplier": 0.03,
-        "Addition": 0,
-        "ApplicableRecipes": [
-            "ManganesePure"
-        ],
-        "Value": 0,
-        "InputTalent": false
-    },
-    {
-        "Name": "Pure Manganese Ore Refining",
-        "Multiplier": -0.03,
-        "Addition": 0,
-        "ApplicableRecipes": [
-            "ManganesePure"
         ],
         "Value": 0,
         "InputTalent": true
@@ -740,17 +777,7 @@
         "InputTalent": true
     },
     {
-        "Name": "Nickel pure Productivity",
-        "Multiplier": 0.03,
-        "Addition": 0,
-        "ApplicableRecipes": [
-            "NickelPure"
-        ],
-        "Value": 0,
-        "InputTalent": false
-    },
-    {
-        "Name": "Nickel pure Ore Refining",
+        "Name": "Pure Nickel Ore Refining",
         "Multiplier": -0.03,
         "Addition": 0,
         "ApplicableRecipes": [
@@ -758,6 +785,16 @@
         ],
         "Value": 0,
         "InputTalent": true
+    },
+    {
+        "Name": "Pure Nickel Productivity",
+        "Multiplier": 0.03,
+        "Addition": 0,
+        "ApplicableRecipes": [
+            "NickelPure"
+        ],
+        "Value": 0,
+        "InputTalent": false
     },
     {
         "Name": "Nickel Scrap Productivity",
@@ -780,17 +817,7 @@
         "InputTalent": true
     },
     {
-        "Name": "Niobium pure Productivity",
-        "Multiplier": 0.03,
-        "Addition": 0,
-        "ApplicableRecipes": [
-            "NiobiumPure"
-        ],
-        "Value": 0,
-        "InputTalent": false
-    },
-    {
-        "Name": "Niobium pure Ore Refining",
+        "Name": "Pure Niobium Ore Refining",
         "Multiplier": -0.03,
         "Addition": 0,
         "ApplicableRecipes": [
@@ -798,6 +825,16 @@
         ],
         "Value": 0,
         "InputTalent": true
+    },
+    {
+        "Name": "Pure Niobium Productivity",
+        "Multiplier": 0.03,
+        "Addition": 0,
+        "ApplicableRecipes": [
+            "NiobiumPure"
+        ],
+        "Value": 0,
+        "InputTalent": false
     },
     {
         "Name": "Niobium Scrap Productivity",
@@ -880,6 +917,339 @@
         "InputTalent": true
     },
     {
+        "Name": "Pure Aluminium Ore Refining",
+        "Multiplier": -0.03,
+        "Addition": 0,
+        "ApplicableRecipes": [
+            "AluminiumPure"
+        ],
+        "Value": 0,
+        "InputTalent": true
+    },
+    {
+        "Name": "Pure Aluminium Productivity",
+        "Multiplier": 0.03,
+        "Addition": 0,
+        "ApplicableRecipes": [
+            "AluminiumPure"
+        ],
+        "Value": 0,
+        "InputTalent": false
+    },
+    {
+        "Name": "Pure Calcium Ore Refining",
+        "Multiplier": -0.03,
+        "Addition": 0,
+        "ApplicableRecipes": [
+            "CalciumPure"
+        ],
+        "Value": 0,
+        "InputTalent": true
+    },
+    {
+        "Name": "Pure Calcium Productivity",
+        "Multiplier": 0.03,
+        "Addition": 0,
+        "ApplicableRecipes": [
+            "CalciumPure"
+        ],
+        "Value": 0,
+        "InputTalent": false
+    },
+    {
+        "Name": "Pure Carbon Ore Refining",
+        "Multiplier": -0.03,
+        "Addition": 0,
+        "ApplicableRecipes": [
+            "CarbonPure"
+        ],
+        "Value": 0,
+        "InputTalent": true
+    },
+    {
+        "Name": "Pure Carbon Productivity",
+        "Multiplier": 0.03,
+        "Addition": 0,
+        "ApplicableRecipes": [
+            "CarbonPure"
+        ],
+        "Value": 0,
+        "InputTalent": false
+    },
+    {
+        "Name": "Pure Chromium Ore Refining",
+        "Multiplier": -0.03,
+        "Addition": 0,
+        "ApplicableRecipes": [
+            "ChromiumPure"
+        ],
+        "Value": 0,
+        "InputTalent": true
+    },
+    {
+        "Name": "Pure Chromium Productivity",
+        "Multiplier": 0.03,
+        "Addition": 0,
+        "ApplicableRecipes": [
+            "ChromiumPure"
+        ],
+        "Value": 0,
+        "InputTalent": false
+    },
+    {
+        "Name": "Pure Cobalt Ore Refining",
+        "Multiplier": -0.03,
+        "Addition": 0,
+        "ApplicableRecipes": [
+            "CobaltPure"
+        ],
+        "Value": 0,
+        "InputTalent": true
+    },
+    {
+        "Name": "Pure Cobalt Productivity",
+        "Multiplier": 0.03,
+        "Addition": 0,
+        "ApplicableRecipes": [
+            "CobaltPure"
+        ],
+        "Value": 0,
+        "InputTalent": false
+    },
+    {
+        "Name": "Pure Copper Ore Refining",
+        "Multiplier": -0.03,
+        "Addition": 0,
+        "ApplicableRecipes": [
+            "CopperPure"
+        ],
+        "Value": 0,
+        "InputTalent": true
+    },
+    {
+        "Name": "Pure Copper Productivity",
+        "Multiplier": 0.03,
+        "Addition": 0,
+        "ApplicableRecipes": [
+            "CopperPure"
+        ],
+        "Value": 0,
+        "InputTalent": false
+    },
+    {
+        "Name": "Pure Fluorine Ore Refining",
+        "Multiplier": -0.03,
+        "Addition": 0,
+        "ApplicableRecipes": [
+            "FluorinePure"
+        ],
+        "Value": 0,
+        "InputTalent": true
+    },
+    {
+        "Name": "Pure Fluorine Productivity",
+        "Multiplier": 0.03,
+        "Addition": 0,
+        "ApplicableRecipes": [
+            "FluorinePure"
+        ],
+        "Value": 0,
+        "InputTalent": false
+    },
+    {
+        "Name": "Pure Gold Ore Refining",
+        "Multiplier": -0.03,
+        "Addition": 0,
+        "ApplicableRecipes": [
+            "GoldPure"
+        ],
+        "Value": 0,
+        "InputTalent": true
+    },
+    {
+        "Name": "Pure Gold Productivity",
+        "Multiplier": 0.03,
+        "Addition": 0,
+        "ApplicableRecipes": [
+            "GoldPure"
+        ],
+        "Value": 0,
+        "InputTalent": false
+    },
+    {
+        "Name": "Pure Iron Ore Refining",
+        "Multiplier": -0.03,
+        "Addition": 0,
+        "ApplicableRecipes": [
+            "IronPure"
+        ],
+        "Value": 0,
+        "InputTalent": true
+    },
+    {
+        "Name": "Pure Iron Productivity",
+        "Multiplier": 0.03,
+        "Addition": 0,
+        "ApplicableRecipes": [
+            "IronPure"
+        ],
+        "Value": 0,
+        "InputTalent": false
+    },
+    {
+        "Name": "Pure Lithium Ore Refining",
+        "Multiplier": -0.03,
+        "Addition": 0,
+        "ApplicableRecipes": [
+            "LithiumPure"
+        ],
+        "Value": 0,
+        "InputTalent": true
+    },
+    {
+        "Name": "Pure Lithium Productivity",
+        "Multiplier": 0.03,
+        "Addition": 0,
+        "ApplicableRecipes": [
+            "LithiumPure"
+        ],
+        "Value": 0,
+        "InputTalent": false
+    },
+    {
+        "Name": "Pure Manganese Ore Refining",
+        "Multiplier": -0.03,
+        "Addition": 0,
+        "ApplicableRecipes": [
+            "ManganesePure"
+        ],
+        "Value": 0,
+        "InputTalent": true
+    },
+    {
+        "Name": "Pure Manganese Productivity",
+        "Multiplier": 0.03,
+        "Addition": 0,
+        "ApplicableRecipes": [
+            "ManganesePure"
+        ],
+        "Value": 0,
+        "InputTalent": false
+    },
+    {
+        "Name": "Pure Scandium Ore Refining",
+        "Multiplier": -0.03,
+        "Addition": 0,
+        "ApplicableRecipes": [
+            "ScandiumPure"
+        ],
+        "Value": 0,
+        "InputTalent": true
+    },
+    {
+        "Name": "Pure Scandium Productivity",
+        "Multiplier": 0.03,
+        "Addition": 0,
+        "ApplicableRecipes": [
+            "ScandiumPure"
+        ],
+        "Value": 0,
+        "InputTalent": false
+    },
+    {
+        "Name": "Pure Silicon Ore Refining",
+        "Multiplier": -0.03,
+        "Addition": 0,
+        "ApplicableRecipes": [
+            "SiliconPure"
+        ],
+        "Value": 0,
+        "InputTalent": true
+    },
+    {
+        "Name": "Pure Silicon Productivity",
+        "Multiplier": 0.03,
+        "Addition": 0,
+        "ApplicableRecipes": [
+            "SiliconPure"
+        ],
+        "Value": 0,
+        "InputTalent": false
+    },
+    {
+        "Name": "Pure Sodium Ore Refining",
+        "Multiplier": -0.03,
+        "Addition": 0,
+        "ApplicableRecipes": [
+            "SodiumPure"
+        ],
+        "Value": 0,
+        "InputTalent": true
+    },
+    {
+        "Name": "Pure Sodium Productivity",
+        "Multiplier": 0.03,
+        "Addition": 0,
+        "ApplicableRecipes": [
+            "SodiumPure"
+        ],
+        "Value": 0,
+        "InputTalent": false
+    },
+    {
+        "Name": "Pure Sulfur Ore Refining",
+        "Multiplier": -0.03,
+        "Addition": 0,
+        "ApplicableRecipes": [
+            "SulfurPure"
+        ],
+        "Value": 0,
+        "InputTalent": true
+    },
+    {
+        "Name": "Pure Sulfur Productivity",
+        "Multiplier": 0.03,
+        "Addition": 0,
+        "ApplicableRecipes": [
+            "SulfurPure"
+        ],
+        "Value": 0,
+        "InputTalent": false
+    },
+    {
+        "Name": "Pure Titanium Ore Refining",
+        "Multiplier": -0.03,
+        "Addition": 0,
+        "ApplicableRecipes": [
+            "TitaniumPure"
+        ],
+        "Value": 0,
+        "InputTalent": true
+    },
+    {
+        "Name": "Pure Titanium Productivity",
+        "Multiplier": 0.03,
+        "Addition": 0,
+        "ApplicableRecipes": [
+            "TitaniumPure"
+        ],
+        "Value": 0,
+        "InputTalent": false
+    },
+    {
+        "Name": "Rare Scrap Refinery",
+        "Multiplier": 0.0,
+        "Addition": -1,
+        "ApplicableRecipes": [
+            "CobaltScrap",
+            "FluorineScrap",
+            "GoldScrap",
+            "ScandiumScrap"
+        ],
+        "Value": 0,
+        "InputTalent": true
+    },
+    {
         "Name": "Red Gold Product Productivity",
         "Multiplier": 0.03,
         "Addition": 0,
@@ -895,6 +1265,26 @@
         "Addition": 0,
         "ApplicableRecipes": [
             "RedGoldProduct"
+        ],
+        "Value": 0,
+        "InputTalent": true
+    },
+    {
+        "Name": "Rocket Fuels Productivity",
+        "Multiplier": 0.05,
+        "Addition": 0,
+        "ApplicableRecipes": [
+            "Xeron"
+        ],
+        "Value": 0,
+        "InputTalent": false
+    },
+    {
+        "Name": "Rocket Fuels Refinery",
+        "Multiplier": -0.03,
+        "Addition": 0,
+        "ApplicableRecipes": [
+            "Xeron"
         ],
         "Value": 0,
         "InputTalent": true
@@ -920,26 +1310,6 @@
         "InputTalent": true
     },
     {
-        "Name": "Pure Scandium Productivity",
-        "Multiplier": 0.03,
-        "Addition": 0,
-        "ApplicableRecipes": [
-            "ScandiumPure"
-        ],
-        "Value": 0,
-        "InputTalent": false
-    },
-    {
-        "Name": "Pure Scandium Ore Refining",
-        "Multiplier": -0.03,
-        "Addition": 0,
-        "ApplicableRecipes": [
-            "ScandiumPure"
-        ],
-        "Value": 0,
-        "InputTalent": true
-    },
-    {
         "Name": "Scandium Scrap Productivity",
         "Multiplier": 0.03,
         "Addition": 0,
@@ -955,26 +1325,6 @@
         "Addition": -2,
         "ApplicableRecipes": [
             "ScandiumScrap"
-        ],
-        "Value": 0,
-        "InputTalent": true
-    },
-    {
-        "Name": "Pure Silicon Productivity",
-        "Multiplier": 0.03,
-        "Addition": 0,
-        "ApplicableRecipes": [
-            "SiliconPure"
-        ],
-        "Value": 0,
-        "InputTalent": false
-    },
-    {
-        "Name": "Pure Silicon Ore Refining",
-        "Multiplier": -0.03,
-        "Addition": 0,
-        "ApplicableRecipes": [
-            "SiliconPure"
         ],
         "Value": 0,
         "InputTalent": true
@@ -1020,17 +1370,7 @@
         "InputTalent": true
     },
     {
-        "Name": "Silver Pure Productivity",
-        "Multiplier": 0.03,
-        "Addition": 0,
-        "ApplicableRecipes": [
-            "SilverPure"
-        ],
-        "Value": 0,
-        "InputTalent": false
-    },
-    {
-        "Name": "Silver Pure Ore Refining",
+        "Name": "Pure Silver Ore Refining",
         "Multiplier": -0.03,
         "Addition": 0,
         "ApplicableRecipes": [
@@ -1038,6 +1378,16 @@
         ],
         "Value": 0,
         "InputTalent": true
+    },
+    {
+        "Name": "Pure Silver Productivity",
+        "Multiplier": 0.03,
+        "Addition": 0,
+        "ApplicableRecipes": [
+            "SilverPure"
+        ],
+        "Value": 0,
+        "InputTalent": false
     },
     {
         "Name": "Silver Scrap Productivity",
@@ -1060,26 +1410,6 @@
         "InputTalent": true
     },
     {
-        "Name": "Pure Sodium Productivity",
-        "Multiplier": 0.03,
-        "Addition": 0,
-        "ApplicableRecipes": [
-            "SodiumPure"
-        ],
-        "Value": 0,
-        "InputTalent": false
-    },
-    {
-        "Name": "Pure Sodium Ore Refining",
-        "Multiplier": -0.03,
-        "Addition": 0,
-        "ApplicableRecipes": [
-            "SodiumPure"
-        ],
-        "Value": 0,
-        "InputTalent": true
-    },
-    {
         "Name": "Sodium Scrap Productivity",
         "Multiplier": 0.03,
         "Addition": 0,
@@ -1095,6 +1425,32 @@
         "Addition": -2,
         "ApplicableRecipes": [
             "SodiumScrap"
+        ],
+        "Value": 0,
+        "InputTalent": true
+    },
+    {
+        "Name": "Space Fuels Productivity",
+        "Multiplier": 0.05,
+        "Addition": 0,
+        "ApplicableRecipes": [
+            "Kergon1",
+            "Kergon2",
+            "Kergon3",
+            "Kergon4"
+        ],
+        "Value": 0,
+        "InputTalent": false
+    },
+    {
+        "Name": "Space Fuels Refinery",
+        "Multiplier": -0.03,
+        "Addition": 0,
+        "ApplicableRecipes": [
+            "Kergon1",
+            "Kergon2",
+            "Kergon3",
+            "Kergon4"
         ],
         "Value": 0,
         "InputTalent": true
@@ -1140,26 +1496,6 @@
         "InputTalent": true
     },
     {
-        "Name": "Pure Sulfur Productivity",
-        "Multiplier": 0.03,
-        "Addition": 0,
-        "ApplicableRecipes": [
-            "SulfurPure"
-        ],
-        "Value": 0,
-        "InputTalent": false
-    },
-    {
-        "Name": "Pure Sulfur Ore Refining",
-        "Multiplier": -0.03,
-        "Addition": 0,
-        "ApplicableRecipes": [
-            "SulfurPure"
-        ],
-        "Value": 0,
-        "InputTalent": true
-    },
-    {
         "Name": "Sulfur Scrap Productivity",
         "Multiplier": 0.03,
         "Addition": 0,
@@ -1200,26 +1536,6 @@
         "InputTalent": true
     },
     {
-        "Name": "Pure Titanium Productivity",
-        "Multiplier": 0.03,
-        "Addition": 0,
-        "ApplicableRecipes": [
-            "TitaniumPure"
-        ],
-        "Value": 0,
-        "InputTalent": false
-    },
-    {
-        "Name": "Pure Titanium Ore Refining",
-        "Multiplier": -0.03,
-        "Addition": 0,
-        "ApplicableRecipes": [
-            "TitaniumPure"
-        ],
-        "Value": 0,
-        "InputTalent": true
-    },
-    {
         "Name": "Titanium Scrap Productivity",
         "Multiplier": 0.03,
         "Addition": 0,
@@ -1240,17 +1556,102 @@
         "InputTalent": true
     },
     {
-        "Name": "Vanadium pure Productivity",
-        "Multiplier": 0.03,
-        "Addition": 0,
+        "Name": "Uncommon Ammo L Productivity",
+        "Multiplier": 0.0,
+        "Addition": 1,
         "ApplicableRecipes": [
-            "VanadiumPure"
+            "AmmoCannonLargeKineticUncommon",
+            "AmmoCannonLargeThermicUncommon",
+            "AmmoLaserLargeElectromagneticUncommon",
+            "AmmoLaserLargeThermicUncommon",
+            "AmmoMissileLargeAntimatterUncommon",
+            "AmmoMissileLargeKineticUncommon",
+            "AmmoRailgunLargeAntimatterUncommon",
+            "AmmoRailgunLargeElectromagneticUncommon"
         ],
         "Value": 0,
         "InputTalent": false
     },
     {
-        "Name": "Vanadium pure Ore Refining",
+        "Name": "Uncommon Ammo M Productivity",
+        "Multiplier": 0.0,
+        "Addition": 1,
+        "ApplicableRecipes": [
+            "AmmoCannonMediumKineticUncommon",
+            "AmmoCannonMediumThermicUncommon",
+            "AmmoLaserMediumElectromagneticUncommon",
+            "AmmoLaserMediumThermicUncommon",
+            "AmmoMissileMediumAntimatterUncommon",
+            "AmmoMissileMediumKineticUncommon",
+            "AmmoRailgunMediumAntimatterUncommon",
+            "AmmoRailgunMediumElectromagneticUncommon"
+        ],
+        "Value": 0,
+        "InputTalent": false
+    },
+    {
+        "Name": "Uncommon Ammo S Productivity",
+        "Multiplier": 0.0,
+        "Addition": 1,
+        "ApplicableRecipes": [
+            "AmmoCannonSmallKineticUncommon",
+            "AmmoCannonSmallThermicUncommon",
+            "AmmoLaserSmallElectromagneticUncommon",
+            "AmmoLaserSmallThermicUncommon",
+            "AmmoMissileSmallAntimatterUncommon",
+            "AmmoMissileSmallKineticUncommon",
+            "AmmoRailgunSmallAntimatterUncommon",
+            "AmmoRailgunSmallElectromagneticUncommon"
+        ],
+        "Value": 0,
+        "InputTalent": false
+    },
+    {
+        "Name": "Uncommon Ammo XS Productivity",
+        "Multiplier": 0.0,
+        "Addition": 1,
+        "ApplicableRecipes": [
+            "AmmoCannonExtraSmallKineticUncommon",
+            "AmmoCannonExtraSmallThermicUncommon",
+            "AmmoLaserExtraSmallElectromagneticUncommon",
+            "AmmoLaserExtraSmallThermicUncommon",
+            "AmmoMissileExtraSmallKineticUncommon",
+            "AmmoRailgunExtraSmallAntimatterUncommon",
+            "AmmoRailgunExtraSmallElectromagneticUncommon"
+        ],
+        "Value": 0,
+        "InputTalent": false
+    },
+    {
+        "Name": "Uncommon Intermediary Part Productivity",
+        "Multiplier": 0.0,
+        "Addition": 1,
+        "ApplicableRecipes": [
+            "component_2",
+            "connector_2",
+            "fixation_2",
+            "led_2",
+            "pipe_2",
+            "screw_2"
+        ],
+        "Value": 0,
+        "InputTalent": false
+    },
+    {
+        "Name": "Uncommon Scrap Refinery",
+        "Multiplier": 0.0,
+        "Addition": -1,
+        "ApplicableRecipes": [
+            "CalciumScrap",
+            "ChromiumScrap",
+            "CopperScrap",
+            "SodiumScrap"
+        ],
+        "Value": 0,
+        "InputTalent": true
+    },
+    {
+        "Name": "Pure Vanadium Ore Refining",
         "Multiplier": -0.03,
         "Addition": 0,
         "ApplicableRecipes": [
@@ -1258,6 +1659,16 @@
         ],
         "Value": 0,
         "InputTalent": true
+    },
+    {
+        "Name": "Pure Vanadium Productivity",
+        "Multiplier": 0.03,
+        "Addition": 0,
+        "ApplicableRecipes": [
+            "VanadiumPure"
+        ],
+        "Value": 0,
+        "InputTalent": false
     },
     {
         "Name": "Vanadium Scrap Productivity",
@@ -1298,415 +1709,5 @@
         ],
         "Value": 0,
         "InputTalent": true
-    },
-    {
-        "Name": "Basic Scrap Refinery",
-        "Multiplier": 0.0,
-        "Addition": -1,
-        "ApplicableRecipes": [
-            "AluminiumScrap",
-            "CarbonScrap",
-            "IronScrap",
-            "SiliconScrap"
-        ],
-        "Value": 0,
-        "InputTalent": true
-    },
-    {
-        "Name": "Uncommon Scrap Refinery",
-        "Multiplier": 0.0,
-        "Addition": -1,
-        "ApplicableRecipes": [
-            "CalciumScrap",
-            "ChromiumScrap",
-            "CopperScrap",
-            "SodiumScrap"
-        ],
-        "Value": 0,
-        "InputTalent": true
-    },
-    {
-        "Name": "Advanced Scrap Refinery",
-        "Multiplier": 0.0,
-        "Addition": -1,
-        "ApplicableRecipes": [
-            "LithiumScrap",
-            "NickelScrap",
-            "SilverScrap",
-            "SulfurScrap"
-        ],
-        "Value": 0,
-        "InputTalent": true
-    },
-    {
-        "Name": "Rare Scrap Refinery",
-        "Multiplier": 0.0,
-        "Addition": -1,
-        "ApplicableRecipes": [
-            "CobaltScrap",
-            "FluorineScrap",
-            "GoldScrap",
-            "ScandiumScrap"
-        ],
-        "Value": 0,
-        "InputTalent": true
-    },
-    {
-        "Name": "Space Fuels Productivity",
-        "Multiplier": 0.05,
-        "Addition": 0,
-        "ApplicableRecipes": [
-            "Kergon1",
-            "Kergon2",
-            "Kergon3",
-            "Kergon4"
-        ],
-        "Value": 0,
-        "InputTalent": false
-    },
-    {
-        "Name": "Space Fuels Refinery",
-        "Multiplier": -0.03,
-        "Addition": 0,
-        "ApplicableRecipes": [
-            "Kergon1",
-            "Kergon2",
-            "Kergon3",
-            "Kergon4"
-        ],
-        "Value": 0,
-        "InputTalent": true
-    },
-    {
-        "Name": "Atmospheric Fuels Productivity",
-        "Multiplier": 0.05,
-        "Addition": 0,
-        "ApplicableRecipes": [
-            "Nitron"
-        ],
-        "Value": 0,
-        "InputTalent": false
-    },
-    {
-        "Name": "Atmospheric Fuels Refinery",
-        "Multiplier": -0.03,
-        "Addition": 0,
-        "ApplicableRecipes": [
-            "Nitron"
-        ],
-        "Value": 0,
-        "InputTalent": true
-    },
-    {
-        "Name": "Rocket Fuels Productivity",
-        "Multiplier": 0.05,
-        "Addition": 0,
-        "ApplicableRecipes": [
-            "Xeron"
-        ],
-        "Value": 0,
-        "InputTalent": false
-    },
-    {
-        "Name": "Rocket Fuels Refinery",
-        "Multiplier": -0.03,
-        "Addition": 0,
-        "ApplicableRecipes": [
-            "Xeron"
-        ],
-        "Value": 0,
-        "InputTalent": true
-    },
-    {
-        "Name": "Fuel Refinery",
-        "Multiplier": -0.02,
-        "Addition": 0,
-        "ApplicableRecipes": [
-            "Kergon1",
-            "Kergon2",
-            "Kergon3",
-            "Kergon4",
-            "Nitron",
-            "Xeron"
-        ],
-        "Value": 0,
-        "InputTalent": true
-    },
-    {
-        "Name": "Basic Intermediary Part Productivity",
-        "Multiplier": 0.0,
-        "Addition": 1,
-        "ApplicableRecipes": [
-            "component_1",
-            "connector_1",
-            "fixation_1",
-            "led_1",
-            "pipe_1",
-            "screw_1"
-        ],
-        "Value": 0,
-        "InputTalent": false
-    },
-    {
-        "Name": "Uncommon Intermediary Part Productivity",
-        "Multiplier": 0.0,
-        "Addition": 1,
-        "ApplicableRecipes": [
-            "component_2",
-            "connector_2",
-            "fixation_2",
-            "led_2",
-            "pipe_2",
-            "screw_2"
-        ],
-        "Value": 0,
-        "InputTalent": false
-    },
-    {
-        "Name": "Advanced Intermediary Part Productivity",
-        "Multiplier": 0.0,
-        "Addition": 1,
-        "ApplicableRecipes": [
-            "component_3",
-            "connector_3",
-            "fixation_3",
-            "led_3",
-            "pipe_3",
-            "screw_3"
-        ],
-        "Value": 0,
-        "InputTalent": false
-    },
-    {
-        "Name": "Uncommon Ammo XS Productivity",
-        "Multiplier": 0.0,
-        "Addition": 1,
-        "ApplicableRecipes": [
-            "AmmoCannonExtraSmallKineticUncommon",
-            "AmmoCannonExtraSmallThermicUncommon",
-            "AmmoLaserExtraSmallElectromagneticUncommon",
-            "AmmoLaserExtraSmallThermicUncommon",
-            "AmmoMissileExtraSmallKineticUncommon",
-            "AmmoRailgunExtraSmallAntimatterUncommon",
-            "AmmoRailgunExtraSmallElectromagneticUncommon"
-        ],
-        "Value": 0,
-        "InputTalent": false
-    },
-    {
-        "Name": "Uncommon Ammo S Productivity",
-        "Multiplier": 0.0,
-        "Addition": 1,
-        "ApplicableRecipes": [
-            "AmmoCannonSmallKineticUncommon",
-            "AmmoCannonSmallThermicUncommon",
-            "AmmoLaserSmallElectromagneticUncommon",
-            "AmmoLaserSmallThermicUncommon",
-            "AmmoMissileSmallAntimatterUncommon",
-            "AmmoMissileSmallKineticUncommon",
-            "AmmoRailgunSmallAntimatterUncommon",
-            "AmmoRailgunSmallElectromagneticUncommon"
-        ],
-        "Value": 0,
-        "InputTalent": false
-    },
-    {
-        "Name": "Uncommon Ammo M Productivity",
-        "Multiplier": 0.0,
-        "Addition": 1,
-        "ApplicableRecipes": [
-            "AmmoCannonMediumKineticUncommon",
-            "AmmoCannonMediumThermicUncommon",
-            "AmmoLaserMediumElectromagneticUncommon",
-            "AmmoLaserMediumThermicUncommon",
-            "AmmoMissileMediumAntimatterUncommon",
-            "AmmoMissileMediumKineticUncommon",
-            "AmmoRailgunMediumAntimatterUncommon",
-            "AmmoRailgunMediumElectromagneticUncommon"
-        ],
-        "Value": 0,
-        "InputTalent": false
-    },
-    {
-        "Name": "Uncommon Ammo L Productivity",
-        "Multiplier": 0.0,
-        "Addition": 1,
-        "ApplicableRecipes": [
-            "AmmoCannonLargeKineticUncommon",
-            "AmmoCannonLargeThermicUncommon",
-            "AmmoLaserLargeElectromagneticUncommon",
-            "AmmoLaserLargeThermicUncommon",
-            "AmmoMissileLargeAntimatterUncommon",
-            "AmmoMissileLargeKineticUncommon",
-            "AmmoRailgunLargeAntimatterUncommon",
-            "AmmoRailgunLargeElectromagneticUncommon"
-        ],
-        "Value": 0,
-        "InputTalent": false
-    },
-    {
-        "Name": "Advanced Ammo XS Productivity",
-        "Multiplier": 0.0,
-        "Addition": 1,
-        "ApplicableRecipes": [
-            "AmmoCannonExtraSmallKineticAdvancedAgile",
-            "AmmoCannonExtraSmallKineticAdvancedDefense",
-            "AmmoCannonExtraSmallKineticAdvancedHeavy",
-            "AmmoCannonExtraSmallKineticAdvancedPrecision",
-            "AmmoCannonExtraSmallThermicAdvancedAgile",
-            "AmmoCannonExtraSmallThermicAdvancedDefense",
-            "AmmoCannonExtraSmallThermicAdvancedHeavy",
-            "AmmoCannonExtraSmallThermicAdvancedPrecision",
-            "AmmoLaserExtraSmallElectromagneticAdvancedAgile",
-            "AmmoLaserExtraSmallElectromagneticAdvancedDefense",
-            "AmmoLaserExtraSmallElectromagneticAdvancedHeavy",
-            "AmmoLaserExtraSmallElectromagneticAdvancedPrecision",
-            "AmmoLaserExtraSmallThermicAdvancedAgile",
-            "AmmoLaserExtraSmallThermicAdvancedDefense",
-            "AmmoLaserExtraSmallThermicAdvancedHeavy",
-            "AmmoLaserExtraSmallThermicAdvancedPrecision",
-            "AmmoMissileExtraSmallAntimatterAdvancedAgile",
-            "AmmoMissileExtraSmallAntimatterAdvancedDefense",
-            "AmmoMissileExtraSmallAntimatterAdvancedHeavy",
-            "AmmoMissileExtraSmallAntimatterAdvancedPrecision",
-            "AmmoMissileExtraSmallAntimatterUncommon",
-            "AmmoMissileExtraSmallKineticAdvancedAgile",
-            "AmmoMissileExtraSmallKineticAdvancedDefense",
-            "AmmoMissileExtraSmallKineticAdvancedHeavy",
-            "AmmoMissileExtraSmallKineticAdvancedPrecision",
-            "AmmoRailgunExtraSmallAntimatterAdvancedAgile",
-            "AmmoRailgunExtraSmallAntimatterAdvancedDefense",
-            "AmmoRailgunExtraSmallAntimatterAdvancedHeavy",
-            "AmmoRailgunExtraSmallAntimatterAdvancedPrecision",
-            "AmmoRailgunExtraSmallElectromagneticAdvancedAgile",
-            "AmmoRailgunExtraSmallElectromagneticAdvancedDefense",
-            "AmmoRailgunExtraSmallElectromagneticAdvancedHeavy",
-            "AmmoRailgunExtraSmallElectromagneticAdvancedPrecision"
-        ],
-        "Value": 0,
-        "InputTalent": false
-    },
-    {
-        "Name": "Advanced Ammo S Productivity",
-        "Multiplier": 0.0,
-        "Addition": 1,
-        "ApplicableRecipes": [
-            "AmmoCannonSmallKineticAdvancedAgile",
-            "AmmoCannonSmallKineticAdvancedDefense",
-            "AmmoCannonSmallKineticAdvancedHeavy",
-            "AmmoCannonSmallKineticAdvancedPrecision",
-            "AmmoCannonSmallThermicAdvancedAgile",
-            "AmmoCannonSmallThermicAdvancedDefense",
-            "AmmoCannonSmallThermicAdvancedHeavy",
-            "AmmoCannonSmallThermicAdvancedPrecision",
-            "AmmoLaserSmallElectromagneticAdvancedAgile",
-            "AmmoLaserSmallElectromagneticAdvancedDefense",
-            "AmmoLaserSmallElectromagneticAdvancedHeavy",
-            "AmmoLaserSmallElectromagneticAdvancedPrecision",
-            "AmmoLaserSmallThermicAdvancedAgile",
-            "AmmoLaserSmallThermicAdvancedDefense",
-            "AmmoLaserSmallThermicAdvancedHeavy",
-            "AmmoLaserSmallThermicAdvancedPrecision",
-            "AmmoMissileSmallAntimatterAdvancedAgile",
-            "AmmoMissileSmallAntimatterAdvancedDefense",
-            "AmmoMissileSmallAntimatterAdvancedHeavy",
-            "AmmoMissileSmallAntimatterAdvancedPrecision",
-            "AmmoMissileSmallKineticAdvancedAgile",
-            "AmmoMissileSmallKineticAdvancedDefense",
-            "AmmoMissileSmallKineticAdvancedHeavy",
-            "AmmoMissileSmallKineticAdvancedPrecision",
-            "AmmoRailgunSmallAntimatterAdvancedAgile",
-            "AmmoRailgunSmallAntimatterAdvancedDefense",
-            "AmmoRailgunSmallAntimatterAdvancedHeavy",
-            "AmmoRailgunSmallAntimatterAdvancedPrecision",
-            "AmmoRailgunSmallElectromagneticAdvancedAgile",
-            "AmmoRailgunSmallElectromagneticAdvancedDefense",
-            "AmmoRailgunSmallElectromagneticAdvancedHeavy",
-            "AmmoRailgunSmallElectromagneticAdvancedPrecision"
-        ],
-        "Value": 0,
-        "InputTalent": false
-    },
-    {
-        "Name": "Advanced Ammo M Productivity",
-        "Multiplier": 0.0,
-        "Addition": 1,
-        "ApplicableRecipes": [
-            "AmmoCannonMediumKineticAdvancedAgile",
-            "AmmoCannonMediumKineticAdvancedDefense",
-            "AmmoCannonMediumKineticAdvancedHeavy",
-            "AmmoCannonMediumKineticAdvancedPrecision",
-            "AmmoCannonMediumThermicAdvancedAgile",
-            "AmmoCannonMediumThermicAdvancedDefense",
-            "AmmoCannonMediumThermicAdvancedHeavy",
-            "AmmoCannonMediumThermicAdvancedPrecision",
-            "AmmoLaserMediumElectromagneticAdvancedAgile",
-            "AmmoLaserMediumElectromagneticAdvancedDefense",
-            "AmmoLaserMediumElectromagneticAdvancedHeavy",
-            "AmmoLaserMediumElectromagneticAdvancedPrecision",
-            "AmmoLaserMediumThermicAdvancedAgile",
-            "AmmoLaserMediumThermicAdvancedDefense",
-            "AmmoLaserMediumThermicAdvancedHeavy",
-            "AmmoLaserMediumThermicAdvancedPrecision",
-            "AmmoMissileMediumAntimatterAdvancedAgile",
-            "AmmoMissileMediumAntimatterAdvancedDefense",
-            "AmmoMissileMediumAntimatterAdvancedHeavy",
-            "AmmoMissileMediumAntimatterAdvancedPrecision",
-            "AmmoMissileMediumKineticAdvancedAgile",
-            "AmmoMissileMediumKineticAdvancedDefense",
-            "AmmoMissileMediumKineticAdvancedHeavy",
-            "AmmoMissileMediumKineticAdvancedPrecision",
-            "AmmoRailgunMediumAntimatterAdvancedAgile",
-            "AmmoRailgunMediumAntimatterAdvancedDefense",
-            "AmmoRailgunMediumAntimatterAdvancedHeavy",
-            "AmmoRailgunMediumAntimatterAdvancedPrecision",
-            "AmmoRailgunMediumElectromagneticAdvancedAgile",
-            "AmmoRailgunMediumElectromagneticAdvancedDefense",
-            "AmmoRailgunMediumElectromagneticAdvancedHeavy",
-            "AmmoRailgunMediumElectromagneticAdvancedPrecision"
-        ],
-        "Value": 0,
-        "InputTalent": false
-    },
-    {
-        "Name": "Advanced Ammo L Productivity",
-        "Multiplier": 0.0,
-        "Addition": 1,
-        "ApplicableRecipes": [
-            "AmmoCannonLargeKineticAdvancedAgile",
-            "AmmoCannonLargeKineticAdvancedDefense",
-            "AmmoCannonLargeKineticAdvancedHeavy",
-            "AmmoCannonLargeKineticAdvancedPrecision",
-            "AmmoCannonLargeThermicAdvancedAgile",
-            "AmmoCannonLargeThermicAdvancedDefense",
-            "AmmoCannonLargeThermicAdvancedHeavy",
-            "AmmoCannonLargeThermicAdvancedPrecision",
-            "AmmoLaserLargeElectromagneticAdvancedAgile",
-            "AmmoLaserLargeElectromagneticAdvancedDefense",
-            "AmmoLaserLargeElectromagneticAdvancedHeavy",
-            "AmmoLaserLargeElectromagneticAdvancedPrecision",
-            "AmmoLaserLargeThermicAdvancedAgile",
-            "AmmoLaserLargeThermicAdvancedDefense",
-            "AmmoLaserLargeThermicAdvancedHeavy",
-            "AmmoLaserLargeThermicAdvancedPrecision",
-            "AmmoMissileLargeAntimatterAdvancedAgile",
-            "AmmoMissileLargeAntimatterAdvancedDefense",
-            "AmmoMissileLargeAntimatterAdvancedHeavy",
-            "AmmoMissileLargeAntimatterAdvancedPrecision",
-            "AmmoMissileLargeKineticAdvancedAgile",
-            "AmmoMissileLargeKineticAdvancedDefense",
-            "AmmoMissileLargeKineticAdvancedHeavy",
-            "AmmoMissileLargeKineticAdvancedPrecision",
-            "AmmoRailgunLargeAntimatterAdvancedAgile",
-            "AmmoRailgunLargeAntimatterAdvancedDefense",
-            "AmmoRailgunLargeAntimatterAdvancedHeavy",
-            "AmmoRailgunLargeAntimatterAdvancedPrecision",
-            "AmmoRailgunLargeElectromagneticAdvancedAgile",
-            "AmmoRailgunLargeElectromagneticAdvancedDefense",
-            "AmmoRailgunLargeElectromagneticAdvancedHeavy",
-            "AmmoRailgunLargeElectromagneticAdvancedPrecision"
-        ],
-        "Value": 0,
-        "InputTalent": false
     }
 ]

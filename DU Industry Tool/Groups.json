@@ -17,7 +17,7 @@
     "StructuralPart":{
         "Id": "08d8a31f-5159-4bb2-877d-6d69aec28495",
         "ParentId": "08d8a31f-50dc-4c02-8de7-8aa9a5df4c2e",
-        "Name": "Structural Parts"
+        "Name": "Structural parts"
     },
     "screwPart":{
         "Id": "08d8a31f-5157-4dcc-8d91-4ff49c7b7779",
@@ -764,6 +764,11 @@
         "ParentId": "08d8a31f-5006-41d3-8726-5b1fbd11d624",
         "Name": "Engines"
     },
+    "Retrorockets":{
+        "Id": "08d8a31f-5021-45bd-846d-5c7b7ffd67d8",
+        "ParentId": "08d8a31f-5021-45bd-846d-5c7b7ffd67d9",
+        "Name": "Retro-Rocket Brakes"
+    },
     "Spacebrake":{
         "Id": "08d8a31f-5021-45bd-846d-5c7b7ffd67d9",
         "ParentId": "08d8a31f-500b-4999-8cbc-345cfa4596fc",
@@ -859,10 +864,19 @@
         "ParentId": "08d8a31f-4f3a-485c-8c71-4d0379da4e2e",
         "Name": "Other"
     },
+    "MiningUnitsLarge":{
+        "Id": "08d8a31f-4ff8-49fc-8db6-bc6e49ab44d2",
+        "ParentId": "08d8a31f-4ff8-49fc-8db6-ac6e49ab44d2",
+        "Name": "Mining Units L"
+    },
+    "MiningUnitsSmall":{
+        "Id": "08d8a31f-4ff8-49fc-8db6-cc6e49ab44d2",
+        "ParentId": "08d8a31f-4ff8-49fc-8db6-ac6e49ab44d2",
+        "Name": "Mining Units S"
+    },
     "MiningUnits":{
-        "Id": "08d8a31f-4ff8-49fc-8db6-ac6e49ab44d3",
-        "ParentId-OLD": "08d8a31f-4ff2-4c9f-883c-0a8b2b6033e7",
-        "ParentId": "08d8a31f-4f3a-485c-8c71-4d0379da4e2e",
+        "Id": "08d8a31f-4ff8-49fc-8db6-ac6e49ab44d2",
+        "ParentId": "08d8a31f-4fca-41ed-8134-ddaeff6f3cc8",
         "Name": "Mining Units"
     },
     "Industry5":{
@@ -948,7 +962,7 @@
     "IndustryInfrastructure":{
         "Id": "08d8a31f-4fca-41ed-8134-ddaeff6f3cc8",
         "ParentId": "08d8a31f-4f3a-485c-8c71-4d0379da4e2e",
-        "Name": "Industry & infrastructure Elements"
+        "Name": "Industry & Infrastructure Elements"
     },
     "SeatUnit":{
         "Id": "08d8a31f-4fc9-4282-81f3-ce98674eaf49",
@@ -1435,6 +1449,11 @@
         "ParentId": "08d8a31f-4f43-4c1b-857d-a83c01d973a8",
         "Name": "Shield Generators"
     },
+    "TransponderUnit":{
+        "Id": "08d8a31f-4f44-467f-8e0f-cfd1a9c09360",
+        "ParentId": "08d8a31f-4f43-4c1b-857d-a83c01d973a8",
+        "Name": "Transponders"
+    },
     "CombatDefense":{
         "Id": "08d8a31f-4f43-4c1b-857d-a83c01d973a8",
         "ParentId": "08d8a31f-4f3a-485c-8c71-4d0379da4e2e",
@@ -1813,7 +1832,7 @@
     "AmmoCannonMedium":{
         "Id": "08d8a31f-4f1c-415f-8f5e-a89b00df433c",
         "ParentId": "08d8a31f-4f19-493e-81ab-79281894af58",
-        "Name": "Medium Cannon Ammo"
+        "Name": "Cannon Ammo M"
     },
     "AmmoCannonLargeThermic":{
         "Id": "08d8a31f-4f1b-4bcf-8b65-b0a0b8bd89ae",
@@ -1828,7 +1847,7 @@
     "AmmoCannonLarge":{
         "Id": "08d8a31f-4f1b-41dd-85a2-69082bb5f35d",
         "ParentId": "08d8a31f-4f19-493e-81ab-79281894af58",
-        "Name": "Large Cannon Ammo"
+        "Name": "Cannon Ammo Large"
     },
     "AmmoCannonExtraSmallThermic":{
         "Id": "08d8a31f-4f1a-4b14-850c-ce4a946f657b",
