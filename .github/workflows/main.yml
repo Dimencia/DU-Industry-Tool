@@ -29,7 +29,6 @@ jobs:
         - name: Build Solution
           run: |
             msbuild.exe DU-Industry-Tool.sln /p:platform="Any CPU" /p:configuration="Release"
-            del DU-Industry-Tool/bin/Release/DU-Industry-Tool.application
 
         - name: Zip Solution
           uses: montudor/action-zip@v1
@@ -39,18 +38,18 @@ jobs:
         - name: Create github Release
           id: create_release
           uses: actions/create-release@v1
-          env: 
+          env:
               GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          with: 
+          with:
               tag_name: v${{ steps.versionReader.outputs.VERSION }}
               release_name: DU-Industry-Tool v${{ steps.versionReader.outputs.VERSION }}
               draft: true
               prerelease: false
         - name: Upload release
           uses: actions/upload-release-asset@v1.0.1
-          env: 
+          env:
               GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          with: 
+          with:
               upload_url: ${{ steps.create_release.outputs.upload_url }}
               asset_path: DU-Industry-Tool${{steps.versionReader.outputs.VERSION}}.zip
               asset_name: DU-Industry-Tool${{steps.versionReader.outputs.VERSION}}.zip
