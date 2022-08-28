@@ -16,11 +16,13 @@ namespace DU_Industry_Tool
         public AboutForm()
         {
             InitializeComponent();
+
             discordLink.Click += LinkOnClick;
-            githubLink.Click += LinkOnClick;
+            DimenciaGithubLink.Click += LinkOnClick;
+            TobiReleasesLink.Click += LinkOnClick;
         }
 
-        private void LinkOnClick(object sender, EventArgs e)
+        private static void LinkOnClick(object sender, EventArgs e)
         {
             if (sender is KryptonLinkLabel klb)
             {
