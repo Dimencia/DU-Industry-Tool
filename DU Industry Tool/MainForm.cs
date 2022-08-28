@@ -99,8 +99,7 @@ namespace DU_Industry_Tool
             _infoPanel.Controls.Clear();
             _infoPanel.BorderStyle = BorderStyle.None;
 
-            _infoPanel.Controls.Add(new Label
-            {
+            _infoPanel.Controls.Add(new Label {
                 AutoSize = false,
                 Font = new Font(_infoPanel.Font.FontFamily, 12f, FontStyle.Bold),
                 Padding = new Padding(2, 5, 4, 2),
@@ -108,40 +107,24 @@ namespace DU_Industry_Tool
                 Height = 30,
                 Width = 370
             });
-            _infoPanel.Controls.Add(new Label
-            {
+            _infoPanel.Controls.Add(new Label {
                 AutoSize = true,
                 Font = new Font(_infoPanel.Font.FontFamily, 9f),
                 Padding = new Padding(4, 0, 4, 5),
                 Text = $"Unit mass: {recipe.UnitMass:N1} volume: {recipe.UnitVolume:N1}"+(recipe.Nanocraftable ? "  *nanocraftable*" : "")
             });
 
-            var costPanel = new FlowLayoutPanel
-            {
-                FlowDirection = FlowDirection.TopDown,
-                AutoSize = true
-            };
             _manager.ProductQuantity = int.Parse(QuantityBox.Text);
             if (!double.TryParse(QuantityBox.Text, out var cnt)) cnt = 1d;
             var costToMake = _manager.GetTotalCost(recipe.Key, cnt, silent: true);
-            costPanel.Controls.Add(new Label
-            {
-                AutoSize = true,
-                Text = "Cost To Make " + costToMake.ToString("N02") + "q"
-            });
-            _infoPanel.Controls.Add(costPanel);
+            AddFlowLabel(_infoPanel.Controls, "Cost To Make " + costToMake.ToString("N02") + "q");
 
-            costPanel = new FlowLayoutPanel
-            {
-                FlowDirection = FlowDirection.TopDown,
-                AutoSize = true
-            };
             var cost = _manager.GetBaseCost(recipe.Key);
-            costPanel.Controls.Add(new Label
-            {
-                Text = "Untalented (without schematics) " + cost.ToString("N02") + "q",
-                AutoSize = true
-            });
+            AddFlowLabel(_infoPanel.Controls, $"Untalented (without schematics) {cost:N1}q");
+
+            cost = recipe.Time > 0 ? 86400/recipe.Time : 0;
+            var pnl = AddFlowLabel(_infoPanel.Controls, $"Per Industry {cost:N1} / Day");
+            pnl.Padding = new Padding(0, 0, 0, 10);
 
             // IDK why sometimes prices are listed as 0
             var orders = _market.MarketOrders.Values.Where(o => o.ItemType == recipe.NqId &&
@@ -149,88 +132,33 @@ namespace DU_Industry_Tool
                                                                DateTime.Now < o.ExpirationDate &&
                                                                o.Price > 0);
             var mostRecentOrder = orders.OrderBy(o => o.Price).FirstOrDefault();
-            if (mostRecentOrder == null)
+            if (mostRecentOrder != null)
             {
-                _infoPanel.Controls.Add(costPanel);
-            }
-            else
-            {
-                costPanel.Controls.Add(new Label
+                var costPanel = new FlowLayoutPanel
                 {
-                    Text = "Market " + mostRecentOrder.Price.ToString("N02") + "q",
-                    AutoSize = true
-                });
-                costPanel.Controls.Add(new Label
-                {
-                    Text = "Until " + mostRecentOrder.ExpirationDate
-                });
-                _infoPanel.Controls.Add(costPanel);
-
-                var costPanelm = new FlowLayoutPanel
-                {
+                    AutoSize = true,
                     FlowDirection = FlowDirection.TopDown,
-                    AutoSize = true
+                    Padding = new Padding(0)
                 };
-                costPanelm.Controls.Add(new Label
-                {
-                    Text = "Profit Margin ",
-                    AutoSize = true
-                });
-                cost = ((mostRecentOrder.Price-costToMake)/mostRecentOrder.Price);
-                costPanelm.Controls.Add(new Label
-                {
-                    Text = cost.ToString("0%"),
-                    AutoSize = true
-                });
-                _infoPanel.Controls.Add(costPanelm);
-
+                AddLabel(costPanel.Controls, "Market " + mostRecentOrder.Price.ToString("N02") + "q");
+                AddLabel(costPanel.Controls, "Until " + mostRecentOrder.ExpirationDate);
+                AddLabel(costPanel.Controls, "Profit Margin ");
+                cost = ((mostRecentOrder.Price-costToMake) / mostRecentOrder.Price);
+                AddLabel(costPanel.Controls, cost.ToString("0%"));
                 cost = (mostRecentOrder.Price - costToMake)*(86400/recipe.Time);
-                costPanel = new FlowLayoutPanel
-                {
-                    FlowDirection = FlowDirection.TopDown,
-                    AutoSize = true
-                };
-                costPanel.Controls.Add(new Label
-                {
-                    Text = "Profit/Day/Industry " + cost.ToString("N02") + "q",
-                    AutoSize = true
-                });
+                AddLabel(costPanel.Controls, "Profit/Day/Industry " + cost.ToString("N02") + "q");
                 _infoPanel.Controls.Add(costPanel);
             }
-
-            var costPanel2 = new FlowLayoutPanel
-            {
-                AutoSize = false,
-                FlowDirection = FlowDirection.TopDown,
-            };
-
-            cost = recipe.Time > 0 ? 86400/recipe.Time : 0;
-            costPanel2.Controls.Add(new Label
-            {
-                Text = "Per Industry " + cost.ToString("0.0") + "/Day",
-                AutoSize = true
-            });
-            _infoPanel.Controls.Add(costPanel2);
 
             // ----- Ingredients -----
-            costPanel = new FlowLayoutPanel
-            {
-                FlowDirection = FlowDirection.TopDown,
-                AutoSize = true
-            };
-            _infoPanel.Controls.Add(new Label
-            {
-                AutoSize = true,
-                Text = "Ingredients",
-                Font = new Font(_infoPanel.Font, FontStyle.Bold)
-            });
-
+            var newPanel = AddFlowLabel(_infoPanel.Controls, "Ingredients", FontStyle.Bold);
             var grid = new TableLayoutPanel
             {
                 ColumnCount = 2,
                 RowCount = recipe.Ingredients.Count,
                 AutoSize = true,
-                Padding = new Padding(0, 0, 0, 10)
+                Margin = new Padding(0),
+                Padding = new Padding(0,0,0,10)
             };
             foreach (var ingredient in recipe.Ingredients)
             {
@@ -238,106 +166,81 @@ namespace DU_Industry_Tool
                 {
                     AutoSize = true,
                     Font = new Font(_infoPanel.Font, FontStyle.Underline),
-                    Text = ingredient.Name,
                     ForeColor = Color.CornflowerBlue,
-                    Tag = ingredient.Type
+                    Padding = new Padding(0),
+                    Tag = ingredient.Type,
+                    Text = ingredient.Name,
                 };
                 label.Click += Label_Click;
                 grid.Controls.Add(label);
-                grid.Controls.Add(new Label
-                {
-                    AutoSize = true,
-                    Text = ingredient.Quantity.ToString("0.0")
-                });
+                AddLabel(grid.Controls, ingredient.Quantity.ToString("0.0"));
             }
-            _infoPanel.Controls.Add(grid);
+            newPanel.Controls.Add(grid);
 
             // ----- Products -----
-            var prodPanel = new FlowLayoutPanel
-            {
-                FlowDirection = FlowDirection.TopDown,
-                AutoSize = true
-            };
-            var prodLabel = new Label
-            {
-                AutoSize = true,
-                Font = new Font(_infoPanel.Font, FontStyle.Bold),
-                Text = "Products"
-            };
-            prodPanel.Controls.Add(prodLabel);
-            _infoPanel.Controls.Add(prodPanel);
-
+            newPanel = AddFlowLabel(_infoPanel.Controls, "Products", FontStyle.Bold);
             grid = new TableLayoutPanel
             {
                 ColumnCount = 2,
                 RowCount = recipe.Products.Count,
                 AutoSize = true,
-                Padding = new Padding(0, 0, 0, 10)
+                Padding = new Padding(0,4,0,10)
             };
-            foreach (var ingredient in recipe.Products)
+            foreach (var prod in recipe.Products)
             {
-                grid.Controls.Add(new Label
+                var isSame = prod.Type == recipe.Key;
+                var prodLbl = new Label
                 {
                     AutoSize = true,
+                    ForeColor = isSame ? Color.Black : Color.CornflowerBlue,
                     Font = new Font(_infoPanel.Font, FontStyle.Regular),
-                    Text = ingredient.Name
-                });
-                grid.Controls.Add(new Label
+                    Text = prod.Name,
+                    Tag = isSame ? null : prod.Type
+                };
+                if (!isSame)
                 {
-                    AutoSize = true,
-                    Font = new Font(_infoPanel.Font, FontStyle.Regular),
-                    Text = ingredient.Quantity.ToString("0.0")
-                });
+                    prodLbl.Click += Label_Click;
+                }
+                grid.Controls.Add(prodLbl);
+                AddLabel(grid.Controls, prod.Quantity.ToString("0.0"));
             }
-            _infoPanel.Controls.Add(grid);
+            newPanel.Controls.Add(grid);
 
             if (recipe.ParentGroupName.EndsWith("Ore", StringComparison.InvariantCultureIgnoreCase) ||
                 recipe.ParentGroupName.EndsWith("Parts", StringComparison.InvariantCultureIgnoreCase) ||
                 recipe.ParentGroupName.EndsWith("Product", StringComparison.InvariantCultureIgnoreCase) ||
                 recipe.ParentGroupName.EndsWith("Pure", StringComparison.InvariantCultureIgnoreCase) ||
-                recipe.Name.StartsWith("Relic Plasma", StringComparison.InvariantCultureIgnoreCase))
+                recipe.Name?.StartsWith("Relic Plasma", StringComparison.InvariantCultureIgnoreCase) == true)
             {
                 var containedIn = _manager.Recipes.Values.Where(x =>
-                    true == x.Ingredients?.Any(y => y.Name.Equals(recipe.Name, StringComparison.InvariantCultureIgnoreCase)));
+                    true == x.Ingredients?.Any(y => y.Name.Equals(recipe.Name, StringComparison.InvariantCultureIgnoreCase))).ToList();
                 if (containedIn?.Any() == true)
                 {
-                    prodPanel = new FlowLayoutPanel
-                    {
-                        FlowDirection = FlowDirection.TopDown,
-                        AutoSize = true
-                    };
-                    prodPanel.Controls.Add(new Label
-                    {
-                        AutoSize = true,
-                        Font = new Font(_infoPanel.Font, FontStyle.Bold),
-                        Text = "Part of recipes:"
-                    });
+                    newPanel = AddFlowLabel(_infoPanel.Controls, "Part of recipes:", FontStyle.Bold);
                     grid = new TableLayoutPanel
                     {
                         AutoScroll = true,
-                        AutoSize = false,
                         ColumnCount = 1,
-                        Padding = new Padding(0, 0, 0, 0),
+                        Padding = new Padding(0),
                         RowCount = containedIn.Count(),
-                        Width = 350,
                         Height = 400,
+                        Width = 450,
                         VerticalScroll = { Visible = true }
                     };
-                    foreach (var master in containedIn)
+                    foreach (var label in containedIn.Select(master => new Label
+                             {
+                                 AutoSize = true,
+                                 Font = new Font(_infoPanel.Font, FontStyle.Underline),
+                                 Text = master.Name,
+                                 ForeColor = Color.CornflowerBlue,
+                                 Padding = new Padding(0),
+                                 Tag = master.Key
+                             }))
                     {
-                        var label = new Label
-                        {
-                            AutoSize = true,
-                            Font = new Font(_infoPanel.Font, FontStyle.Underline),
-                            Text = master.Name,
-                            ForeColor = Color.CornflowerBlue,
-                            Tag = master.Key
-                        };
                         label.Click += Label_Click;
                         grid.Controls.Add(label);
                     }
-                    prodPanel.Controls.Add(grid);
-                    _infoPanel.Controls.Add(prodPanel);
+                    newPanel.Controls.Add(grid);
                 }
             }
 
@@ -375,6 +278,39 @@ namespace DU_Industry_Tool
 
             _infoPanel.AutoScroll = false;
             OnMainformResize(null, null);
+        }
+
+        private FlowLayoutPanel AddFlowLabel(System.Windows.Forms.Control.ControlCollection cc, string lblText, FontStyle fstyle = FontStyle.Regular)
+        {
+            var panel = new FlowLayoutPanel
+            {
+                AutoSize = true,
+                FlowDirection = FlowDirection.TopDown,
+                Padding = new Padding(0)
+            };
+            var lbl = new Label
+            {
+                AutoSize = true,
+                Font = new Font(_infoPanel.Font, fstyle),
+                Padding = new Padding(0),
+                Text = lblText
+            };
+            panel.Controls.Add(lbl);
+            cc.Add(panel);
+            return panel;
+        }
+
+        private Label AddLabel(System.Windows.Forms.Control.ControlCollection cc, string lblText, FontStyle fstyle = FontStyle.Regular)
+        {
+            var lbl = new Label
+            {
+                AutoSize = true,
+                Font = new Font(_infoPanel.Font, fstyle),
+                Padding = new Padding(0),
+                Text = lblText
+            };
+            cc.Add(lbl);
+            return lbl;
         }
 
         private void Label_Click(object sender, EventArgs e)

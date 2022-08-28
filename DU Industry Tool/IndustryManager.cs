@@ -960,9 +960,10 @@ namespace DU_Industry_Tool
 
             if (dmpRcp)
             {
+                /*
                 var missingRec = _luaRecipes.Values.Where(x =>
                         x.Products?.Count > 0 && Recipes.Values.All(y => y.NqId != x.Products[0].Id))
-                    .OrderBy(x => x.Products[0].DisplayNameWithSize);
+                        .OrderBy(x => x.Products[0].DisplayNameWithSize);
                 foreach (var missing in missingRec)
                 {
                     Debug.WriteLine(missing.Products[0].Id.ToString().PadRight(30) + " " +
@@ -970,13 +971,14 @@ namespace DU_Industry_Tool
                 }
 
                 // Check for missing Plasma in recipes' ingredients
-                List<ulong> plasmaIds = new List<ulong> {
+                var plasmaIds = new List<ulong> {
                     1769135512, 1831558336, 1831557945, 1831558342,
                     1831558338, 1831558341, 1831558343, 1831558340,
                     1831558339, 1831558337
                 };
                 var plas = _luaRecipes.Values.Where(x => x.Ingredients.Count > 0 &&
-                                                         x.Ingredients.Any(y => plasmaIds.Contains(y.Id))).OrderBy(x => x.Products[0].DisplayNameWithSize).ToList();
+                                                         x.Ingredients.Any(y => plasmaIds.Contains(y.Id)))
+                                .OrderBy(x => x.Products[0].DisplayNameWithSize).ToList();
                 foreach (var pl in plas)
                 {
                     var ingName = pl.Ingredients.First(x => x.DisplayNameWithSize.StartsWith("Relic Plasma")).DisplayNameWithSize;
@@ -988,9 +990,10 @@ namespace DU_Industry_Tool
                     }
                     if (rec.Value.Ingredients.All(x => x.Name != ingName))
                     {
-                        Debug.WriteLine(rec.Key + " " + rec.Value.Name + " missing " + ingName);
+                        Debug.WriteLine(rec.Key + " " + rec.Value.Name + " is missing " + ingName);
                     }
                 }
+                */
             }
 
             //SaveRecipes();
