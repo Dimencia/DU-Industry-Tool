@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using DocumentFormat.OpenXml.Drawing.ChartDrawing;
 
 namespace DU_Industry_Tool
 {
@@ -25,8 +26,7 @@ namespace DU_Industry_Tool
         private readonly SortedDictionary<string, DuLuaItem> _luaItems; // List of items from du-lua.dev
         private readonly SortedDictionary<string, DuLuaRecipe> _luaRecipes; // List of recipes from du-lua.dev
 
-        public readonly SortedDictionary<string, SchematicRecipe>
-            Recipes; // Global list of all our recipes, from the json
+        public readonly SortedDictionary<string, SchematicRecipe> Recipes; // Global list of all our recipes, from the json
 
         public readonly Dictionary<string, Group> Groups;
         public List<Ore> Ores { get; } = new List<Ore>();
@@ -371,7 +371,10 @@ namespace DU_Industry_Tool
                     {
                         // Transfer updateable values and only protocol to debug console
                         if (!string.IsNullOrEmpty(dmpItem.Value.DisplayNameWithSize) &&
-                            kvp.Value.Name != dmpItem.Value.DisplayNameWithSize)
+                            kvp.Value.Name != dmpItem.Value.DisplayNameWithSize &&
+                            !dmpItem.Value.DisplayNameWithSize.EndsWith("hydraulics") &&
+                            !dmpItem.Value.DisplayNameWithSize.Equals("Silver Pure",StringComparison.InvariantCultureIgnoreCase) &&
+                            !dmpItem.Value.DisplayNameWithSize.Equals("Nickel Pure",StringComparison.InvariantCultureIgnoreCase))
                         {
                             Debug.WriteLine($"{kvp.Value.Name} Name to {dmpItem.Value.DisplayNameWithSize}");
                             kvp.Value.Name = dmpItem.Value.DisplayNameWithSize;
@@ -381,8 +384,8 @@ namespace DU_Industry_Tool
                         {
                             Debug.WriteLine($"{kvp.Value.Name} Level {kvp.Value.Level} to {dmpItem.Value.Tier}");
                         }
-
                         kvp.Value.Level = dmpItem.Value.Tier;
+
                         if (!string.IsNullOrEmpty(dmpItem.Value.Size) && kvp.Value.Size != dmpItem.Value.Size)
                         {
                             Debug.WriteLine($"{kvp.Value.Name} Size {kvp.Value.Size} to {dmpItem.Value.Size}");
@@ -394,14 +397,13 @@ namespace DU_Industry_Tool
                             Debug.WriteLine(
                                 $"{kvp.Value.Name} UnitMass {kvp.Value.UnitMass:N2} to {dmpItem.Value.UnitMass:N2}");
                         }
-
                         kvp.Value.UnitMass = dmpItem.Value.UnitMass;
+
                         if (kvp.Value.UnitVolume != 0 && kvp.Value.UnitVolume != dmpItem.Value.UnitVolume)
                         {
                             Debug.WriteLine(
                                 $"{kvp.Value.Name} UnitVolume {kvp.Value.UnitVolume:N2} to {dmpItem.Value.UnitVolume:N2}");
                         }
-
                         kvp.Value.UnitVolume = dmpItem.Value.UnitVolume;
                     }
                     else
@@ -429,20 +431,18 @@ namespace DU_Industry_Tool
                         {
                             Debug.WriteLine($"{kvp.Value.Name} Level {kvp.Value.Level} to {dmpItem.Value.Tier}");
                         }
-
                         kvp.Value.Level = dmpItem.Value.Tier;
+
                         if ((int)kvp.Value.Time != dmpItem.Value.Time)
                         {
                             Debug.WriteLine($"{kvp.Value.Name} Time {kvp.Value.Time} to {dmpItem.Value.Time}");
                         }
-
                         kvp.Value.Time = dmpItem.Value.Time;
+
                         if (kvp.Value.Nanocraftable != dmpItem.Value.Nanocraftable)
                         {
-                            Debug.WriteLine(
-                                $"{kvp.Value.Name} Nanocraftable {kvp.Value.Nanocraftable} to {dmpItem.Value.Nanocraftable}");
+                            Debug.WriteLine($"{kvp.Value.Name} Nanocraftable {kvp.Value.Nanocraftable} to {dmpItem.Value.Nanocraftable}");
                         }
-
                         kvp.Value.Nanocraftable = dmpItem.Value.Nanocraftable;
                     }
                 }
@@ -840,6 +840,26 @@ namespace DU_Industry_Tool
 
             if (dmp)
             {
+                /*
+                // Ammo types output
+                List<string> ammoCategories = new List<string> {
+                    "326757369",  "3336558558", "399761377",  "512435856",  // Tier 2
+                    "2413250793", "1705420479", "3125069948", "2913149958", // Tier 3
+                    "2293088862", "3636126848", "3847207511", "2557110259", // Tier 4
+                };
+                foreach (var aCat in ammoCategories)
+                {
+                    Debug.WriteLine(_luaItems[aCat].DisplayNameWithSize);
+                    var catEntries = _luaItems.Where(x => x.Value.Schematics.Count > 0 &&
+                                                          x.Value.Schematics[0].Id == aCat).Select(x => x.Key).ToList();
+                    var entries = Recipes.Where(x => catEntries.Contains(x.Value.NqId.ToString())).OrderBy(x => x.Key);
+                    foreach (var kvp in entries)
+                    {
+                        Debug.WriteLine(kvp.Key);
+                        //Debug.WriteLine(kvp.Value.Name);
+                    }
+                    Debug.WriteLine("");
+                }
                 var missingIds = new StringBuilder();
                 var idLine = "";
                 var idCount = 0;
@@ -935,6 +955,7 @@ namespace DU_Industry_Tool
                 }
 
                 Debug.WriteLine(missingIds.ToString());
+                */
             }
 
             if (dmpRcp)
@@ -946,6 +967,29 @@ namespace DU_Industry_Tool
                 {
                     Debug.WriteLine(missing.Products[0].Id.ToString().PadRight(30) + " " +
                                     missing.Products[0].DisplayNameWithSize);
+                }
+
+                // Check for missing Plasma in recipes' ingredients
+                List<ulong> plasmaIds = new List<ulong> {
+                    1769135512, 1831558336, 1831557945, 1831558342,
+                    1831558338, 1831558341, 1831558343, 1831558340,
+                    1831558339, 1831558337
+                };
+                var plas = _luaRecipes.Values.Where(x => x.Ingredients.Count > 0 &&
+                                                         x.Ingredients.Any(y => plasmaIds.Contains(y.Id))).OrderBy(x => x.Products[0].DisplayNameWithSize).ToList();
+                foreach (var pl in plas)
+                {
+                    var ingName = pl.Ingredients.First(x => x.DisplayNameWithSize.StartsWith("Relic Plasma")).DisplayNameWithSize;
+                    var rec = Recipes.FirstOrDefault(x => x.Value.NqId == pl.Products[0].Id);
+                    if (rec.Key == null)
+                    {
+                        Debug.WriteLine(pl.Products[0].DisplayNameWithSize + " " + pl.Products[0].Id + " NOT FOUND!");
+                        continue;
+                    }
+                    if (rec.Value.Ingredients.All(x => x.Name != ingName))
+                    {
+                        Debug.WriteLine(rec.Key + " " + rec.Value.Name + " missing " + ingName);
+                    }
                 }
             }
 
@@ -1146,12 +1190,17 @@ namespace DU_Industry_Tool
                             .ToList()
                     });
                 }
-
+                Talents.Sort(TalentComparer);
                 SaveTalents();
             }
 
             if (progressBar != null)
                 progressBar.Value = 100;
+        }
+
+        private static int TalentComparer(Talent x, Talent y)
+        {
+            return string.Compare(x.Name, y.Name, StringComparison.InvariantCultureIgnoreCase);
         }
 
         public void SaveTalents()
@@ -1259,10 +1308,6 @@ namespace DU_Industry_Tool
                 return 0;
 
             double totalCost = 0;
-
-            var inputMultiplier = 1;
-            var outputMultiplier = 1;
-
             foreach (var ingredient in recipe.Ingredients)
             {
                 if (!Recipes.Keys.Contains(ingredient.Type))
@@ -1273,19 +1318,16 @@ namespace DU_Industry_Tool
 
                 if (Recipes.Keys.Contains(ingredient.Type) && Recipes[ingredient.Type].ParentGroupName == "Ore")
                 {
-                    //Console.WriteLine(ingredient.Name + " value: " + Ores.Where(o => o.Key == ingredient.Type).First().Value + "; Requires " + ingredient.Quantity + " to make " + recipe.Products.First().Quantity + " for a total of " + ((Ores.Where(o => o.Key == ingredient.Type).First().Value * ingredient.Quantity) / recipe.Products.First().Quantity));
-                    //Console.WriteLine("Talents: " + ingredient.Name + " value: " + Ores.Where(o => o.Key == ingredient.Type).First().Value + "; Requires " + (ingredient.Quantity * inputMultiplier) + " to make " + (recipe.Products.First().Quantity * outputMultiplier) + " for a total of " + ((Ores.Where(o => o.Key == ingredient.Type).First().Value * ingredient.Quantity * inputMultiplier) / (recipe.Products.First().Quantity * outputMultiplier)));
-                    totalCost += (ingredient.Quantity * inputMultiplier *
+                    totalCost += (ingredient.Quantity *
                                   Ores.First(o => o.Key == ingredient.Type).Value) /
-                                 (recipe.Products.First().Quantity * outputMultiplier);
+                                 (recipe.Products.First().Quantity);
                 }
                 else
                 {
-                    totalCost += GetBaseCost(ingredient.Type) * ingredient.Quantity * inputMultiplier /
-                                 (recipe.Products.First().Quantity * outputMultiplier);
+                    totalCost += GetBaseCost(ingredient.Type) * ingredient.Quantity /
+                                 (recipe.Products.First().Quantity);
                 }
             }
-
             return totalCost;
         }
 
@@ -1321,7 +1363,6 @@ namespace DU_Industry_Tool
             }
 
             double totalCost = 0;
-            //if (key.StartsWith("Hydrogen") || key.StartsWith("Oxygen") || key.StartsWith("Catalyst"))
             if (key.StartsWith("Catalyst"))
                 return 0;
             if (!Recipes.Keys.Contains(key))
@@ -1373,18 +1414,13 @@ namespace DU_Industry_Tool
                 var isPlasma = myRecipe.ParentGroupName.Equals("Consumables") &&
                                myRecipe.Key.StartsWith("Plasma", StringComparison.InvariantCultureIgnoreCase);
                 var ingName = ingredient.Name;
-                var ingKey = ingName; //ingredient.Type;
+                var ingKey = ingName;
                 if (!isPlasma)
                 {
                     ingKey = "T" + (myRecipe.Level < 2 ? "1" : myRecipe.Level.ToString()) + " " + ingKey;
                 }
 
-                if (isPure)
-                {
-                    ingName = "   " + ingKey;
-                    AddIngredient(ingName, amount);
-                }
-                else if (!isOre)
+                if (!isOre && !isPure)
                 {
                     if (isPart || isProduct)
                     {
@@ -1428,6 +1464,8 @@ namespace DU_Industry_Tool
                         _sumPures[ingKey] += qty;
                     else
                         _sumPures.Add(ingKey, qty);
+                    ingName = "   " + ingKey;
+                    AddIngredient(ingName, qty);
                     continue;
                 }
 
@@ -1571,9 +1609,12 @@ namespace DU_Industry_Tool
             double outSum = 0;
             foreach (var item in itemPrices)
             {
-                var key = item.Key.Substring(3); // assume tier at start, e.g. "T2 "
-                var recipe =
-                    Recipes.Values.FirstOrDefault(x => x.Name.Equals(key, StringComparison.InvariantCultureIgnoreCase));
+                var key = item.Key;
+                if (key.StartsWith("T"))
+                {
+                    key = key.Substring(3); // assume tier at start, e.g. "T2 "
+                }
+                var recipe = Recipes.Values.FirstOrDefault(x => x.Name.Equals(key, StringComparison.InvariantCultureIgnoreCase));
                 if (recipe == null)
                 {
                     Debug.WriteLine("NOT FOUND: " + key);

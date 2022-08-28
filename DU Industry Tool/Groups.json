@@ -1847,7 +1847,7 @@
     "AmmoCannonLarge":{
         "Id": "08d8a31f-4f1b-41dd-85a2-69082bb5f35d",
         "ParentId": "08d8a31f-4f19-493e-81ab-79281894af58",
-        "Name": "Large Cannon Ammo"
+        "Name": "Cannon Ammo Large"
     },
     "AmmoCannonExtraSmallThermic":{
         "Id": "08d8a31f-4f1a-4b14-850c-ce4a946f657b",
