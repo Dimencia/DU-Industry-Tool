@@ -3,7 +3,7 @@ on:
         branches: [master]
 jobs:
     build:
-        runs-on: windows-latest
+        runs-on: windows-2019
         steps:
         - name: Checkout
           uses: actions/checkout@v2
@@ -30,10 +30,12 @@ jobs:
           run: |
             msbuild.exe DU-Industry-Tool.sln /p:platform="Any CPU" /p:configuration="Release"
 
-        - name: Zip Solution
-          uses: montudor/action-zip@v1
+        - name: Archive Release
+          uses: thedoctor0/zip-release@main
           with:
-            args: zip -qq -r DU-Industry-Tool${{steps.versionReader.outputs.VERSION}}.zip DU-Industry-Tool/bin/Release
+             type: 'zip'
+             filename: DU-Industry-Tool${{steps.versionReader.outputs.VERSION}}.zip
+             exclusions: '*.git* /*node_modules/* *.vs* *.user .editorconfig'
 
         - name: Create github Release
           id: create_release
