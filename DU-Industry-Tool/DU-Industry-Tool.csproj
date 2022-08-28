@@ -7,7 +7,7 @@
     <ProjectGuid>{728C72E3-CB0A-4871-958F-7FD68F743F2D}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>DU_Industry_Tool</RootNamespace>
-    <AssemblyName>DU Industry Tool</AssemblyName>
+    <AssemblyName>DU-Industry-Tool</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
