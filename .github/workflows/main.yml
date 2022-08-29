@@ -55,7 +55,7 @@ jobs:
 
         - name: Release Notes
           id: release_notes
-          uses: suzuito/create-relese-by-file@master
+          uses: suzuito/create-release-by-file@master
           with:
             release_note: ./ReleaseNotes.txt
             prefix: '# '
