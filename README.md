@@ -1,5 +1,5 @@
 ## Mercury edition
-- Versions 0.500+ by tobitege(https://github.com/tobitege/DU-Industry-Tool)
+- Versions 0.500+ by tobitege (https://github.com/tobitege/DU-Industry-Tool)
 - Major recipes update to be current with patch 0.31 "Mercury".
 - Schematic cost is now maintained and associated with the
 corresponding pures, products and elements.
