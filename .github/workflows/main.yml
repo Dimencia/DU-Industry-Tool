@@ -23,11 +23,12 @@ jobs:
             set /p Version=<Version.txt
             echo ::set-output name=VERSION::%Version%
 
-        - name: Read version
-          id: read-version
-          uses: yaos/csproj-version-reader@master
+        - name: Get Assembly Version
+          id: getversion
+          uses: berglie/assembly-version/get@v1
           with:
-            FilePath: ./DU-Industry-Tool/DU-Industry-Tool.csproj
+            filename: 'Version.txt'
+            directory: '.'
 
         - name: Restore Packages
           run: nuget restore DU-Industry-Tool.sln
@@ -41,7 +42,7 @@ jobs:
           with:
             directory: DU-Industry-Tool/bin/Release/
             type: 'zip'
-            filename: DU-Industry-Tool${{ steps.versionReader.outputs.version }}.zip
+            filename: DU-Industry-Tool${{ steps.getversion.outputs.version }}.zip
             exclusions: '*.git* /*node_modules/* *.pdb *.vs* *.user .editorconfig'
 
         - name: Create github Release
@@ -50,8 +51,8 @@ jobs:
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           with:
-            tag_name: v${{ steps.versionReader.outputs.version }}
-            release_name: DU-Industry-Toolv${{ steps.versionReader.outputs.version }}
+            tag_name: v${{ steps.getversion.outputs.version }}
+            release_name: DU-Industry-Toolv${{ steps.getversion.outputs.version }}
             draft: true
             prerelease: false
 
@@ -61,8 +62,8 @@ jobs:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           with:
             upload_url: ${{ steps.create_release.outputs.upload_url }}
-            asset_path: DU-Industry-Tool${{ steps.versionReader.outputs.version }}.zip
-            asset_name: DU-Industry-Tool${{ steps.versionReader.outputs.version }}.zip
+            asset_path: DU-Industry-Tool${{ steps.getversion.outputs.version }}.zip
+            asset_name: DU-Industry-Tool${{ steps.getversion.outputs.version }}.zip
             asset_content_type: application/zip
 
         - name: Publish release
