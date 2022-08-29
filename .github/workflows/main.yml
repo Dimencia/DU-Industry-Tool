@@ -1,6 +1,12 @@
 on:
     push:
-        branches: [master]
+        branches:
+            - master
+        paths-ignore:
+            - '.github/**/*.yml'
+            - '.git*
+            - '.vscode
+
 jobs:
     build:
         runs-on: windows-2019
@@ -24,44 +30,55 @@ jobs:
             filename: 'Version.txt'
             directory: '.'
 
+        - name: Create Tag
+          id: create_tag
+          uses: jaywcjlove/create-tag-action@main
+          with:
+            test: '[R|r]elease[d]\s+[v|V]\d(\.\d+){0,2}'
+
         - name: Restore Packages
           run: nuget restore DU-Industry-Tool.sln
 
         - name: Build Solution
+          if: steps.create_tag.outputs.successful
           run: |
             msbuild.exe DU-Industry-Tool.sln /p:platform="Any CPU" /p:configuration="Release"
 
         - name: Archive Release
           uses: thedoctor0/zip-release@main
+          if: steps.create_tag.outputs.successful
           with:
             directory: DU-Industry-Tool/bin/Release/
             type: 'zip'
-            filename: DU-Industry-Tool-v${{ steps.getversion.outputs.version }}.zip
+            filename: DU-Industry-Tool-v${{ steps.create_tag.outputs.versionNumber }}.zip
             exclusions: '*.git* /*node_modules/* *.exe.config *.xml *.pdb *.vs* *.user .editorconfig'
 
         - name: Create github Release
           id: create_release
           uses: actions/create-release@v1
+          if: steps.create_tag.outputs.successful
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           with:
-            tag_name: v${{ steps.getversion.outputs.version }}
-            release_name: DU-Industry-Tool-v${{ steps.getversion.outputs.version }}
+            tag_name: v${{ steps.create_tag.outputs.versionNumber }}
+            release_name: DU-Industry-Tool-v${{ steps.create_tag.outputs.versionNumber }}
             draft: true
             prerelease: false
 
         - name: Upload release
           uses: actions/upload-release-asset@v1.0.1
+          if: steps.create_tag.outputs.successful
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           with:
             upload_url: ${{ steps.create_release.outputs.upload_url }}
-            asset_path: DU-Industry-Tool/bin/Release/DU-Industry-Tool-v${{ steps.getversion.outputs.version }}.zip
-            asset_name: DU-Industry-Tool-v${{ steps.getversion.outputs.version }}.zip
+            asset_path: DU-Industry-Tool/bin/Release/DU-Industry-Tool-v${{ steps.create_tag.outputs.versionNumber }}.zip
+            asset_name: DU-Industry-Tool-v${{ steps.create_tag.outputs.versionNumber }}.zip
             asset_content_type: application/zip
 
         - name: Publish release
           uses: eregon/publish-release@v1
+          if: steps.create_tag.outputs.successful
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           with:
