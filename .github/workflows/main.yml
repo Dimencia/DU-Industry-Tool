@@ -37,7 +37,7 @@ jobs:
             directory: DU-Industry-Tool/bin/Release/
             type: 'zip'
             filename: DU-Industry-Tool-v${{ steps.getversion.outputs.version }}.zip
-            exclusions: '*.git* /*node_modules/* *.xml *.pdb *.vs* *.user .editorconfig'
+            exclusions: '*.git* /*node_modules/* *.exe.config *.xml *.pdb *.vs* *.user .editorconfig'
 
         - name: Create github Release
           id: create_release
