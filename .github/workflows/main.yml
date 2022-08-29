@@ -17,12 +17,6 @@ jobs:
         - name: Navigate to Workspace
           run: cd $GITHUB_WORKSPACE
 
-        - name: Get version
-          id: versionReader
-          run: |
-            set /p Version=<Version.txt
-            echo ::set-output name=VERSION::%Version%
-
         - name: Get Assembly Version
           id: getversion
           uses: berglie/assembly-version/get@v1
@@ -43,7 +37,7 @@ jobs:
             directory: DU-Industry-Tool/bin/Release/
             type: 'zip'
             filename: DU-Industry-Tool-v${{ steps.getversion.outputs.version }}.zip
-            exclusions: '*.git* /*node_modules/* *.pdb *.vs* *.user .editorconfig'
+            exclusions: '*.git* /*node_modules/* *.xml *.pdb *.vs* *.user .editorconfig'
 
         - name: Create github Release
           id: create_release
@@ -62,7 +56,7 @@ jobs:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           with:
             upload_url: ${{ steps.create_release.outputs.upload_url }}
-            asset_path: DU-Industry-Tool-v${{ steps.getversion.outputs.version }}.zip
+            asset_path: DU-Industry-Tool/bin/Release/DU-Industry-Tool-v${{ steps.getversion.outputs.version }}.zip
             asset_name: DU-Industry-Tool-v${{ steps.getversion.outputs.version }}.zip
             asset_content_type: application/zip
 
