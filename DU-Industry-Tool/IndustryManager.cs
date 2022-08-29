@@ -315,14 +315,14 @@ namespace DU_Industry_Tool
 
             // NOTE: conversion needs a manual fix, should only be used in special cases!
             if (File.Exists("items_api_dump.lua") &&
-                MessageBox.Show("Convert items lua file to json?", "Conversion", MessageBoxButtons.YesNo) ==
+                MessageBox.Show(@"Convert items lua file to json?", @"Conversion", MessageBoxButtons.YesNo) ==
                 DialogResult.Yes)
             {
                 dmp = ConvertLua2Json("items_api_dump");
             }
 
             if (File.Exists("recipes_api_dump.lua") &&
-                MessageBox.Show("Convert recipes lua file to json?", "Conversion", MessageBoxButtons.YesNo) ==
+                MessageBox.Show(@"Convert recipes lua file to json?", @"Conversion", MessageBoxButtons.YesNo) ==
                 DialogResult.Yes)
             {
                 dmpRcp = ConvertLua2Json("recipes_api_dump");
