@@ -69,16 +69,16 @@ namespace DU_Industry_Tool
         {
             if (treeView.SelectedNode == e.Node)
             {
-                SelectRecipe(sender, e.Node);
+                SelectRecipe(e.Node);
             }
         }
 
         private void Treeview_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            SelectRecipe(sender, e.Node);
+            SelectRecipe(e.Node);
         }
 
-        private void SelectRecipe(object sender, TreeNode e)
+        private void SelectRecipe(TreeNode e)
         {
             if (!(e?.Tag is SchematicRecipe recipe))
             {
