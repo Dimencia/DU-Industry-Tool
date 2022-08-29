@@ -5,10 +5,10 @@ using System.Drawing;
 using System.Linq;
 using System.Globalization;
 using System.Windows.Forms;
-using ComponentFactory.Krypton.Toolkit;
-using ComponentFactory.Krypton.Navigator;
-using ComponentFactory.Krypton.Workspace;
-using ComponentFactory.Krypton.Docking;
+using Krypton.Toolkit;
+using Krypton.Navigator;
+using Krypton.Workspace;
+using Krypton.Docking;
 using DocumentFormat.OpenXml.Drawing.ChartDrawing;
 using DU_Industry_Tool.Properties;
 
@@ -69,16 +69,16 @@ namespace DU_Industry_Tool
         {
             if (treeView.SelectedNode == e.Node)
             {
-                SelectRecipe(sender, e.Node);
+                SelectRecipe(e.Node);
             }
         }
 
         private void Treeview_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            SelectRecipe(sender, e.Node);
+            SelectRecipe(e.Node);
         }
 
-        private void SelectRecipe(object sender, TreeNode e)
+        private void SelectRecipe(TreeNode e)
         {
             if (!(e?.Tag is SchematicRecipe recipe))
             {

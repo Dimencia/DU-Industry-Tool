@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30225.117
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DU Industry Tool", "DU Industry Tool\DU Industry Tool.csproj", "{728C72E3-CB0A-4871-958F-7FD68F743F2D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DU-Industry-Tool", "DU-Industry-Tool\DU-Industry-Tool.csproj", "{728C72E3-CB0A-4871-958F-7FD68F743F2D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
