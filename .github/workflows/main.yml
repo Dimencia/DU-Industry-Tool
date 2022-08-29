@@ -18,7 +18,7 @@ jobs:
           uses: microsoft/setup-msbuild@v1
 
         - name: Setup NuGet
-          uses: NuGet/setup-nuget@v1.0.5
+          uses: NuGet/setup-nuget@v1.0.6
 
         - name: Navigate to Workspace
           run: cd $GITHUB_WORKSPACE
@@ -36,13 +36,33 @@ jobs:
           with:
             test: '[R|r]elease[d]\s+[v|V]\d(\.\d+){0,2}'
 
+        - name: Generate Changelog
+          id: changelog
+          uses: jaywcjlove/changelog-generator@main
+          if: steps.create_tag.outputs.successful
+          with:
+            head-ref: ${{steps.create_tag.outputs.version}}
+            filter-author: (tobitege|Dimencia)
+            filter: (^[\s]+?[R|r]elease)|(^[R|r]elease)
+
         - name: Restore Packages
+          if: steps.create_tag.outputs.successful
           run: nuget restore DU-Industry-Tool.sln
 
         - name: Build Solution
           if: steps.create_tag.outputs.successful
           run: |
             msbuild.exe DU-Industry-Tool.sln /p:platform="Any CPU" /p:configuration="Release"
+
+        - name: Release Notes
+          id: release_notes
+          uses: suzuito/create-relese-by-file@master
+          with:
+            release_note: ./ReleaseNotes.txt
+            prefix: '# '
+            check_only: false
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
         - name: Archive Release
           uses: thedoctor0/zip-release@main

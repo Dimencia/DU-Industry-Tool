@@ -1,4 +1,5 @@
 ## Mercury edition
+- Versions 0.500+ by tobitege(https://github.com/tobitege/DU-Industry-Tool)
 - Major recipes update to be current with patch 0.31 "Mercury".
 - Schematic cost is now maintained and associated with the
 corresponding pures, products and elements.
@@ -11,7 +12,8 @@ tier and category.
 Big thanks to Jericho1060 for making available item/recipe data dumps via
 his website https://du-lua.dev which helped me a lot to update the data displayed!
 
-Updated by tobitege
+Binary releases available here (v0.500+):
+https://github.com/tobitege/DU-Industry-Tool/releases
 
 ![Mercury Overview](https://github.com/tobitege/DU-Industry-Tool/blob/master/DU%20Industry%20Tool%20(Mercury)%20Screenshot.png?raw=true)
 
