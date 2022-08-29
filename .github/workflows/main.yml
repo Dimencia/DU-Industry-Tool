@@ -22,7 +22,12 @@ jobs:
           run: |
             set /p Version=<Version.txt
             echo ::set-output name=VERSION::%Version%
-            echo ${{ steps.get_version.outputs.VERSION }}
+
+        - name: Read version
+          id: read-version
+          uses: yaos/csproj-version-reader@master
+          with:
+            FilePath: ./DU-Industry-Tool/DU-Industry-Tool.csproj
 
         - name: Restore Packages
           run: nuget restore DU-Industry-Tool.sln
@@ -34,30 +39,32 @@ jobs:
         - name: Archive Release
           uses: thedoctor0/zip-release@main
           with:
-             path: DU-Industry-Tool/bin/Release/
-             type: 'zip'
-             filename: DU-Industry-Tool${{steps.versionReader.outputs.VERSION}}.zip
-             exclusions: '*.git* /*node_modules/* *.vs* *.user .editorconfig'
+            directory: DU-Industry-Tool/bin/Release/
+            type: 'zip'
+            filename: DU-Industry-Tool${{ steps.versionReader.outputs.version }}.zip
+            exclusions: '*.git* /*node_modules/* *.pdb *.vs* *.user .editorconfig'
 
         - name: Create github Release
           id: create_release
           uses: actions/create-release@v1
           env:
-              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           with:
-              tag_name: v${{ steps.versionReader.outputs.VERSION }}
-              release_name: DU-Industry-Toolv${{steps.versionReader.outputs.VERSION}}
-              draft: true
-              prerelease: false
+            tag_name: v${{ steps.versionReader.outputs.version }}
+            release_name: DU-Industry-Toolv${{ steps.versionReader.outputs.version }}
+            draft: true
+            prerelease: false
+
         - name: Upload release
           uses: actions/upload-release-asset@v1.0.1
           env:
-              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           with:
-              upload_url: ${{ steps.create_release.outputs.upload_url }}
-              asset_path: DU-Industry-Tool${{steps.versionReader.outputs.VERSION}}.zip
-              asset_name: DU-Industry-Tool${{steps.versionReader.outputs.VERSION}}.zip
-              asset_content_type: application/zip
+            upload_url: ${{ steps.create_release.outputs.upload_url }}
+            asset_path: DU-Industry-Tool${{ steps.versionReader.outputs.version }}.zip
+            asset_name: DU-Industry-Tool${{ steps.versionReader.outputs.version }}.zip
+            asset_content_type: application/zip
+
         - name: Publish release
           uses: eregon/publish-release@v1
           env:
