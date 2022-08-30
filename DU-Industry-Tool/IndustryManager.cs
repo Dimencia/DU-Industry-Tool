@@ -51,7 +51,7 @@ namespace DU_Industry_Tool
             }
 
             // On initialization, read all our data from files
-            var json = File.ReadAllText("RecipesGroups.json");
+            var json = File.ReadAllText(@"RecipesGroups.json");
             Recipes = JsonConvert.DeserializeObject<SortedDictionary<string, SchematicRecipe>>(json);
 
             if (progressBar != null)
