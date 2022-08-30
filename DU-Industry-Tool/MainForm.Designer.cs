@@ -52,7 +52,7 @@ namespace DU_Industry_Tool
             this.kryptonDockableWorkspace = new Krypton.Docking.KryptonDockableWorkspace();
             this.kryptonWorkspaceCell1 = new Krypton.Workspace.KryptonWorkspaceCell();
             this.kryptonPage1 = new Krypton.Navigator.KryptonPage();
-            this.searchPanel = new System.Windows.Forms.FlowLayoutPanel();
+            this.searchPanel = new Krypton.Toolkit.KryptonPanel();
             this.SearchBox = new System.Windows.Forms.TextBox();
             this.SearchButton = new System.Windows.Forms.Button();
             this.QuantityBox = new System.Windows.Forms.ComboBox();
@@ -293,6 +293,7 @@ namespace DU_Industry_Tool
             this.QuantityBox.Name = "QuantityBox";
             this.QuantityBox.Size = new System.Drawing.Size(50, 28);
             this.QuantityBox.TabIndex = 2;
+            this.QuantityBox.SelectionChangeCommitted += QuantityBoxOnSelectionChangeCommitted;
             // 
             // PreviousButton
             // 
@@ -404,7 +405,7 @@ namespace DU_Industry_Tool
         private Krypton.Workspace.KryptonWorkspaceCell kryptonWorkspaceCell1;
         private Krypton.Navigator.KryptonPage kryptonPage1;
         private System.Windows.Forms.TreeView treeView;
-        private System.Windows.Forms.FlowLayoutPanel searchPanel;
+        private Krypton.Toolkit.KryptonPanel searchPanel;
         private System.Windows.Forms.TextBox SearchBox;
         private System.Windows.Forms.Button SearchButton;
         private System.Windows.Forms.Button PreviousButton;

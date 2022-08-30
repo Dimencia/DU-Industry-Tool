@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.7.1.0
+
+- Switching between result tabs will now synchronize the tree to highlight the same item.
+- Changing the amount selection will now re-calculate a currently selected recipe with the selected amount of items.
+- Removed forgotten sample code resources.
+
 ## v0.7.0.0
 
 - Renamed solution and application (dashes instead of blanks)

@@ -30,12 +30,12 @@ jobs:
             filename: 'Version.txt'
             directory: '.'
 
-        #- name: Create Tag
-        #  if: github.ref == 'refs/heads/master'  # ONLY ON MASTER
-        #  id: create_tag
-        #  uses: jaywcjlove/create-tag-action@main
-        #  with:
-        #    release: true
+        - name: Create Tag
+          if: github.ref == 'refs/heads/master'  # ONLY ON MASTER
+          id: create_tag
+          uses: jaywcjlove/create-tag-action@main
+          with:
+            release: true
         #    version: ${{ steps.getversion.outputs.version }}
 
         #- name: Generate Changelog
@@ -65,40 +65,40 @@ jobs:
         #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
         - name: Archive Release
-          if: github.ref == 'refs/heads/master'  # ONLY ON MASTER
+          if: (github.ref == 'refs/heads/master') && (steps.create_tag.outputs.successful)  # ONLY ON MASTER
           uses: thedoctor0/zip-release@main
           with:
             directory: DU-Industry-Tool/bin/Release/
             type: 'zip'
-            filename: DU-Industry-Tool-v${{ steps.getversion.outputs.version }}.zip
+            filename: DU-Industry-Tool-v${{ steps.create_tag.outputs.version }}.zip
             exclusions: '*.git* /*node_modules/* *.exe.config *.xml *.pdb *.vs* *.user .editorconfig'
 
         - name: Create Github Release
-          if: github.ref == 'refs/heads/master'  # ONLY ON MASTER
+          if: (github.ref == 'refs/heads/master') && (steps.create_tag.outputs.successful)  # ONLY ON MASTER
           id: create_release
           uses: actions/create-release@v1
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           with:
-            tag_name: v${{ steps.getversion.outputs.version }}
-            release_name: DU-Industry-Tool-v${{ steps.getversion.outputs.version }}
+            tag_name: v${{ steps.create_tag.outputs.version }}
+            release_name: DU-Industry-Tool-v${{ steps.create_tag.outputs.version }}
             draft: true
             prerelease: false
             body_path: changelog.md
 
         - name: Upload release
-          if: github.ref == 'refs/heads/master'  # ONLY ON MASTER
+          if: (github.ref == 'refs/heads/master') && (steps.create_tag.outputs.successful)  # ONLY ON MASTER
           uses: actions/upload-release-asset@v1.0.1
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           with:
             upload_url: ${{ steps.create_release.outputs.upload_url }}
-            asset_path: DU-Industry-Tool/bin/Release/DU-Industry-Tool-v${{ steps.getversion.outputs.version }}.zip
-            asset_name: DU-Industry-Tool-v${{ steps.getversion.outputs.version }}.zip
+            asset_path: DU-Industry-Tool/bin/Release/DU-Industry-Tool-v${{ steps.create_tag.outputs.version }}.zip
+            asset_name: DU-Industry-Tool-v${{ steps.create_tag.outputs.version }}.zip
             asset_content_type: application/zip
 
         - name: Publish release
-          if: github.ref == 'refs/heads/master'  # ONLY ON MASTER
+          if: (github.ref == 'refs/heads/master') && (steps.create_tag.outputs.successful)  # ONLY ON MASTER
           uses: eregon/publish-release@v1
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

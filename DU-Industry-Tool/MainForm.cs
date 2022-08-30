@@ -26,6 +26,7 @@ namespace DU_Industry_Tool
         private readonly List<string> _breadcrumbs = new List<string>();
         private FlowLayoutPanel _costDetailsPanel;
         private FlowLayoutPanel _infoPanel;
+        private bool _navUpdating;
 
         public MainForm(IndustryManager manager)
         {
@@ -67,7 +68,7 @@ namespace DU_Industry_Tool
 
         private void Treeview_NodeClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            if (treeView.SelectedNode == e.Node)
+            if (e.Node != null && treeView.SelectedNode == e.Node)
             {
                 SelectRecipe(e.Node);
             }
@@ -75,7 +76,7 @@ namespace DU_Industry_Tool
 
         private void Treeview_AfterSelect(object sender, TreeViewEventArgs e)
         {
-            SelectRecipe(e.Node);
+            SelectRecipe(e?.Node);
         }
 
         private void SelectRecipe(TreeNode e)
@@ -94,8 +95,17 @@ namespace DU_Industry_Tool
             // Display recipe info for the thing they have selected
             Console.WriteLine(recipe.Name);
             SearchBox.Text = recipe.Name;
-            var newDoc = NewDocument(recipe.Name);
-            if (newDoc == null || _infoPanel == null) return;
+            _navUpdating = true;
+            ContentDocument newDoc = null;
+            try
+            {
+                newDoc = NewDocument(recipe.Name);
+                if (newDoc == null || _infoPanel == null) return;
+            }
+            finally
+            {
+                _navUpdating = false;
+            }
             _infoPanel.Controls.Clear();
             _infoPanel.BorderStyle = BorderStyle.None;
 
@@ -315,12 +325,13 @@ namespace DU_Industry_Tool
 
         private void Label_Click(object sender, EventArgs e)
         {
-            var label = sender as Label;
-            if (!_manager.Recipes.ContainsKey(label.Tag as string))
+            if (!(sender is Label label)) return;
+            if (!(label.Tag is string tag)) return;
+            if (!_manager.Recipes.ContainsKey(tag))
             {
                 return;
             }
-            var recipe = _manager.Recipes[label.Tag as string];
+            var recipe = _manager.Recipes[tag];
 
             if (_breadcrumbs.Count == 0 || _breadcrumbs.LastOrDefault() != recipe.Name)
             {
@@ -334,12 +345,11 @@ namespace DU_Industry_Tool
             {
                 foreach(var innerNode in outerNode.Nodes.OfType<TreeNode>())
                 {
-                    if (innerNode.Text.Equals(recipe.Name, StringComparison.CurrentCultureIgnoreCase))
-                    {
-                        targetNode = innerNode;
-                        break;
-                    }
+                    if (!innerNode.Text.Equals(recipe.Name, StringComparison.CurrentCultureIgnoreCase)) continue;
+                    targetNode = innerNode;
+                    break;
                 }
+                if (targetNode != null) break;
             }
             if (targetNode == null) return;
             treeView.SelectedNode = targetNode;
@@ -399,28 +409,46 @@ namespace DU_Industry_Tool
             var outerNodes = treeView.Nodes.OfType<TreeNode>();
             TreeNode firstResult = null;
             treeView.BeginUpdate();
-            treeView.CollapseAll();
-            foreach (var outerNode in outerNodes)
+            try
             {
-                foreach (var innerNode in outerNode.Nodes.OfType<TreeNode>())
+                treeView.CollapseAll();
+                foreach (var outerNode in outerNodes)
                 {
-                    if (!innerNode.Text.ToLower().Contains(searchValue.ToLower()))
-                        continue;
-                    innerNode.EnsureVisible();
-                    if (firstResult == null)
+                    foreach (var innerNode in outerNode.Nodes.OfType<TreeNode>())
                     {
-                        firstResult = innerNode;
+                        if (innerNode.Text.IndexOf(searchValue, StringComparison.InvariantCultureIgnoreCase) < 0)
+                            continue;
+                        innerNode.EnsureVisible();
+                        if (firstResult == null ||
+                            innerNode.Text.Equals(searchValue, StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            firstResult = innerNode;
+                        }
                     }
                 }
+                if (firstResult != null)
+                {
+                    treeView.SelectedNode = firstResult;
+                    treeView.SelectedNode.EnsureVisible();
+                }
             }
-
-            if (firstResult != null)
+            finally
             {
-                treeView.SelectedNode = firstResult;
-                treeView.SelectedNode.EnsureVisible();
+                treeView.EndUpdate();
             }
-            treeView.EndUpdate();
             treeView.Focus();
+        }
+
+        private void QuantityBoxOnSelectionChangeCommitted(object sender, EventArgs e)
+        {
+            if (treeView.SelectedNode == null)
+            {
+                SearchButton_Click(sender, e);
+            }
+            else
+            {
+                SelectRecipe(treeView.SelectedNode);
+            }
         }
 
         private void UpdateMarketValuesToolStripMenuItem_Click(object sender, EventArgs e)
@@ -669,7 +697,10 @@ namespace DU_Industry_Tool
             this.buttonConvertLua2JsonFile.Visible = false;
             // Setup docking functionality
             var w = kryptonDockingManager.ManageWorkspace(kryptonDockableWorkspace);
-            kryptonDockingManager.ManageControl(kryptonPage1, w);
+            if (w != null)
+            {
+                kryptonDockingManager.ManageControl(kryptonPage1, w);
+            }
             kryptonDockingManager.ManageFloating(this);
 
             // Do not allow the left-side page to be closed or made auto hidden/docked
@@ -734,7 +765,10 @@ namespace DU_Industry_Tool
 
         private void KryptonNavigator1OnSelectedPageChanged(object sender, EventArgs e)
         {
-            OnMainformResize(sender, e);
+            if(_navUpdating || !(sender is KryptonNavigator nav && nav.SelectedPage != null)) return;
+            if (nav.SelectedPage.Controls.Count == 0) return;
+            SearchBox.Text = nav.SelectedPage.Text;
+            SearchButton_Click(SearchButton, e);
         }
 
         private void RibbonButtonAboutClick(object sender, EventArgs e)
@@ -742,5 +776,6 @@ namespace DU_Industry_Tool
             var form = new AboutForm();
             form.ShowDialog(this);
         }
+
     } // Mainform
 }
