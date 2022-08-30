@@ -57,7 +57,7 @@ namespace DU_Industry_Tool
             if (progressBar != null)
                 progressBar.Value = 20;
 
-            json = File.ReadAllText("Groups.json");
+            json = File.ReadAllText(@"Groups.json");
             Groups = JsonConvert.DeserializeObject<Dictionary<string, Group>>(json);
             if (progressBar != null)
                 progressBar.Value = 30;

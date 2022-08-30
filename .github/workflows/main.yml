@@ -3,9 +3,9 @@ on:
         branches:
             - master
         paths-ignore:
-            - '.github/**/*.yml'
             - '.git*'
             - '.vscode'
+            #- '.github/**/*.yml'
 
 jobs:
     build:
@@ -66,7 +66,7 @@ jobs:
         #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
         - name: Archive Release
-          if: (github.ref == 'refs/heads/master') && (steps.create_tag.outputs.successful)  # ONLY ON MASTER
+          if: ${{ (github.ref == 'refs/heads/master') && (steps.create_tag.outputs.successful) }}  # ONLY ON MASTER
           uses: thedoctor0/zip-release@main
           with:
             directory: DU-Industry-Tool/bin/Release/
@@ -75,7 +75,7 @@ jobs:
             exclusions: '*.git* /*node_modules/* *.exe.config *.xml *.pdb *.vs* *.user .editorconfig'
 
         - name: Create Github Release
-          if: (github.ref == 'refs/heads/master') && (steps.create_tag.outputs.successful)  # ONLY ON MASTER
+          if: ${{ (github.ref == 'refs/heads/master') && (steps.create_tag.outputs.successful) }}  # ONLY ON MASTER
           id: create_release
           uses: actions/create-release@v1
           env:
@@ -88,7 +88,7 @@ jobs:
             body_path: changelog.md
 
         - name: Upload release
-          if: (github.ref == 'refs/heads/master') && (steps.create_tag.outputs.successful)  # ONLY ON MASTER
+          if: ${{ (github.ref == 'refs/heads/master') && (steps.create_tag.outputs.successful) }}  # ONLY ON MASTER
           uses: actions/upload-release-asset@v1.0.1
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -99,7 +99,7 @@ jobs:
             asset_content_type: application/zip
 
         - name: Publish release
-          if: (github.ref == 'refs/heads/master') && (steps.create_tag.outputs.successful)  # ONLY ON MASTER
+          if: ${{ (github.ref == 'refs/heads/master') && (steps.create_tag.outputs.successful) }}  # ONLY ON MASTER
           uses: eregon/publish-release@v1
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
