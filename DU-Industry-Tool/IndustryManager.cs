@@ -44,7 +44,7 @@ namespace DU_Industry_Tool
         public IndustryManager(ProgressBar progressBar = null)
         {
             CultureInfo.CurrentCulture = new CultureInfo("en-us");
-            if (!File.Exists("RecipesGroups.json") || !File.Exists("Groups.json"))
+            if (!File.Exists(@"RecipesGroups.json") || !File.Exists("Groups.json"))
             {
                 MessageBox.Show(@"Files RecipesGroups.json and/or Groups.json are missing! Please re-download!");
                 return;
