@@ -40,7 +40,7 @@ jobs:
         #    version: ${{ steps.getversion.outputs.version }}
 
         #- name: Generate Changelog
-        #  if: steps.create_tag.outputs.successful
+        #  if: ${{ (github.ref == 'refs/heads/master') && (steps.create_tag.outputs.successful) }}  # ONLY ON MASTER
         #  id: changelog
         #  uses: jaywcjlove/changelog-generator@main
         #  with:
@@ -49,9 +49,11 @@ jobs:
         #    filter: (^[\s]+?[R|r]elease)|(^[R|r]elease)
 
         - name: Restore Packages
+          if: ${{ (github.ref == 'refs/heads/master') && (steps.create_tag.outputs.successful) }}  # ONLY ON MASTER
           run: nuget restore DU-Industry-Tool.sln
 
         - name: Build Solution
+          if: ${{ (github.ref == 'refs/heads/master') && (steps.create_tag.outputs.successful) }}  # ONLY ON MASTER
           run: |
             msbuild.exe DU-Industry-Tool.sln /p:platform="Any CPU" /p:configuration="Release"
 
@@ -85,7 +87,7 @@ jobs:
             release_name: DU-Industry-Tool-v${{ steps.create_tag.outputs.version }}
             draft: true
             prerelease: false
-            body_path: changelog.md
+            body_path: latestchanges.md
 
         - name: Upload release
           if: ${{ (github.ref == 'refs/heads/master') && (steps.create_tag.outputs.successful) }}  # ONLY ON MASTER
