@@ -27,8 +27,8 @@ jobs:
           id: getversion
           uses: berglie/assembly-version/get@v1
           with:
-            filename: 'Version.txt'
-            directory: '.'
+            filename: Version.txt
+            directory: './DU-Industry-Tool'
 
         - name: Create Tag
           if: github.ref == 'refs/heads/master'  # ONLY ON MASTER
@@ -36,8 +36,8 @@ jobs:
           uses: jaywcjlove/create-tag-action@main
           with:
             release: true
-            test: '[R|r]elease[d]\s+[v|V]\d(\.\d+){0,2}'
-        #    version: ${{ steps.getversion.outputs.version }}
+        #    test: '[R|r]elease[d]\s+[v|V]\d(\.\d+){0,2}'
+            version: ${{ steps.getversion.outputs.version }}
 
         #- name: Generate Changelog
         #  if: ${{ (github.ref == 'refs/heads/master') && (steps.create_tag.outputs.successful) }}  # ONLY ON MASTER
@@ -61,7 +61,7 @@ jobs:
         #  id: release_notes
         #  uses: suzuito/create-release-by-file@master
         #  with:
-        #    release_note: ./changelog.md
+        #    release_note: ./DU-Industry-Tool/changelog.md
         #    prefix: '# '
         #    check_only: false
         #  env:

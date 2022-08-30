@@ -1,7 +1,7 @@
 # Latest Changes
 
-## v0.7.1.0
+## v0.7.2
 
-- Switching between result tabs will now synchronize the tree to highlight the same item.
-- Changing the amount selection box will now re-calculate a currently selected recipe with the selected amount of items.
-- Removed forgotten sample code resources.
+- Improved search in tree to prioritize exact match over partial match.
+- Fixed version number handling in About dialogue
+- Some code cleanup

@@ -107,22 +107,14 @@ namespace DU_Industry_Tool
                 _navUpdating = false;
             }
             _infoPanel.Controls.Clear();
-            _infoPanel.BorderStyle = BorderStyle.None;
 
-            _infoPanel.Controls.Add(new Label {
-                AutoSize = false,
-                Font = new Font(_infoPanel.Font.FontFamily, 12f, FontStyle.Bold),
-                Padding = new Padding(2, 5, 4, 2),
-                Text = $"{recipe.Name} (T{recipe.Level})",
-                Height = 30,
-                Width = 370
-            });
-            _infoPanel.Controls.Add(new Label {
-                AutoSize = true,
-                Font = new Font(_infoPanel.Font.FontFamily, 9f),
-                Padding = new Padding(4, 0, 4, 5),
-                Text = $"Unit mass: {recipe.UnitMass:N1} volume: {recipe.UnitVolume:N1}"+(recipe.Nanocraftable ? "  *nanocraftable*" : "")
-            });
+            var lbl = AddLabel(_infoPanel.Controls, $"{recipe.Name} (T{recipe.Level})");
+            lbl.Font = new Font(_infoPanel.Font.FontFamily, 12f, FontStyle.Bold);
+            lbl.Padding = new Padding(2, 5, 4, 2);
+            lbl.Height = 30;
+            lbl.Width = 370;
+            lbl = AddLabel(_infoPanel.Controls, $"Unit mass: {recipe.UnitMass:N1} volume: {recipe.UnitVolume:N1}"+(recipe.Nanocraftable ? "  *nanocraftable*" : ""));
+            lbl.Padding = new Padding(4, 0, 4, 5);
 
             _manager.ProductQuantity = int.Parse(QuantityBox.Text);
             if (!double.TryParse(QuantityBox.Text, out var cnt)) cnt = 1d;
@@ -138,11 +130,11 @@ namespace DU_Industry_Tool
 
             // IDK why sometimes prices are listed as 0
             var orders = _market.MarketOrders.Values.Where(o => o.ItemType == recipe.NqId &&
-                                                               o.BuyQuantity < 0 &&
-                                                               DateTime.Now < o.ExpirationDate &&
-                                                               o.Price > 0);
+                                                                o.BuyQuantity < 0 &&
+                                                                DateTime.Now < o.ExpirationDate &&
+                                                                o.Price > 0);
             var mostRecentOrder = orders.OrderBy(o => o.Price).FirstOrDefault();
-            if (mostRecentOrder != null)
+            if (mostRecentOrder?.Price > 0.00d)
             {
                 var costPanel = new FlowLayoutPanel
                 {
@@ -170,22 +162,16 @@ namespace DU_Industry_Tool
                 Margin = new Padding(0),
                 Padding = new Padding(0,0,0,10)
             };
+            newPanel.SuspendLayout();
+            grid.SuspendLayout();
             foreach (var ingredient in recipe.Ingredients)
             {
-                var label = new Label
-                {
-                    AutoSize = true,
-                    Font = new Font(_infoPanel.Font, FontStyle.Underline),
-                    ForeColor = Color.CornflowerBlue,
-                    Padding = new Padding(0),
-                    Tag = ingredient.Type,
-                    Text = ingredient.Name,
-                };
-                label.Click += Label_Click;
-                grid.Controls.Add(label);
+                AddLinkedLabel(grid.Controls, ingredient.Name, ingredient.Type).Click += Label_Click;
                 AddLabel(grid.Controls, ingredient.Quantity.ToString("0.0"));
             }
+            grid.ResumeLayout();
             newPanel.Controls.Add(grid);
+            newPanel.ResumeLayout();
 
             // ----- Products -----
             newPanel = AddFlowLabel(_infoPanel.Controls, "Products", FontStyle.Bold);
@@ -196,25 +182,19 @@ namespace DU_Industry_Tool
                 AutoSize = true,
                 Padding = new Padding(0,4,0,10)
             };
+            newPanel.SuspendLayout();
+            grid.SuspendLayout();
             foreach (var prod in recipe.Products)
             {
-                var isSame = prod.Type == recipe.Key;
-                var prodLbl = new Label
-                {
-                    AutoSize = true,
-                    ForeColor = isSame ? Color.Black : Color.CornflowerBlue,
-                    Font = new Font(_infoPanel.Font, FontStyle.Regular),
-                    Text = prod.Name,
-                    Tag = isSame ? null : prod.Type
-                };
-                if (!isSame)
-                {
-                    prodLbl.Click += Label_Click;
-                }
-                grid.Controls.Add(prodLbl);
+                if (prod.Type == recipe.Key)
+                    AddLabel(grid.Controls, prod.Name);
+                else
+                    AddLinkedLabel(grid.Controls, prod.Name, prod.Type).Click += Label_Click;
                 AddLabel(grid.Controls, prod.Quantity.ToString("0.0"));
             }
+            grid.ResumeLayout();
             newPanel.Controls.Add(grid);
+            newPanel.ResumeLayout();
 
             if (recipe.ParentGroupName.EndsWith("Ore", StringComparison.InvariantCultureIgnoreCase) ||
                 recipe.ParentGroupName.EndsWith("Parts", StringComparison.InvariantCultureIgnoreCase) ||
@@ -237,20 +217,15 @@ namespace DU_Industry_Tool
                         Width = 450,
                         VerticalScroll = { Visible = true }
                     };
-                    foreach (var label in containedIn.Select(master => new Label
-                             {
-                                 AutoSize = true,
-                                 Font = new Font(_infoPanel.Font, FontStyle.Underline),
-                                 Text = master.Name,
-                                 ForeColor = Color.CornflowerBlue,
-                                 Padding = new Padding(0),
-                                 Tag = master.Key
-                             }))
+                    newPanel.SuspendLayout();
+                    grid.SuspendLayout();
+                    foreach (var entry in containedIn)
                     {
-                        label.Click += Label_Click;
-                        grid.Controls.Add(label);
+                        AddLinkedLabel(grid.Controls, entry.Name, entry.Key).Click += Label_Click;
                     }
+                    grid.ResumeLayout();
                     newPanel.Controls.Add(grid);
+                    newPanel.ResumeLayout();
                 }
             }
 
@@ -320,6 +295,15 @@ namespace DU_Industry_Tool
                 Text = lblText
             };
             cc.Add(lbl);
+            return lbl;
+        }
+
+        private Label AddLinkedLabel(System.Windows.Forms.Control.ControlCollection cc, string lblText, string lblKey)
+        {
+            var lbl = AddLabel(cc, lblText, FontStyle.Underline);
+            lbl.ForeColor = Color.CornflowerBlue;
+            lbl.Text = lblText;
+            lbl.Tag = lblKey;
             return lbl;
         }
 
@@ -419,10 +403,11 @@ namespace DU_Industry_Tool
                         if (innerNode.Text.IndexOf(searchValue, StringComparison.InvariantCultureIgnoreCase) < 0)
                             continue;
                         innerNode.EnsureVisible();
-                        if (firstResult == null ||
-                            innerNode.Text.Equals(searchValue, StringComparison.InvariantCultureIgnoreCase))
+                        var isExact = innerNode.Text.Equals(searchValue, StringComparison.InvariantCultureIgnoreCase);
+                        if (firstResult == null || isExact)
                         {
                             firstResult = innerNode;
+                            if (isExact) break;
                         }
                     }
                 }
