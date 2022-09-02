@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -19,7 +13,7 @@ namespace DU_Industry_Tool
         {
             InitializeComponent();
             Market = market;
-            textBox1.Text = market._logFolderPath;
+            textBox1.Text = market.LogFolderPath;
         }
 
         public void UpdateProgressBar(int progress)
@@ -33,9 +27,9 @@ namespace DU_Industry_Tool
             });
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void Button1_Click(object sender, EventArgs e)
         {
-            Market._logFolderPath = textBox1.Text;
+            Market.LogFolderPath = textBox1.Text;
             button1.Enabled = false;
             textBox1.Enabled = false;
             checkBox1.Enabled = false;

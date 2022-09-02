@@ -5,10 +5,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace DU_Industry_Tool
 {
@@ -18,13 +15,12 @@ namespace DU_Industry_Tool
     // But they might delete their logfiles, but we still want our data.
     public class MarketManager
     {
-
         // This is a terrible idea.
-        private Regex MarketRegex = new Regex(@"MarketOrder:\[marketId = ([0-9]*), orderId = ([0-9]*), itemType = ([0-9]*), buyQuantity = ([\-0-9]*), expirationDate = @\([0-9]*\) ([^,]*), updateDate = @\([0-9]*\) ([^,]*), ownerId = EntityId:\[playerId = ([0-9]*), organizationId = ([0-9]*)\], ownerName = ([^,]*), unitPrice = Currency:\[amount = ([0-9]*)");
+        private readonly Regex MarketRegex = new Regex(@"MarketOrder:\[marketId = ([0-9]*), orderId = ([0-9]*), itemType = ([0-9]*), buyQuantity = ([\-0-9]*), expirationDate = @\([0-9]*\) ([^,]*), updateDate = @\([0-9]*\) ([^,]*), ownerId = EntityId:\[playerId = ([0-9]*), organizationId = ([0-9]*)\], ownerName = ([^,]*), unitPrice = Currency:\[amount = ([0-9]*)");
 
-        public Dictionary<ulong,MarketData> MarketOrders = new Dictionary<ulong, MarketData>(); // Indexed by orderId for our purposes
-        private List<string> CheckedLogFiles = new List<string>();
-        public string _logFolderPath { get; set; }
+        public readonly Dictionary<ulong,MarketData> MarketOrders = new Dictionary<ulong, MarketData>(); // Indexed by orderId for our purposes
+        private readonly List<string> CheckedLogFiles = new List<string>();
+        public string LogFolderPath { get; set; }
 
         public MarketManager()
         {
@@ -32,49 +28,53 @@ namespace DU_Industry_Tool
             if (File.Exists("MarketOrders.json"))
             {
                 var loadedInfo = JsonConvert.DeserializeObject<SaveableMarketData>(File.ReadAllText("MarketOrders.json"));
-                MarketOrders = loadedInfo.Data;
-                CheckedLogFiles = loadedInfo.CheckedLogFiles;
-                _logFolderPath = loadedInfo.LogFolderPath;
+                if (loadedInfo != null)
+                {
+                    MarketOrders    = loadedInfo.Data;
+                    CheckedLogFiles = loadedInfo.CheckedLogFiles;
+                    LogFolderPath   = loadedInfo.LogFolderPath;
+                }
             }
-            if (_logFolderPath == null)
-                _logFolderPath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"NQ\DualUniverse\log");
+            if (string.IsNullOrEmpty(LogFolderPath))
+            {
+                LogFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                                @"NQ\DualUniverse\log");
+            }
 
             // Do an initial scan?
             //UpdateMarketData();
             Console.WriteLine("Parsed " + MarketOrders.Count + " market orders from settings file");
         }
 
-
         public void UpdateMarketData(LoadingForm form = null)
         {
-
             // Before we read log files, discard any that are too old in our current collection
             var oldOrders = MarketOrders.Where(o => o.Value.ExpirationDate < DateTime.Now).ToList();
             foreach (var kvp in oldOrders)
                 MarketOrders.Remove(kvp.Key);
 
             // Find the most recently updated one, and remove it from CheckedLogFiles if it's in there
-            var directory = new DirectoryInfo(_logFolderPath);
+            var directory = new DirectoryInfo(LogFolderPath);
             var mostRecent = directory.GetFiles().OrderByDescending(f => f.LastWriteTime).First();
             if (CheckedLogFiles.Contains(mostRecent.Name))
                 CheckedLogFiles.Remove(mostRecent.Name);
 
-            int numProcessed = 0;
-            var files = System.IO.Directory.GetFiles(_logFolderPath, "*.xml").Where(f => !CheckedLogFiles.Contains(Path.GetFileName(f))).ToArray();
+            var numProcessed = 0;
+            var files = System.IO.Directory.GetFiles(LogFolderPath, "*.xml").Where(f => !CheckedLogFiles.Contains(Path.GetFileName(f))).ToArray();
 
-
-            DateTime lastDate = DateTime.MinValue;
+            var lastDate = DateTime.MinValue;
 
             foreach (var file in files)
             {
                 if (!CheckedLogFiles.Contains(Path.GetFileName(file)))
                 {
                     var fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Write);
-                    using (StreamReader reader = new StreamReader(fs))
+                    using (var reader = new StreamReader(fs))
                     {
                         while (!reader.EndOfStream)
                         {
-                            string contents = reader.ReadLine();
+                            var contents = reader.ReadLine();
+                            if (contents == null) continue;
                             // First see if we match a date
                             var dateMatch = Regex.Match(contents, @"<date>([^<]*)");
                             if (dateMatch.Success)
@@ -85,18 +85,20 @@ namespace DU_Industry_Tool
                             var matches = MarketRegex.Matches(contents);
                             foreach (Match match in matches)
                             {
-                                var data = new MarketData();
-                                data.MarketId = ulong.Parse(match.Groups[1].Value);
-                                data.OrderId = ulong.Parse(match.Groups[2].Value);
-                                data.ItemType = ulong.Parse(match.Groups[3].Value);
-                                data.BuyQuantity = long.Parse(match.Groups[4].Value);
-                                data.ExpirationDate = DateTime.ParseExact(match.Groups[5].Value, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
-                                data.UpdateDate = DateTime.ParseExact(match.Groups[6].Value, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
-                                data.PlayerId = ulong.Parse(match.Groups[7].Value);
-                                data.OrganizationId = ulong.Parse(match.Groups[8].Value);
-                                data.OwnerName = match.Groups[9].Value;
-                                data.Price = ulong.Parse(match.Groups[10].Value)/100; // Weirdly, their prices are *100
-                                data.LogDate = lastDate;
+                                var data = new MarketData
+                                {
+                                    MarketId = ulong.Parse(match.Groups[1].Value),
+                                    OrderId = ulong.Parse(match.Groups[2].Value),
+                                    ItemType = ulong.Parse(match.Groups[3].Value),
+                                    BuyQuantity = long.Parse(match.Groups[4].Value),
+                                    ExpirationDate = DateTime.ParseExact(match.Groups[5].Value, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture),
+                                    UpdateDate = DateTime.ParseExact(match.Groups[6].Value, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture),
+                                    PlayerId = ulong.Parse(match.Groups[7].Value),
+                                    OrganizationId = ulong.Parse(match.Groups[8].Value),
+                                    OwnerName = match.Groups[9].Value,
+                                    Price = ulong.Parse(match.Groups[10].Value)/100, // Weirdly, their prices are *100
+                                    LogDate = lastDate
+                                };
 
 
                                 if (data.ExpirationDate > DateTime.Now)
@@ -133,13 +135,12 @@ namespace DU_Industry_Tool
             Console.WriteLine("Parsed " + MarketOrders.Count + " market orders from log files");
             // And save it
             SaveData();
-            if (form != null)
-                form.UpdateProgressBar(100);// Signal that we're done
+            form?.UpdateProgressBar(100);// Signal that we're done
         }
 
         public void SaveData()
         {
-            var saveable = new SaveableMarketData() { CheckedLogFiles = CheckedLogFiles, Data = MarketOrders, LogFolderPath = _logFolderPath };
+            var saveable = new SaveableMarketData() { CheckedLogFiles = CheckedLogFiles, Data = MarketOrders, LogFolderPath = LogFolderPath };
             File.WriteAllText("MarketOrders.json", JsonConvert.SerializeObject(saveable));
         }
 

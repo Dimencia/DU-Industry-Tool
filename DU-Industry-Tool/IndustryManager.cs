@@ -15,6 +15,7 @@ namespace DU_Industry_Tool
     public class IndustryManager
     {
         private readonly List<string> _sizeList = new List<string> { "XS", "S", "M", "L", "XL" };
+        private readonly List<string> _tierNames = new List<string> { "", "Basic", "Uncommon", "Advanced", "Rare", "Exotic" };
         private SortedDictionary<string, double> _sumParts; // Sums for all parts in a recipe
         private SortedDictionary<string, double> _sumProducts; // Sums for each individual ingredient Product
         private SortedDictionary<string, double> _sumPures; // Sums for each individual ingredient Pure
@@ -333,12 +334,12 @@ namespace DU_Industry_Tool
                 try
                 {
                     _luaItems = JsonConvert.DeserializeObject<SortedDictionary<string, DuLuaItem>>(
-                        File.ReadAllText("items_api_dump.json"));
+                                    File.ReadAllText("items_api_dump.json"));
                     dmp = true;
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    Console.WriteLine(e.Message);
                 }
             }
 
@@ -346,14 +347,13 @@ namespace DU_Industry_Tool
             {
                 try
                 {
-                    _luaRecipes =
-                        JsonConvert.DeserializeObject<SortedDictionary<string, DuLuaRecipe>>(
-                            File.ReadAllText("recipes_api_dump.json"));
+                    _luaRecipes = JsonConvert.DeserializeObject<SortedDictionary<string, DuLuaRecipe>>(
+                                    File.ReadAllText("recipes_api_dump.json"));
                     dmpRcp = true;
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    Console.WriteLine(e.Message);
                 }
             }
 
@@ -409,7 +409,7 @@ namespace DU_Industry_Tool
                     else
                     {
                         Debug.WriteLine("NqId NOT FOUND: " + itemId + " Key: " + kvp.Key);
-                        itemId = kvp.Value.id.ToString();
+                        itemId = kvp.Value.Id.ToString();
                         if (dmp && !_luaItems.ContainsKey(itemId))
                         {
                             Debug.WriteLine("Id NOT FOUND: " + itemId + " Key: " + kvp.Key);
@@ -444,6 +444,196 @@ namespace DU_Industry_Tool
                             Debug.WriteLine($"{kvp.Value.Name} Nanocraftable {kvp.Value.Nanocraftable} to {dmpItem.Value.Nanocraftable}");
                         }
                         kvp.Value.Nanocraftable = dmpItem.Value.Nanocraftable;
+                    }
+                }
+
+                // Check for missing "industry" value
+                if (string.IsNullOrEmpty(kvp.Value.Industry) &&
+                    !kvp.Value.Name.StartsWith("Relic plasma", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    var topLevelGroup = GetTopLevelGroup(kvp.Value.ParentGroupName);
+
+                    var isPart    = kvp.Value.ParentGroupName.EndsWith("Parts", StringComparison.InvariantCultureIgnoreCase);
+
+                    var isElect   = isPart && (
+                                    (kvp.Value.Name.IndexOf(" antenna ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                    kvp.Value.Name.EndsWith(" antimatter core", StringComparison.InvariantCultureIgnoreCase) ||
+                                    kvp.Value.Name.EndsWith(" anti-gravity core", StringComparison.InvariantCultureIgnoreCase) ||
+                                    (kvp.Value.Name.IndexOf(" button ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                    kvp.Value.Name.EndsWith(" component", StringComparison.InvariantCultureIgnoreCase) ||
+                                    kvp.Value.Name.EndsWith(" connector", StringComparison.InvariantCultureIgnoreCase) ||
+                                    (kvp.Value.Name.IndexOf(" control system ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                    (kvp.Value.Name.IndexOf(" core system ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                    (kvp.Value.Name.IndexOf(" electronics", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                    (kvp.Value.Name.IndexOf(" mechanical sensor ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                    (kvp.Value.Name.IndexOf(" motherboard ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                    (kvp.Value.Name.IndexOf(" ore scanner ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                    kvp.Value.Name.EndsWith(" power system", StringComparison.InvariantCultureIgnoreCase) ||
+                                    (kvp.Value.Name.IndexOf(" power transformer ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                    kvp.Value.Name.EndsWith(" processor", StringComparison.InvariantCultureIgnoreCase) ||
+                                    kvp.Value.Name.EndsWith(" quantum alignment unit", StringComparison.InvariantCultureIgnoreCase) ||
+                                    kvp.Value.Name.EndsWith(" quantum barrier", StringComparison.InvariantCultureIgnoreCase) ||
+                                    (kvp.Value.Name.IndexOf("uncommon light", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                    false);
+
+                    var isMetal   = isPart && (
+                                    kvp.Value.Name.EndsWith(" burner", StringComparison.InvariantCultureIgnoreCase) ||
+                                    (kvp.Value.Name.IndexOf(" chemical container ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                    (kvp.Value.Name.IndexOf(" combustion chamber ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                    (kvp.Value.Name.IndexOf(" container ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                    (kvp.Value.Name.IndexOf(" electric engine ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                    (kvp.Value.Name.IndexOf(" firing system ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                    (kvp.Value.Name.IndexOf(" frame ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                    (kvp.Value.Name.IndexOf(" gas cylinder ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                    kvp.Value.Name.EndsWith(" hydraulics", StringComparison.InvariantCultureIgnoreCase) ||
+                                    (kvp.Value.Name.IndexOf(" ionic chamber ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                    kvp.Value.Name.EndsWith(" magnet", StringComparison.InvariantCultureIgnoreCase) ||
+                                    (kvp.Value.Name.IndexOf(" magnetic rail ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                    (kvp.Value.Name.IndexOf(" missile silo ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                    (kvp.Value.Name.IndexOf(" mobile panel ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                    kvp.Value.Name.EndsWith(" pipe", StringComparison.InvariantCultureIgnoreCase) ||
+                                    (kvp.Value.Name.IndexOf(" power transformer ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                    (kvp.Value.Name.IndexOf(" robotic arm ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                    (kvp.Value.Name.IndexOf(" screen ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                    kvp.Value.Name.EndsWith(" screw", StringComparison.InvariantCultureIgnoreCase) ||
+                                    kvp.Value.Name.EndsWith(" singularity container", StringComparison.InvariantCultureIgnoreCase) ||
+                                    kvp.Value.Name.EndsWith(" solid warhead", StringComparison.InvariantCultureIgnoreCase)  ||
+                                    false);
+
+                    var is3D      = isPart && (
+                                    (kvp.Value.Name.IndexOf(" casing", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                    (kvp.Value.Name.IndexOf(" fixation", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                    kvp.Value.Name.EndsWith(" injector", StringComparison.InvariantCultureIgnoreCase) ||
+                                    kvp.Value.Name.EndsWith(" quantum core", StringComparison.InvariantCultureIgnoreCase) ||
+                                    (kvp.Value.Name.IndexOf(" screen ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                    false);
+
+                    var isAssy    = (topLevelGroup == "Elements") ||
+                                    (kvp.Value.ParentGroupName == "Atmospheric Brakes") ||
+                                    (kvp.Value.ParentGroupName == "Construct Elements") ||
+                                    (kvp.Value.ParentGroupName == "Control Units") ||
+                                    (kvp.Value.ParentGroupName == "Containers") ||
+                                    (kvp.Value.ParentGroupName == "Combat & Defense Elements") ||
+                                    (kvp.Value.ParentGroupName == "Decorative Element") ||
+                                    (kvp.Value.ParentGroupName == "Displays") ||
+                                    (kvp.Value.ParentGroupName == "Electronics") ||
+                                    (kvp.Value.ParentGroupName == "Engines") ||
+                                    (kvp.Value.ParentGroupName == "Furniture & Appliances") ||
+                                    (kvp.Value.ParentGroupName == "High-Tech Furniture") ||
+                                    (kvp.Value.ParentGroupName == "Industry") ||
+                                    (kvp.Value.ParentGroupName == "Mining Units") ||
+                                    (kvp.Value.ParentGroupName == "Piloting Control Units") ||
+                                    (kvp.Value.ParentGroupName == "Screens") ||
+                                    (kvp.Value.ParentGroupName == "Sensors") ||
+                                    (kvp.Value.ParentGroupName == "Signs") ||
+                                    (kvp.Value.ParentGroupName == "Space Brakes") ||
+                                    (kvp.Value.ParentGroupName == "Support Tech") ||
+                                    (kvp.Value.ParentGroupName == "Systems") ||
+                                    (kvp.Value.ParentGroupName == "Triggers") ||
+                                    (kvp.Value.Name.IndexOf(" ammo ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                    (!isPart && ((kvp.Value.Name.IndexOf(" artist ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                                 (kvp.Value.Name.IndexOf(" atmospheric engine ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                                 (kvp.Value.Name.IndexOf("board", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                                 (kvp.Value.Name.IndexOf(" counter ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                                 (kvp.Value.Name.IndexOf(" container ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                                 (kvp.Value.Name.IndexOf(" emitter ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                                 (kvp.Value.Name.IndexOf(" hologram ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                                 (kvp.Value.Name.IndexOf(" hover engine ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                                 (kvp.Value.Name.IndexOf("node", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                                 (kvp.Value.Name.IndexOf(" operator ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                                 (kvp.Value.Name.IndexOf("plant", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                                 (kvp.Value.Name.IndexOf("pressure", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                                 (kvp.Value.Name.IndexOf(" pulsor ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                                 (kvp.Value.Name.IndexOf(" receiver ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                                 (kvp.Value.Name.IndexOf("relay", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                                 (kvp.Value.Name.IndexOf("remote", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                                 (kvp.Value.Name.IndexOf("repair", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                                 (kvp.Value.Name.IndexOf(" shield generator ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                                 (kvp.Value.Name.IndexOf(" space engine ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                                 (kvp.Value.Name.IndexOf(" switch ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                                 (kvp.Value.Name.IndexOf("territory ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                                 (kvp.Value.Name.IndexOf(" vertical booster ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                                 (kvp.Value.Name.IndexOf(" weapon ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                                 false));
+
+                    var isPure    = kvp.Value.ParentGroupName.Equals("Pure");
+                    var isProduct = kvp.Value.ParentGroupName.Equals("Product");
+                    var isGlass   = kvp.Key.StartsWith("led_", StringComparison.InvariantCultureIgnoreCase) ||
+                                    kvp.Key.StartsWith("WarpCell") ||
+                                    kvp.Value.Name.EndsWith(" antimatter capsule", StringComparison.InvariantCultureIgnoreCase) ||
+                                    (kvp.Value.Name.IndexOf(" laser chamber", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                    kvp.Value.Name.EndsWith(" optics", StringComparison.InvariantCultureIgnoreCase) ||
+                                    (kvp.Value.Name.IndexOf("glass", StringComparison.InvariantCultureIgnoreCase) >= 0);
+                    var isChem    = kvp.Value.Name.StartsWith("Biological") ||
+                                    kvp.Value.Name.StartsWith("Catalyst") ||
+                                    kvp.Value.Name.EndsWith(" explosive module", StringComparison.InvariantCultureIgnoreCase) ||
+                                    kvp.Value.Name.StartsWith("Fluoropolymer") ||
+                                    kvp.Value.ParentGroupName.Equals("Fuels") ||
+                                    kvp.Value.ParentGroupName.EndsWith("plastic product", StringComparison.InvariantCultureIgnoreCase) ||
+                                    false;
+                    var isScrap   = kvp.Value.ParentGroupName.Equals("Scraps");
+                    var isHC = kvp.Value.ParentGroupName == "Product Honeycomb Materials" ||
+                               kvp.Value.ParentGroupName == "Pure Honeycomb Materials";
+
+                    var indy = "";
+                    var indPrefix = _tierNames[kvp.Value.Level];
+                    var indSuffix = "";
+
+                    if (isGlass)
+                    {
+                        indy = "Glass Furnace M";
+                    }
+                    else
+                    if (isPure || isScrap ||
+                        kvp.Value.ParentGroupName == "Ore" ||
+                        kvp.Value.ParentGroupName == "Refined Materials")
+                    {
+                        indy = "Refiner M";
+                    }
+                    else
+                    if (is3D)
+                    {
+                        indy = "3D Printer M";
+                    }
+                    else
+                    if (isChem)
+                    {
+                        indy = "Chemical Industry M";
+                    }
+                    else
+                    if (isElect)
+                    {
+                        indy = "Electronics Industry M";
+                    }
+                    else
+                    if (isMetal)
+                    {
+                        indy = "Metalwork Industry M";
+                    }
+                    else
+                    if (isAssy)
+                    {
+                        indSuffix = GetElementSize(kvp.Value.Name);
+                        indy = "Assembly Line";
+                    }
+                    else
+                    if (isProduct)
+                    {
+                        indy = "Smelter M";
+                    }
+                    else
+                    if (isHC)
+                    {
+                        indy = "Honeycomb Refiner M";
+                    }
+                    if (indy != "")
+                    {
+                        kvp.Value.Industry = $"{indPrefix} {indy} {indSuffix}".Trim();
+                        //Debug.WriteLine(kvp.Value.Name.PadRight(40)+" -> "+kvp.Value.Industry);
+                    }
+                    else
+                    {
+                        Debug.WriteLine(kvp.Value.Name.PadRight(40)+" -> NO INDY FOUND!");
                     }
                 }
 
@@ -490,16 +680,15 @@ namespace DU_Industry_Tool
                 if (dmp && kvp.Key.StartsWith("hc"))
                 {
                     var luaItem = _luaItems.FirstOrDefault(x => x.Value.Description.StartsWith("Honeycomb") &&
-                                                                !x.Value.DisplayNameWithSize
-                                                                    .EndsWith("Schematic Copy") &&
-                                                                x.Value.DisplayNameWithSize.Equals(kvp.Value.Name,
-                                                                    StringComparison.InvariantCultureIgnoreCase));
-                    if (luaItem.Key != null && luaItem.Key != kvp.Value.NqId.ToString())
+                                               !x.Value.DisplayNameWithSize.EndsWith("Schematic Copy") &&
+                                               x.Value.DisplayNameWithSize.Equals(kvp.Value.Name,
+                                                    StringComparison.InvariantCultureIgnoreCase));
+                    if (!string.IsNullOrEmpty(luaItem.Key) && luaItem.Key != kvp.Value.NqId.ToString())
                     {
                         if (ulong.TryParse(luaItem.Key, out var uTmp))
                         {
                             kvp.Value.NqId = uTmp;
-                            kvp.Value.id = uTmp;
+                            kvp.Value.Id = uTmp;
                         }
                     }
                 }
@@ -683,13 +872,9 @@ namespace DU_Industry_Tool
                         continue;
                     }
 
-                    if (idx == "")
+                    if (idx == "" && GetTopLevelGroup(kvp.Value.ParentGroupName) == "Elements")
                     {
-                        var upGrp = GetTopLevelGroup(kvp.Value.ParentGroupName);
-                        if (upGrp == "Elements")
-                        {
-                            isElement = true;
-                        }
+                        isElement = true;
                     }
 
                     var elemGroups = new List<string>
@@ -817,24 +1002,20 @@ namespace DU_Industry_Tool
                     && !kvp.Value.ParentGroupName.EndsWith(" Parts", StringComparison.InvariantCultureIgnoreCase))
                 {
                     var schemaClass = Schematics.FirstOrDefault(x => x.Key == $"T{kvp.Value.Level}{idx}");
-                    if (schemaClass.Value != null)
-                    {
-                        kvp.Value.SchemaType = schemaClass.Key;
-                        kvp.Value.SchemaPrice = schemaClass.Value.Cost;
-                        Console.WriteLine($@"{kvp.Value.Name} = {kvp.Value.SchemaPrice} ({parentName})");
-                    }
+                    if (schemaClass.Value == null) continue;
+                    kvp.Value.SchemaType = schemaClass.Key;
+                    kvp.Value.SchemaPrice = schemaClass.Value.Cost;
+                    Console.WriteLine($@"{kvp.Value.Name} = {kvp.Value.SchemaPrice} ({parentName})");
                 }
                 else if (kvp.Value.ParentGroupName == "Refined Materials" ||
                          (kvp.Value.Level >= 1 &&
                           kvp.Value.Name.EndsWith("product", StringComparison.InvariantCultureIgnoreCase)))
                 {
                     var schemaClass = Schematics.FirstOrDefault(x => x.Key == $"T{kvp.Value.Level}P");
-                    if (schemaClass.Value != null)
-                    {
-                        kvp.Value.SchemaType = schemaClass.Key;
-                        kvp.Value.SchemaPrice = schemaClass.Value.Cost;
-                        Console.WriteLine($@"{kvp.Value.Name} = {kvp.Value.SchemaPrice} ({parentName})");
-                    }
+                    if (schemaClass.Value == null) continue;
+                    kvp.Value.SchemaType = schemaClass.Key;
+                    kvp.Value.SchemaPrice = schemaClass.Value.Cost;
+                    Console.WriteLine($@"{kvp.Value.Name} = {kvp.Value.SchemaPrice} ({parentName})");
                 }
             }
 
@@ -1228,14 +1409,10 @@ namespace DU_Industry_Tool
 
         private string GetElementSize(string elemName)
         {
-            foreach (var size in _sizeList)
+            foreach (var size in _sizeList.Where(size => elemName.EndsWith(" " + size, StringComparison.InvariantCultureIgnoreCase)))
             {
-                if (elemName.EndsWith(" " + size, StringComparison.InvariantCultureIgnoreCase))
-                {
-                    return size;
-                }
+                return size;
             }
-
             return "";
         }
 
@@ -1521,10 +1698,10 @@ namespace DU_Industry_Tool
             }
 
             CostResults.AppendLine("");
-            _schematicsCost += CalculateItemCost(_sumOres, "U", 1, amount, "Ores");
-            _schematicsCost += CalculateItemCost(_sumPures, "U", 2, amount, "Pures");
-            _schematicsCost += CalculateItemCost(_sumProducts, "P", 1, amount, "Products");
-            _schematicsCost += CalculateItemCost(_sumParts, "P", 1, amount, "Parts");
+            _schematicsCost += CalculateItemCost(_sumOres, "U", amount, "Ores");
+            _schematicsCost += CalculateItemCost(_sumPures, "U", amount, "Pures");
+            _schematicsCost += CalculateItemCost(_sumProducts, "P", amount, "Products");
+            _schematicsCost += CalculateItemCost(_sumParts, "P", amount, "Parts");
             CostResults.AppendLine("Schematics:".PadRight(16) + $"{_schematicsCost:N1}q".PadLeft(20));
             totalCost *= amount;
             CostResults.AppendLine("Pures/Products:".PadRight(16) + $"{totalCost:N1}q".PadLeft(20));
@@ -1604,8 +1781,7 @@ namespace DU_Industry_Tool
         }
 
         private double CalculateItemCost(SortedDictionary<string, double> itemPrices, string listType = "P",
-            byte minLevel = 1, double quantity = 1, string title = "",
-            bool outputDetails = true)
+            double quantity = 1, string title = "", bool outputDetails = true)
         {
             if (itemPrices.Count == 0) return 0;
             CostResults.AppendLine(title);

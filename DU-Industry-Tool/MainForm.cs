@@ -22,7 +22,7 @@ namespace DU_Industry_Tool
         private readonly MarketManager _market;
         private bool _marketFiltered;
         private TextBox _costDetailsLabel;
-        private int _costDetailsLineCount;
+        //private int _costDetailsLineCount;
         private readonly List<string> _breadcrumbs = new List<string>();
         private FlowLayoutPanel _costDetailsPanel;
         private FlowLayoutPanel _infoPanel;
@@ -196,6 +196,8 @@ namespace DU_Industry_Tool
             newPanel.Controls.Add(grid);
             newPanel.ResumeLayout();
 
+            AddFlowLabel(_infoPanel.Controls, "Industry: "+recipe.Industry, FontStyle.Regular);
+
             if (recipe.ParentGroupName.EndsWith("Ore", StringComparison.InvariantCultureIgnoreCase) ||
                 recipe.ParentGroupName.EndsWith("Parts", StringComparison.InvariantCultureIgnoreCase) ||
                 recipe.ParentGroupName.EndsWith("Product", StringComparison.InvariantCultureIgnoreCase) ||
@@ -207,6 +209,8 @@ namespace DU_Industry_Tool
                 if (containedIn?.Any() == true)
                 {
                     newPanel = AddFlowLabel(_infoPanel.Controls, "Part of recipes:", FontStyle.Bold);
+                    newPanel.Padding = new Padding(0, 10, 0, 0);
+
                     grid = new TableLayoutPanel
                     {
                         AutoScroll = true,
@@ -253,7 +257,7 @@ namespace DU_Industry_Tool
                 };
                 _costDetailsPanel.Controls.Add(_costDetailsLabel);
                 _infoPanel.Controls.Add(_costDetailsPanel);
-                _costDetailsLineCount = _costDetailsLabel.Text.Count(c => c == '\n');
+                //_costDetailsLineCount = _costDetailsLabel.Text.Count(c => c == '\n');
             }
             finally
             {
@@ -494,8 +498,10 @@ namespace DU_Industry_Tool
                     var groupNode = new TreeNode(group.Key);
                     foreach (var recipe in group)
                     {
-                        var recipeNode = new TreeNode(recipe.Name);
-                        recipeNode.Tag = recipe;
+                        var recipeNode = new TreeNode(recipe.Name)
+                        {
+                            Tag = recipe
+                        };
                         recipe.Node = recipeNode;
 
                         groupNode.Nodes.Add(recipeNode);
@@ -515,8 +521,10 @@ namespace DU_Industry_Tool
                     var groupNode = new TreeNode(group.Key);
                     foreach (var recipe in group)
                     {
-                        var recipeNode = new TreeNode(recipe.Name);
-                        recipeNode.Tag = recipe;
+                        var recipeNode = new TreeNode(recipe.Name)
+                        {
+                            Tag = recipe
+                        };
                         recipe.Node = recipeNode;
 
                         groupNode.Nodes.Add(recipeNode);
@@ -628,8 +636,8 @@ namespace DU_Industry_Tool
                     }
 
                     worksheet.ColumnsUsed().AdjustToContents();
-                    workbook.SaveAs($"Factory Plan {recipe.Name} {DateTime.Now.ToString("yyyy-MM-dd")}.xlsx");
-                    MessageBox.Show($"Exported to 'Factory Plan {recipe.Name} { DateTime.Now.ToString("yyyy-MM-dd")}.xlsx' in the same folder as the exe!");
+                    workbook.SaveAs($"Factory Plan {recipe.Name} {DateTime.Now:yyyy-MM-dd}.xlsx");
+                    MessageBox.Show($"Exported to 'Factory Plan {recipe.Name} { DateTime.Now:yyyy-MM-dd}.xlsx' in the same folder as the exe!");
                 }
                 catch (Exception ex)
                 {

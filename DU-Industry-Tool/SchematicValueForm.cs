@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace DU_Industry_Tool
@@ -24,10 +18,9 @@ namespace DU_Industry_Tool
                 schematicsGrid.Rows.Add(schema.Value.Name, schema.Value.Cost);
             }
             schematicsGrid.AutoSize = true;
-            this.AutoSize = true;
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void Button1_Click(object sender, EventArgs e)
         {
             if (_manager != null)
             {
@@ -36,12 +29,10 @@ namespace DU_Industry_Tool
                     if (!(values is DataGridViewRow row)) continue;
                     var oreName = row.Cells[0].Value as string;
                     var oreValueString = row.Cells[1].Value as string;
-                    if(double.TryParse(oreValueString, out double schemaPrice))
-                    {
-                        var schema = _manager.Schematics.FirstOrDefault(o => o.Value.Name.Equals(oreName, StringComparison.InvariantCultureIgnoreCase));
-                        if (!string.IsNullOrEmpty(schema.Key))
-                            schema.Value.Cost = schemaPrice;
-                    }
+                    if (!double.TryParse(oreValueString, out double schemaPrice)) continue;
+                    var schema = _manager.Schematics.FirstOrDefault(o => o.Value.Name.Equals(oreName, StringComparison.InvariantCultureIgnoreCase));
+                    if (!string.IsNullOrEmpty(schema.Key))
+                        schema.Value.Cost = schemaPrice;
                 }
                 _manager.SaveSchematicValues();
             }
