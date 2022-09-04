@@ -24,17 +24,18 @@ namespace DU_Industry_Tool
         {
             if (_manager != null)
             {
-                foreach(var values in schematicsGrid.Rows)
-                {
-                    if (!(values is DataGridViewRow row)) continue;
-                    var oreName = row.Cells[0].Value as string;
-                    var oreValueString = row.Cells[1].Value as string;
-                    if (!double.TryParse(oreValueString, out double schemaPrice)) continue;
-                    var schema = _manager.Schematics.FirstOrDefault(o => o.Value.Name.Equals(oreName, StringComparison.InvariantCultureIgnoreCase));
-                    if (!string.IsNullOrEmpty(schema.Key))
-                        schema.Value.Cost = schemaPrice;
-                }
-                _manager.SaveSchematicValues();
+                // Commented out for now, values should be fixed.
+            //    foreach(var values in schematicsGrid.Rows)
+            //    {
+            //        if (!(values is DataGridViewRow row)) continue;
+            //        var oreName = row.Cells[0].Value as string;
+            //        var oreValueString = row.Cells[1].Value as string;
+            //        if (!double.TryParse(oreValueString, out double schemaPrice)) continue;
+            //        var schema = _manager.Schematics.FirstOrDefault(o => o.Value.Name.Equals(oreName, StringComparison.InvariantCultureIgnoreCase));
+            //        if (!string.IsNullOrEmpty(schema.Key))
+            //            schema.Value.Cost = schemaPrice;
+            //    }
+            //    _manager.SaveSchematicValues();
             }
             this.Close();
         }

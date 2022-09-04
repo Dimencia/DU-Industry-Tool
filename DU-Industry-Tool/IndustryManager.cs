@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using DocumentFormat.OpenXml.Drawing.ChartDrawing;
+using Krypton.Toolkit;
 
 namespace DU_Industry_Tool
 {
@@ -314,21 +315,6 @@ namespace DU_Industry_Tool
             var dmp = false;
             var dmpRcp = false;
 
-            // NOTE: conversion needs a manual fix, should only be used in special cases!
-            if (File.Exists("items_api_dump.lua") &&
-                MessageBox.Show(@"Convert items lua file to json?", @"Conversion", MessageBoxButtons.YesNo) ==
-                DialogResult.Yes)
-            {
-                dmp = ConvertLua2Json("items_api_dump");
-            }
-
-            if (File.Exists("recipes_api_dump.lua") &&
-                MessageBox.Show(@"Convert recipes lua file to json?", @"Conversion", MessageBoxButtons.YesNo) ==
-                DialogResult.Yes)
-            {
-                dmpRcp = ConvertLua2Json("recipes_api_dump");
-            }
-
             if (File.Exists("items_api_dump.json"))
             {
                 try
@@ -447,196 +433,6 @@ namespace DU_Industry_Tool
                     }
                 }
 
-                // Check for missing "industry" value
-                if (string.IsNullOrEmpty(kvp.Value.Industry) &&
-                    !kvp.Value.Name.StartsWith("Relic plasma", StringComparison.InvariantCultureIgnoreCase))
-                {
-                    var topLevelGroup = GetTopLevelGroup(kvp.Value.ParentGroupName);
-
-                    var isPart    = kvp.Value.ParentGroupName.EndsWith("Parts", StringComparison.InvariantCultureIgnoreCase);
-
-                    var isElect   = isPart && (
-                                    (kvp.Value.Name.IndexOf(" antenna ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                    kvp.Value.Name.EndsWith(" antimatter core", StringComparison.InvariantCultureIgnoreCase) ||
-                                    kvp.Value.Name.EndsWith(" anti-gravity core", StringComparison.InvariantCultureIgnoreCase) ||
-                                    (kvp.Value.Name.IndexOf(" button ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                    kvp.Value.Name.EndsWith(" component", StringComparison.InvariantCultureIgnoreCase) ||
-                                    kvp.Value.Name.EndsWith(" connector", StringComparison.InvariantCultureIgnoreCase) ||
-                                    (kvp.Value.Name.IndexOf(" control system ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                    (kvp.Value.Name.IndexOf(" core system ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                    (kvp.Value.Name.IndexOf(" electronics", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                    (kvp.Value.Name.IndexOf(" mechanical sensor ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                    (kvp.Value.Name.IndexOf(" motherboard ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                    (kvp.Value.Name.IndexOf(" ore scanner ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                    kvp.Value.Name.EndsWith(" power system", StringComparison.InvariantCultureIgnoreCase) ||
-                                    (kvp.Value.Name.IndexOf(" power transformer ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                    kvp.Value.Name.EndsWith(" processor", StringComparison.InvariantCultureIgnoreCase) ||
-                                    kvp.Value.Name.EndsWith(" quantum alignment unit", StringComparison.InvariantCultureIgnoreCase) ||
-                                    kvp.Value.Name.EndsWith(" quantum barrier", StringComparison.InvariantCultureIgnoreCase) ||
-                                    (kvp.Value.Name.IndexOf("uncommon light", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                    false);
-
-                    var isMetal   = isPart && (
-                                    kvp.Value.Name.EndsWith(" burner", StringComparison.InvariantCultureIgnoreCase) ||
-                                    (kvp.Value.Name.IndexOf(" chemical container ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                    (kvp.Value.Name.IndexOf(" combustion chamber ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                    (kvp.Value.Name.IndexOf(" container ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                    (kvp.Value.Name.IndexOf(" electric engine ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                    (kvp.Value.Name.IndexOf(" firing system ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                    (kvp.Value.Name.IndexOf(" frame ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                    (kvp.Value.Name.IndexOf(" gas cylinder ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                    kvp.Value.Name.EndsWith(" hydraulics", StringComparison.InvariantCultureIgnoreCase) ||
-                                    (kvp.Value.Name.IndexOf(" ionic chamber ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                    kvp.Value.Name.EndsWith(" magnet", StringComparison.InvariantCultureIgnoreCase) ||
-                                    (kvp.Value.Name.IndexOf(" magnetic rail ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                    (kvp.Value.Name.IndexOf(" missile silo ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                    (kvp.Value.Name.IndexOf(" mobile panel ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                    kvp.Value.Name.EndsWith(" pipe", StringComparison.InvariantCultureIgnoreCase) ||
-                                    (kvp.Value.Name.IndexOf(" power transformer ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                    (kvp.Value.Name.IndexOf(" robotic arm ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                    (kvp.Value.Name.IndexOf(" screen ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                    kvp.Value.Name.EndsWith(" screw", StringComparison.InvariantCultureIgnoreCase) ||
-                                    kvp.Value.Name.EndsWith(" singularity container", StringComparison.InvariantCultureIgnoreCase) ||
-                                    kvp.Value.Name.EndsWith(" solid warhead", StringComparison.InvariantCultureIgnoreCase)  ||
-                                    false);
-
-                    var is3D      = isPart && (
-                                    (kvp.Value.Name.IndexOf(" casing", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                    (kvp.Value.Name.IndexOf(" fixation", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                    kvp.Value.Name.EndsWith(" injector", StringComparison.InvariantCultureIgnoreCase) ||
-                                    kvp.Value.Name.EndsWith(" quantum core", StringComparison.InvariantCultureIgnoreCase) ||
-                                    (kvp.Value.Name.IndexOf(" screen ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                    false);
-
-                    var isAssy    = (topLevelGroup == "Elements") ||
-                                    (kvp.Value.ParentGroupName == "Atmospheric Brakes") ||
-                                    (kvp.Value.ParentGroupName == "Construct Elements") ||
-                                    (kvp.Value.ParentGroupName == "Control Units") ||
-                                    (kvp.Value.ParentGroupName == "Containers") ||
-                                    (kvp.Value.ParentGroupName == "Combat & Defense Elements") ||
-                                    (kvp.Value.ParentGroupName == "Decorative Element") ||
-                                    (kvp.Value.ParentGroupName == "Displays") ||
-                                    (kvp.Value.ParentGroupName == "Electronics") ||
-                                    (kvp.Value.ParentGroupName == "Engines") ||
-                                    (kvp.Value.ParentGroupName == "Furniture & Appliances") ||
-                                    (kvp.Value.ParentGroupName == "High-Tech Furniture") ||
-                                    (kvp.Value.ParentGroupName == "Industry") ||
-                                    (kvp.Value.ParentGroupName == "Mining Units") ||
-                                    (kvp.Value.ParentGroupName == "Piloting Control Units") ||
-                                    (kvp.Value.ParentGroupName == "Screens") ||
-                                    (kvp.Value.ParentGroupName == "Sensors") ||
-                                    (kvp.Value.ParentGroupName == "Signs") ||
-                                    (kvp.Value.ParentGroupName == "Space Brakes") ||
-                                    (kvp.Value.ParentGroupName == "Support Tech") ||
-                                    (kvp.Value.ParentGroupName == "Systems") ||
-                                    (kvp.Value.ParentGroupName == "Triggers") ||
-                                    (kvp.Value.Name.IndexOf(" ammo ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                    (!isPart && ((kvp.Value.Name.IndexOf(" artist ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                                 (kvp.Value.Name.IndexOf(" atmospheric engine ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                                 (kvp.Value.Name.IndexOf("board", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                                 (kvp.Value.Name.IndexOf(" counter ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                                 (kvp.Value.Name.IndexOf(" container ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                                 (kvp.Value.Name.IndexOf(" emitter ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                                 (kvp.Value.Name.IndexOf(" hologram ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                                 (kvp.Value.Name.IndexOf(" hover engine ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                                 (kvp.Value.Name.IndexOf("node", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                                 (kvp.Value.Name.IndexOf(" operator ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                                 (kvp.Value.Name.IndexOf("plant", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                                 (kvp.Value.Name.IndexOf("pressure", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                                 (kvp.Value.Name.IndexOf(" pulsor ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                                 (kvp.Value.Name.IndexOf(" receiver ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                                 (kvp.Value.Name.IndexOf("relay", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                                 (kvp.Value.Name.IndexOf("remote", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                                 (kvp.Value.Name.IndexOf("repair", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                                 (kvp.Value.Name.IndexOf(" shield generator ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                                 (kvp.Value.Name.IndexOf(" space engine ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                                 (kvp.Value.Name.IndexOf(" switch ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                                 (kvp.Value.Name.IndexOf("territory ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                                 (kvp.Value.Name.IndexOf(" vertical booster ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                                 (kvp.Value.Name.IndexOf(" weapon ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                                 false));
-
-                    var isPure    = kvp.Value.ParentGroupName.Equals("Pure");
-                    var isProduct = kvp.Value.ParentGroupName.Equals("Product");
-                    var isGlass   = kvp.Key.StartsWith("led_", StringComparison.InvariantCultureIgnoreCase) ||
-                                    kvp.Key.StartsWith("WarpCell") ||
-                                    kvp.Value.Name.EndsWith(" antimatter capsule", StringComparison.InvariantCultureIgnoreCase) ||
-                                    (kvp.Value.Name.IndexOf(" laser chamber", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                    kvp.Value.Name.EndsWith(" optics", StringComparison.InvariantCultureIgnoreCase) ||
-                                    (kvp.Value.Name.IndexOf("glass", StringComparison.InvariantCultureIgnoreCase) >= 0);
-                    var isChem    = kvp.Value.Name.StartsWith("Biological") ||
-                                    kvp.Value.Name.StartsWith("Catalyst") ||
-                                    kvp.Value.Name.EndsWith(" explosive module", StringComparison.InvariantCultureIgnoreCase) ||
-                                    kvp.Value.Name.StartsWith("Fluoropolymer") ||
-                                    kvp.Value.ParentGroupName.Equals("Fuels") ||
-                                    kvp.Value.ParentGroupName.EndsWith("plastic product", StringComparison.InvariantCultureIgnoreCase) ||
-                                    false;
-                    var isScrap   = kvp.Value.ParentGroupName.Equals("Scraps");
-                    var isHC = kvp.Value.ParentGroupName == "Product Honeycomb Materials" ||
-                               kvp.Value.ParentGroupName == "Pure Honeycomb Materials";
-
-                    var indy = "";
-                    var indPrefix = _tierNames[kvp.Value.Level];
-                    var indSuffix = "";
-
-                    if (isGlass)
-                    {
-                        indy = "Glass Furnace M";
-                    }
-                    else
-                    if (isPure || isScrap ||
-                        kvp.Value.ParentGroupName == "Ore" ||
-                        kvp.Value.ParentGroupName == "Refined Materials")
-                    {
-                        indy = "Refiner M";
-                    }
-                    else
-                    if (is3D)
-                    {
-                        indy = "3D Printer M";
-                    }
-                    else
-                    if (isChem)
-                    {
-                        indy = "Chemical Industry M";
-                    }
-                    else
-                    if (isElect)
-                    {
-                        indy = "Electronics Industry M";
-                    }
-                    else
-                    if (isMetal)
-                    {
-                        indy = "Metalwork Industry M";
-                    }
-                    else
-                    if (isAssy)
-                    {
-                        indSuffix = GetElementSize(kvp.Value.Name);
-                        indy = "Assembly Line";
-                    }
-                    else
-                    if (isProduct)
-                    {
-                        indy = "Smelter M";
-                    }
-                    else
-                    if (isHC)
-                    {
-                        indy = "Honeycomb Refiner M";
-                    }
-                    if (indy != "")
-                    {
-                        kvp.Value.Industry = $"{indPrefix} {indy} {indSuffix}".Trim();
-                        //Debug.WriteLine(kvp.Value.Name.PadRight(40)+" -> "+kvp.Value.Industry);
-                    }
-                    else
-                    {
-                        Debug.WriteLine(kvp.Value.Name.PadRight(40)+" -> NO INDY FOUND!");
-                    }
-                }
-
                 // Fix names and some other details
                 if (kvp.Value.Name.Equals("Territory Unit", StringComparison.InvariantCultureIgnoreCase) ||
                     kvp.Value.Name.Equals("Territory Scanner", StringComparison.InvariantCultureIgnoreCase) ||
@@ -703,6 +499,9 @@ namespace DU_Industry_Tool
                 }
 
                 //if (kvp.Value.Nanocraftable) Debug.WriteLine($"{kvp.Value.Name}");
+
+                // Determine the required industry to produce this item
+                DetermineIndustryFor(kvp.Value);
 
                 if (kvp.Key.StartsWith("Catalyst") ||
                     kvp.Value.ParentGroupName == "Ore" ||
@@ -841,7 +640,7 @@ namespace DU_Industry_Tool
                 }
 
                 // Core Units
-                if (parentName != null && parentName.Equals("Core Units", StringComparison.InvariantCultureIgnoreCase))
+                if (true == parentName?.Equals("core units", StringComparison.InvariantCultureIgnoreCase))
                 {
                     var size = GetElementSize(kvp.Value.Name);
                     idx = "CU-" + size;
@@ -866,8 +665,7 @@ namespace DU_Industry_Tool
                         " Parts",
                         "Logic Operators"
                     };
-                    if (parentName != null && skipGroups.Any(x =>
-                            parentName.EndsWith(x, StringComparison.InvariantCultureIgnoreCase)))
+                    if (parentName != null && skipGroups.Any(x => parentName.EndsWith(x, StringComparison.InvariantCultureIgnoreCase)))
                     {
                         continue;
                     }
@@ -1407,6 +1205,149 @@ namespace DU_Industry_Tool
             File.WriteAllText("schematicValues.json", JsonConvert.SerializeObject(Schematics));
         }
 
+        private void DetermineIndustryFor(SchematicRecipe recipe)
+        {
+            if (recipe.ParentGroupName == "Ore" ||
+                recipe.Name.StartsWith("relic plasma", StringComparison.InvariantCultureIgnoreCase))
+            {
+                recipe.Industry = "";
+                return;
+            }
+
+            // elements can be produced by same tier as well as 1 lower tier assemblies:
+            var indPrefix = recipe.Level > 1 ? _tierNames[recipe.Level-1] : _tierNames[recipe.Level];
+            var indSuffix = "";
+
+            var isPart    = recipe.ParentGroupName.EndsWith("Parts", StringComparison.InvariantCultureIgnoreCase);
+            var isPure    = recipe.ParentGroupName.Equals("Pure");
+            var isProduct = recipe.ParentGroupName.Equals("Product");
+            var isScrap   = recipe.ParentGroupName.Equals("Scraps");
+            var isHC      = recipe.ParentGroupName == "Product Honeycomb Materials" ||
+                            recipe.ParentGroupName == "Pure Honeycomb Materials";
+
+            var isElect   = isPart && (
+                                (recipe.Name.IndexOf(" antenna ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                recipe.Name.EndsWith(" antimatter core", StringComparison.InvariantCultureIgnoreCase) ||
+                                recipe.Name.EndsWith(" anti-gravity core", StringComparison.InvariantCultureIgnoreCase) ||
+                                (recipe.Name.IndexOf(" button ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                recipe.Name.EndsWith(" component", StringComparison.InvariantCultureIgnoreCase) ||
+                                recipe.Name.EndsWith(" connector", StringComparison.InvariantCultureIgnoreCase) ||
+                                (recipe.Name.IndexOf(" control system ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                (recipe.Name.IndexOf(" core system ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                (recipe.Name.IndexOf(" electronics", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                (recipe.Name.IndexOf(" mechanical sensor ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                (recipe.Name.IndexOf(" motherboard ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                (recipe.Name.IndexOf(" ore scanner ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                recipe.Name.EndsWith(" power system", StringComparison.InvariantCultureIgnoreCase) ||
+                                (recipe.Name.IndexOf(" power transformer ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                recipe.Name.EndsWith(" processor", StringComparison.InvariantCultureIgnoreCase) ||
+                                recipe.Name.EndsWith(" quantum alignment unit", StringComparison.InvariantCultureIgnoreCase) ||
+                                recipe.Name.EndsWith(" quantum barrier", StringComparison.InvariantCultureIgnoreCase) ||
+                                (recipe.Name.IndexOf("uncommon light", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                false);
+
+            var isMetal   = isPart && !isElect && (
+                                recipe.Name.EndsWith(" burner", StringComparison.InvariantCultureIgnoreCase) ||
+                                (recipe.Name.IndexOf(" chemical container ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                (recipe.Name.IndexOf(" combustion chamber ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                (recipe.Name.IndexOf(" container ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                (recipe.Name.IndexOf(" electric engine ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                (recipe.Name.IndexOf(" firing system ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                (recipe.Name.IndexOf(" frame ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                (recipe.Name.IndexOf(" gas cylinder ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                recipe.Name.EndsWith(" hydraulics", StringComparison.InvariantCultureIgnoreCase) ||
+                                (recipe.Name.IndexOf(" ionic chamber ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                recipe.Name.EndsWith(" magnet", StringComparison.InvariantCultureIgnoreCase) ||
+                                (recipe.Name.IndexOf(" magnetic rail ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                (recipe.Name.IndexOf(" missile silo ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                (recipe.Name.IndexOf(" mobile panel ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                recipe.Name.EndsWith(" pipe", StringComparison.InvariantCultureIgnoreCase) ||
+                                (recipe.Name.IndexOf(" power transformer ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                (recipe.Name.IndexOf(" robotic arm ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                (recipe.Name.IndexOf(" screen ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                recipe.Name.EndsWith(" screw", StringComparison.InvariantCultureIgnoreCase) ||
+                                recipe.Name.EndsWith(" singularity container", StringComparison.InvariantCultureIgnoreCase) ||
+                                recipe.Name.EndsWith(" solid warhead", StringComparison.InvariantCultureIgnoreCase)  ||
+                                false);
+
+            var is3D      = !isElect && !isMetal && (
+                                recipe.Name.Equals("carbon fiber product", StringComparison.InvariantCultureIgnoreCase) ||
+                                (recipe.Name.IndexOf(" casing ", StringComparison.InvariantCultureIgnoreCase) > 0) ||
+                                recipe.Name.EndsWith(" fixation", StringComparison.InvariantCultureIgnoreCase) ||
+                                recipe.Name.EndsWith(" injector", StringComparison.InvariantCultureIgnoreCase) ||
+                                recipe.Name.EndsWith(" quantum core", StringComparison.InvariantCultureIgnoreCase) ||
+                                (recipe.Name.IndexOf(" screen ", StringComparison.InvariantCultureIgnoreCase) > 0) ||
+                                false);
+
+            var isGlass   = !isElect && !isMetal && !is3D && (
+                                recipe.Key.StartsWith("led_", StringComparison.InvariantCultureIgnoreCase) ||
+                                recipe.Key.StartsWith("WarpCell") ||
+                                recipe.Name.EndsWith(" antimatter capsule", StringComparison.InvariantCultureIgnoreCase) ||
+                                (recipe.Name.IndexOf(" laser chamber", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                recipe.Name.EndsWith(" optics", StringComparison.InvariantCultureIgnoreCase) ||
+                                (recipe.Name.IndexOf("glass", StringComparison.InvariantCultureIgnoreCase) >= 0));
+
+            var isChem    = !isElect && !isMetal && !is3D && !isGlass && (
+                                recipe.Name.StartsWith("Biological") ||
+                                recipe.Name.StartsWith("Catalyst") ||
+                                recipe.Name.EndsWith(" explosive module", StringComparison.InvariantCultureIgnoreCase) ||
+                                recipe.Name.StartsWith("Fluoropolymer") ||
+                                recipe.ParentGroupName.Equals("Fuels") ||
+                                recipe.ParentGroupName.EndsWith("plastic product", StringComparison.InvariantCultureIgnoreCase) ||
+                                false);
+
+            var isAssy = !isElect && !isMetal && !is3D && !isChem && !isGlass &&
+                         !isPart && !isPure && !isProduct && !isScrap && !isHC;
+
+            string getIndyName(string industry) => $"{indPrefix} {industry} {indSuffix}".Trim();
+
+            if (recipe.Key == "OxygenPure" || recipe.Key == "HydrogenPure" || isScrap)
+            {
+                recipe.Industry = getIndyName("Basic Recycler M"); return;
+            }
+            if (isGlass)
+            {
+                recipe.Industry = getIndyName("Glass Furnace M"); return;
+            }
+            if (isChem)
+            {
+                recipe.Industry = getIndyName("Chemical Industry M"); return;
+            }
+            if (is3D)
+            {
+                recipe.Industry = getIndyName("3D Printer M"); return;
+            }
+            if (isElect)
+            {
+                recipe.Industry = getIndyName("Electronics Industry M"); return;
+            }
+            if (isMetal)
+            {
+                recipe.Industry = getIndyName("Metalwork Industry M"); return;
+            }
+            if (isPure || recipe.ParentGroupName == "Refined Materials")
+            {
+                recipe.Industry = getIndyName("Refiner M"); return;
+            }
+            if (isProduct)
+            {
+                recipe.Industry = getIndyName("Smelter M"); return;
+            }
+            if (isHC)
+            {
+                recipe.Industry = getIndyName("Honeycomb Refiner M"); return;
+            }
+            if (isAssy)
+            {
+                // IF a frame as ingredient exists, take its size!
+                var frame = recipe.Ingredients.FirstOrDefault(x => x.Name.IndexOf(" frame ", StringComparison.InvariantCultureIgnoreCase) >= 0);
+                indSuffix = GetElementSize(frame == null ? recipe.Name : frame.Name);
+                recipe.Industry = getIndyName("Assembly Line");
+                return;
+            }
+            Debug.WriteLine(recipe.Name.PadRight(40)+" -> NO INDY!");
+        }
+
         private string GetElementSize(string elemName)
         {
             foreach (var size in _sizeList.Where(size => elemName.EndsWith(" " + size, StringComparison.InvariantCultureIgnoreCase)))
@@ -1420,18 +1361,19 @@ namespace DU_Industry_Tool
         {
             if (groupId == Guid.Empty) return "";
             var grp = Groups.FirstOrDefault(x => x.Value.Id == groupId);
-            if (grp.Value == null || grp.Key == "" || grp.Key == "FurnituresAppliances") return "";
-            if (grp.Key == "Ammo" || grp.Value.Name == "Elements") return "Elements";
-            if (grp.Value.ParentId == Guid.Empty) return "";
-            return FindParent(grp.Value.ParentId);
+            if (grp.Value == null || string.IsNullOrEmpty(grp.Key)) return "";
+            if (grp.Key == "ConsumableDisplay" || grp.Key == "Material" || grp.Key == "Element") return grp.Value.Name;
+            return grp.Value.ParentId == Guid.Empty ? grp.Value.Name : FindParent(grp.Value.ParentId);
         }
 
         private string GetTopLevelGroup(string groupName)
         {
-            if (groupName == "" ||
-                groupName.IndexOf("honeycomb", StringComparison.InvariantCultureIgnoreCase) >= 0) return "";
+            if (string.IsNullOrEmpty(groupName)) return "";
             var grp = Groups.FirstOrDefault(x => x.Value.Name == groupName);
-            if (string.IsNullOrEmpty(grp.Key) || grp.Value.ParentId == Guid.Empty) return "";
+            if (string.IsNullOrEmpty(grp.Key)) return "";
+            if (grp.Value.ParentId == Guid.Empty ||
+                grp.Value.Name == "Product")
+                return grp.Value.Name; // e.g. "Parts"
             var tmp = FindParent(grp.Value.ParentId);
             return tmp;
         }
@@ -1657,13 +1599,9 @@ namespace DU_Industry_Tool
                 else
                 {
                     if (isProduct)
-                    {
                         qty = amount * ingredient.Quantity;
-                    }
                     else
-                    {
                         qty = amount * factor;
-                    }
                 }
 
                 cost = GetTotalCost(ingredient.Type, qty, level, depth + 1, silent);
@@ -1827,13 +1765,12 @@ namespace DU_Industry_Tool
                 }
 
                 var orePrefix = idx.Substring(0, 2) + " ";
-                if (isT1Ore || isPlasma || !Schematics.ContainsKey(idx))
+                if (isT1Ore || isPlasma || isPart || !Schematics.ContainsKey(idx))
                 {
                     if (outputDetails)
                     {
                         CostResults.AppendLine((isPlasma ? "" : orePrefix) + output);
                     }
-
                     continue;
                 }
 
@@ -1857,10 +1794,8 @@ namespace DU_Industry_Tool
                     output += " | " + $"{cnt} sch.".PadLeft(10) + " = " + $"{tmp:N2} q".PadLeft(14);
                     CostResults.AppendLine(orePrefix + output);
                 }
-
                 outSum += tmp;
             }
-
             return outSum;
         }
 
@@ -1919,46 +1854,5 @@ namespace DU_Industry_Tool
                 : group.Name;
         }
 
-        private static bool ConvertLua2Json(string filename)
-        {
-            try
-            {
-                var sb = new StringBuilder(File.ReadAllText(filename + ".lua"));
-                sb.Replace("_items=", "");
-                sb.Replace("_recipes=", "");
-                sb.Replace("[", "");
-                sb.Replace("]", "");
-                sb.Replace("id=", "\"id\"=");
-                sb.Replace("displayNameWithSize=", "\"displayNameWithSize\"=");
-                sb.Replace("description=", "\"description\"=");
-                sb.Replace("size=", "\"size\"=");
-                sb.Replace("tier=", "\"tier\"=");
-                sb.Replace("time=", "\"time\"=");
-                sb.Replace("quantity=", "\"quantity\"=");
-                sb.Replace("iconPath=", "\"iconPath\"=");
-                sb.Replace("nanocraftable=", "\"nanocraftable\"=");
-                sb.Replace("unitMass=", "\"unitMass\"=");
-                sb.Replace("unitVolume=", "\"unitVolume\"=");
-                sb.Replace("size=", "\"size\"=");
-                sb.Replace("description=", "\"description\"=");
-                sb.Replace("ingredients=", "\"ingredients\"=");
-                sb.Replace("products=", "\"products\"=");
-                sb.Replace("schematics=", "\"schematics\"=");
-                sb.Replace("={}", "=[]");
-                sb.Replace("}}}", "}]}");
-                sb.Replace("}}", "}]");
-                sb.Replace("{{", "[{");
-                sb.Replace("=", ":");
-                sb.Remove(sb.Length - 1, 1);
-                sb.Append("}");
-                File.WriteAllText(filename + ".json", sb.ToString());
-                return true;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return false;
-            }
-        }
     }
 }

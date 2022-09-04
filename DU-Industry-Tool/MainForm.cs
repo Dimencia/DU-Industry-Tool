@@ -1,18 +1,18 @@
-﻿using ClosedXML.Excel;
+﻿// ReSharper disable LocalizableElement
+// ReSharper disable RedundantUsingDirective
+using ClosedXML.Excel;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Globalization;
+using System.Web.UI.Design;
 using System.Windows.Forms;
 using Krypton.Toolkit;
 using Krypton.Navigator;
 using Krypton.Workspace;
 using Krypton.Docking;
 using DocumentFormat.OpenXml.Drawing.ChartDrawing;
-using DU_Industry_Tool.Properties;
-
-// ReSharper disable LocalizableElement
 
 namespace DU_Industry_Tool
 {
@@ -22,7 +22,6 @@ namespace DU_Industry_Tool
         private readonly MarketManager _market;
         private bool _marketFiltered;
         private TextBox _costDetailsLabel;
-        //private int _costDetailsLineCount;
         private readonly List<string> _breadcrumbs = new List<string>();
         private FlowLayoutPanel _costDetailsPanel;
         private FlowLayoutPanel _infoPanel;
@@ -42,7 +41,7 @@ namespace DU_Industry_Tool
             kryptonPage1.Flags = 0;
             kryptonPage1.ClearFlags(KryptonPageFlags.DockingAllowDocked);
             kryptonPage1.ClearFlags(KryptonPageFlags.DockingAllowClose);
-
+            var sortedRecipes = new List<string>();
             treeView.AfterSelect += Treeview_AfterSelect;
             treeView.NodeMouseClick += Treeview_NodeClick;
             treeView.BeginUpdate();
@@ -53,6 +52,7 @@ namespace DU_Industry_Tool
                             .OrderBy(r => r.Value.Level).ThenBy(r => r.Value.Name)
                             .Select(x => x.Value))
                 {
+                    sortedRecipes.Add(recipe.Name);
                     var recipeNode = new TreeNode(recipe.Name)
                     {
                         Tag = recipe
@@ -63,6 +63,8 @@ namespace DU_Industry_Tool
                 treeView.Nodes.Add(groupNode);
             }
             treeView.EndUpdate();
+            sortedRecipes.Sort();
+            sortedRecipes.ForEach(x => SearchBox.Items.Add(x));
             OnMainformResize(null, null);
         }
 
@@ -93,7 +95,6 @@ namespace DU_Industry_Tool
             PreviousButton.Enabled = _breadcrumbs.Count > 0;
 
             // Display recipe info for the thing they have selected
-            Console.WriteLine(recipe.Name);
             SearchBox.Text = recipe.Name;
             _navUpdating = true;
             ContentDocument newDoc = null;
@@ -108,7 +109,8 @@ namespace DU_Industry_Tool
             }
             _infoPanel.Controls.Clear();
 
-            var lbl = AddLabel(_infoPanel.Controls, $"{recipe.Name} (T{recipe.Level})");
+            var lbl = AddLabel(_infoPanel.Controls, $"{recipe.Name} (T{recipe.Level})", FontStyle.Bold);
+            lbl.Anchor = (AnchorStyles)(AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right);
             lbl.Font = new Font(_infoPanel.Font.FontFamily, 12f, FontStyle.Bold);
             lbl.Padding = new Padding(2, 5, 4, 2);
             lbl.Height = 30;
@@ -153,51 +155,70 @@ namespace DU_Industry_Tool
             }
 
             // ----- Ingredients -----
-            var newPanel = AddFlowLabel(_infoPanel.Controls, "Ingredients", FontStyle.Bold);
-            var grid = new TableLayoutPanel
+            if (recipe.Ingredients.Count > 0)
             {
-                ColumnCount = 2,
-                RowCount = recipe.Ingredients.Count,
-                AutoSize = true,
-                Margin = new Padding(0),
-                Padding = new Padding(0,0,0,10)
-            };
-            newPanel.SuspendLayout();
-            grid.SuspendLayout();
-            foreach (var ingredient in recipe.Ingredients)
-            {
-                AddLinkedLabel(grid.Controls, ingredient.Name, ingredient.Type).Click += Label_Click;
-                AddLabel(grid.Controls, ingredient.Quantity.ToString("0.0"));
+                var newPanel = AddFlowLabel(_infoPanel.Controls, "Ingredients", FontStyle.Bold);
+                newPanel.SuspendLayout();
+                var ingGrid = new TableLayoutPanel
+                {
+                    ColumnCount = 2,
+                    RowCount = recipe.Ingredients.Count,
+                    AutoSize = true,
+                    Margin = new Padding(0),
+                    Padding = new Padding(0, 0, 0, 10),
+                    Width = 300
+                };
+                ingGrid.LayoutSettings.ColumnStyles.Add(new ColumnStyle { Width = 240, SizeType = SizeType.Absolute });
+                ingGrid.SuspendLayout();
+                foreach (var ingredient in recipe.Ingredients)
+                {
+                    AddLinkedLabel(ingGrid.Controls, ingredient.Name, ingredient.Type).Click += Label_Click;
+                    AddLabel(ingGrid.Controls, ingredient.Quantity.ToString("0.0"));
+                }
+
+                ingGrid.ResumeLayout(false);
+                newPanel.Controls.Add(ingGrid);
+                newPanel.ResumeLayout(false);
             }
-            grid.ResumeLayout();
-            newPanel.Controls.Add(grid);
-            newPanel.ResumeLayout();
 
             // ----- Products -----
-            newPanel = AddFlowLabel(_infoPanel.Controls, "Products", FontStyle.Bold);
-            grid = new TableLayoutPanel
+            if (recipe.Products.Count > 0)
             {
-                ColumnCount = 2,
-                RowCount = recipe.Products.Count,
-                AutoSize = true,
-                Padding = new Padding(0,4,0,10)
-            };
-            newPanel.SuspendLayout();
-            grid.SuspendLayout();
-            foreach (var prod in recipe.Products)
-            {
-                if (prod.Type == recipe.Key)
-                    AddLabel(grid.Controls, prod.Name);
-                else
-                    AddLinkedLabel(grid.Controls, prod.Name, prod.Type).Click += Label_Click;
-                AddLabel(grid.Controls, prod.Quantity.ToString("0.0"));
+                var newPanel = AddFlowLabel(_infoPanel.Controls, "Products", FontStyle.Bold);
+                newPanel.SuspendLayout();
+                newPanel.Height = Math.Min(recipe.Products.Count+2, 10) * Math.Abs(_infoPanel.Font.Height);
+                var grid = new TableLayoutPanel
+                {
+                    ColumnCount = 2,
+                    RowCount = recipe.Products.Count,
+                    AutoSize = true,
+                    Padding = new Padding(0, 4, 0, 10),
+                    Width = 300
+                };
+                grid.LayoutSettings.ColumnStyles.Add(new ColumnStyle { Width = 240, SizeType = SizeType.Absolute });
+                grid.SuspendLayout();
+                foreach (var prod in recipe.Products)
+                {
+                    if (prod.Type == recipe.Key)
+                        AddLabel(grid.Controls, prod.Name);
+                    else
+                        AddLinkedLabel(grid.Controls, prod.Name, prod.Type).Click += Label_Click;
+                    AddLabel(grid.Controls, prod.Quantity.ToString("0.0"));
+                }
+
+                grid.ResumeLayout(false);
+                newPanel.Controls.Add(grid);
+                newPanel.ResumeLayout(false);
             }
-            grid.ResumeLayout();
-            newPanel.Controls.Add(grid);
-            newPanel.ResumeLayout();
 
-            AddFlowLabel(_infoPanel.Controls, "Industry: "+recipe.Industry, FontStyle.Regular);
+            // ----- Industry -----
+            if (!string.IsNullOrEmpty(recipe.Industry))
+            {
+                var newPanel = AddFlowLabel(_infoPanel.Controls, "Industry", FontStyle.Bold);
+                AddLinkedLabel(newPanel.Controls, recipe.Industry, recipe.Industry).Click += LabelIndustry_Click;
+            }
 
+            // ----- Reverse recipes -----
             if (recipe.ParentGroupName.EndsWith("Ore", StringComparison.InvariantCultureIgnoreCase) ||
                 recipe.ParentGroupName.EndsWith("Parts", StringComparison.InvariantCultureIgnoreCase) ||
                 recipe.ParentGroupName.EndsWith("Product", StringComparison.InvariantCultureIgnoreCase) ||
@@ -208,17 +229,17 @@ namespace DU_Industry_Tool
                     true == x.Ingredients?.Any(y => y.Name.Equals(recipe.Name, StringComparison.InvariantCultureIgnoreCase))).ToList();
                 if (containedIn?.Any() == true)
                 {
-                    newPanel = AddFlowLabel(_infoPanel.Controls, "Part of recipes:", FontStyle.Bold);
+                    var newPanel = AddFlowLabel(_infoPanel.Controls, "Part of recipes:", FontStyle.Bold);
                     newPanel.Padding = new Padding(0, 10, 0, 0);
 
-                    grid = new TableLayoutPanel
+                    var grid = new TableLayoutPanel
                     {
                         AutoScroll = true,
                         ColumnCount = 1,
                         Padding = new Padding(0),
                         RowCount = containedIn.Count(),
-                        Height = 400,
-                        Width = 450,
+                        Height = Math.Min(containedIn.Count()+1, 10) * Math.Abs(_infoPanel.Font.Height+1),
+                        Width = 300,
                         VerticalScroll = { Visible = true }
                     };
                     newPanel.SuspendLayout();
@@ -227,9 +248,9 @@ namespace DU_Industry_Tool
                     {
                         AddLinkedLabel(grid.Controls, entry.Name, entry.Key).Click += Label_Click;
                     }
-                    grid.ResumeLayout();
+                    grid.ResumeLayout(false);
                     newPanel.Controls.Add(grid);
-                    newPanel.ResumeLayout();
+                    newPanel.ResumeLayout(false);
                 }
             }
 
@@ -257,11 +278,10 @@ namespace DU_Industry_Tool
                 };
                 _costDetailsPanel.Controls.Add(_costDetailsLabel);
                 _infoPanel.Controls.Add(_costDetailsPanel);
-                //_costDetailsLineCount = _costDetailsLabel.Text.Count(c => c == '\n');
             }
             finally
             {
-                _costDetailsPanel.ResumeLayout();
+                _costDetailsPanel.ResumeLayout(false);
                 newDoc.CostDetailsPanel = _costDetailsPanel;
             }
 
@@ -277,14 +297,17 @@ namespace DU_Industry_Tool
                 FlowDirection = FlowDirection.TopDown,
                 Padding = new Padding(0)
             };
-            var lbl = new Label
+            if (!string.IsNullOrEmpty(lblText))
             {
-                AutoSize = true,
-                Font = new Font(_infoPanel.Font, fstyle),
-                Padding = new Padding(0),
-                Text = lblText
-            };
-            panel.Controls.Add(lbl);
+                var lbl = new Label
+                {
+                    AutoSize = true,
+                    Font = new Font(_infoPanel.Font, fstyle),
+                    Padding = new Padding(0),
+                    Text = lblText
+                };
+                panel.Controls.Add(lbl);
+            }
             cc.Add(panel);
             return panel;
         }
@@ -343,6 +366,59 @@ namespace DU_Industry_Tool
             treeView.SelectedNode = targetNode;
             treeView.SelectedNode.EnsureVisible();
             SearchBox.Text = targetNode.Text;
+        }
+
+        private static int RecipeNameComparer(SchematicRecipe x, SchematicRecipe y)
+        {
+            return string.Compare(x.Name, y.Name, StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        private void LabelIndustry_Click(object sender, EventArgs e)
+        {
+            if (!(sender is Label label)) return;
+            if (!(label.Tag is string tag)) return;
+            var products = _manager.Recipes.Where(x => x.Value.Industry.Equals(tag, StringComparison.InvariantCultureIgnoreCase))
+                                .Select(x => x.Value).ToList();
+            if (products?.Any() != true)
+            {
+                return;
+            }
+
+            products.Sort(RecipeNameComparer);
+
+            const string title = "Industry Products";
+
+            var page = kryptonNavigator1.Pages.FirstOrDefault(x => x.Text.Equals(title, StringComparison.InvariantCultureIgnoreCase));
+            if (page == null)
+            {
+                page = NewPage(title, null);
+                kryptonNavigator1.Pages.Insert(0, page);
+            }
+            if (page == null) return;
+            kryptonNavigator1.SelectedPage = page;
+            page.Controls.Clear();
+
+            var panel = AddFlowLabel(page.Controls, tag+" produces:", FontStyle.Bold);
+            panel.Dock = DockStyle.Top;
+
+            var grid = new TableLayoutPanel
+            {
+                AutoScroll = true,
+                AutoSize = true,
+                Dock = DockStyle.Fill,
+                ColumnCount = 1,
+                RowCount = products.Count,
+                Margin = new Padding(0, 22, 0, 0),
+                Padding = new Padding(0, 22, 0, 10)
+            };
+            page.Controls.Add(grid);
+
+            grid.SuspendLayout();
+            foreach (var prod in products)
+            {
+                AddLinkedLabel(grid.Controls, prod.Name, prod.Key).Click += Label_Click;
+            }
+            grid.ResumeLayout();
         }
 
         private void InputOreValuesToolStripMenuItem_Click(object sender, EventArgs e)
@@ -647,31 +723,33 @@ namespace DU_Industry_Tool
             }
         }
 
-        private void ConvertLua2JsonFile_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("Coming soon... ;)");
-        }
-
         private void OnMainformResize(object sender, EventArgs e)
         {
-            if (kryptonNavigator1.SelectedPage == null) return;
+            kryptonNavigator1.Left = searchPanel.Width + 6;
+            kryptonNavigator1.Top = kryptonRibbon.Height;
+            kryptonNavigator1.Height = kryptonWorkspaceCell1.Height - 4;
+            kryptonNavigator1.Width = ClientSize.Width - searchPanel.Width - 10;
+            _infoPanel = null;
+            _costDetailsPanel = null;
             _costDetailsLabel = null;
+            if (kryptonNavigator1.SelectedPage == null) return;
             if (kryptonNavigator1.SelectedPage.Controls.Count > 0 &&
                 kryptonNavigator1.SelectedPage.Controls[0] is ContentDocument xDoc)
             {
+                _infoPanel = xDoc.InfoPanel;
                 _costDetailsPanel = xDoc.CostDetailsPanel;
                 if (_costDetailsPanel?.Controls.Count > 0)
                 {
                     _costDetailsLabel = _costDetailsPanel.Controls[0] as TextBox;
                 }
             }
-            if (_costDetailsPanel == null) return;
+            if (_costDetailsPanel == null || _infoPanel == null) return;
             _costDetailsPanel.SuspendLayout();
             try
             {
                 _costDetailsPanel.AutoSize = false;
-                _costDetailsPanel.Height = kryptonNavigator1.SelectedPage.Height - 6;
-                _costDetailsPanel.Width = kryptonNavigator1.SelectedPage.Width - 380;
+                _costDetailsPanel.Height = kryptonNavigator1.SelectedPage.Height - 4;
+                _costDetailsPanel.Width = kryptonNavigator1.SelectedPage.Width - _costDetailsPanel.Left;
                 if (_costDetailsLabel == null) return;
                 _costDetailsLabel.AutoSize = false;
                 _costDetailsLabel.Width  = _costDetailsPanel.Width  - 8;
@@ -679,7 +757,7 @@ namespace DU_Industry_Tool
             }
             finally
             {
-                _costDetailsPanel.ResumeLayout();
+                _costDetailsPanel.ResumeLayout(false);
             }
         }
 
@@ -687,7 +765,6 @@ namespace DU_Industry_Tool
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            this.buttonConvertLua2JsonFile.Visible = false;
             // Setup docking functionality
             var w = kryptonDockingManager.ManageWorkspace(kryptonDockableWorkspace);
             if (w != null)
@@ -700,6 +777,7 @@ namespace DU_Industry_Tool
             kryptonPage1.ClearFlags(KryptonPageFlags.DockingAllowAutoHidden |
                             KryptonPageFlags.DockingAllowDocked |
                             KryptonPageFlags.DockingAllowClose);
+            OnMainformResize(sender, e);
         }
 
         private static KryptonPage NewPage(string name, Control content)
@@ -711,11 +789,9 @@ namespace DU_Industry_Tool
                 Flags = 0
             };
             p.SetFlags(KryptonPageFlags.DockingAllowDocked | KryptonPageFlags.DockingAllowClose);
-            if (content != null)
-            {
-                content.Dock = DockStyle.Fill;
-                p.Controls.Add(content);
-            }
+            if (content == null) return p;
+            content.Dock = DockStyle.Fill;
+            p.Controls.Add(content);
             return p;
         }
 
