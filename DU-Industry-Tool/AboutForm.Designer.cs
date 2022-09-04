@@ -122,7 +122,7 @@ namespace DU_Industry_Tool
             this.labelMain.Name = "labelMain";
             this.labelMain.Size = new System.Drawing.Size(545, 155);
             this.labelMain.TabIndex = 7;
-            this.labelMain.Values.Text = "DU Industry Tool v0.640\r\nA tool to find cost for elements in Dual Universe.\r\n\r\nCr" +
+            this.labelMain.Values.Text = "DU Industry Tool vXXX\r\nA tool to find cost for elements in Dual Universe.\r\n\r\nCr" +
     "eated by Dimencia (2020-2021)\r\nContributor: tobitege (2022)\r\n";
             // 
             // kryptonLabel4

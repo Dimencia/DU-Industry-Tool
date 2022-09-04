@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
+using System.IO;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Krypton.Toolkit;
 
@@ -20,25 +17,25 @@ namespace DU_Industry_Tool
             discordLink.Click += LinkOnClick;
             DimenciaGithubLink.Click += LinkOnClick;
             TobiReleasesLink.Click += LinkOnClick;
+            var version = File.ReadAllText("Version.txt");
+            labelMain.Values.Text = this.labelMain.Values.Text.Replace("XXX", version);
         }
 
         private static void LinkOnClick(object sender, EventArgs e)
         {
-            if (sender is KryptonLinkLabel klb)
+            if (!(sender is KryptonLinkLabel klb)) return;
+            try
             {
-                try
-                {
-                    System.Diagnostics.Process.Start(klb.Text);
-                }
-                catch (System.ComponentModel.Win32Exception noBrowser)
-                {
-                    if (noBrowser.ErrorCode==-2147467259)
-                        KryptonMessageBox.Show(noBrowser.Message,"Error",MessageBoxButtons.OK,MessageBoxIcon.Error);
-                }
-                catch (System.Exception)
-                {
-                    KryptonMessageBox.Show("Sorry, could not open the URL!","Error",MessageBoxButtons.OK,MessageBoxIcon.Error);
-                }
+                System.Diagnostics.Process.Start(klb.Text);
+            }
+            catch (System.ComponentModel.Win32Exception noBrowser)
+            {
+                if (noBrowser.ErrorCode==-2147467259)
+                    KryptonMessageBox.Show(noBrowser.Message,"Error",MessageBoxButtons.OK,MessageBoxIcon.Error);
+            }
+            catch (System.Exception)
+            {
+                KryptonMessageBox.Show("Sorry, could not open the URL!","Error",MessageBoxButtons.OK,MessageBoxIcon.Error);
             }
         }
     }

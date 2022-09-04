@@ -117,9 +117,4 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="richTextBox.Text" xml:space="preserve">
-    <value>This demo shows a standard docking scenario where document pages are being edited in the center and docking pages are arranged around the edges. Docking pages are allowed to be docked, auto hidden, floating or placed in the documents area. Document pages are allowed to be placed only in the documents area or made floating. 
-
-The documents area in this example uses a KryptonDockableWorkspace control that allows for complex arrangements of cells so that pages can be viewed side by side as well as tabbed. If you prefer the documents area to be like a traditional tab control where the pages can only be tabbed and never placed side-by-side then you can use the KryptonDockableNavigator control instead.</value>
-  </data>
 </root>

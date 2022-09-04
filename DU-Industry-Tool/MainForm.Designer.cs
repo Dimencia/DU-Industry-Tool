@@ -47,13 +47,12 @@ namespace DU_Industry_Tool
             this.buttonFilterToMarket = new Krypton.Toolkit.KryptonContextMenuItem();
             this.buttonExportToSpreadsheet = new Krypton.Toolkit.KryptonContextMenuItem();
             this.buttonFactoryBreakdownForSelected = new Krypton.Toolkit.KryptonContextMenuItem();
-            this.buttonConvertLua2JsonFile = new Krypton.Toolkit.KryptonContextMenuItem();
             this.ribbonAppButtonExit = new Krypton.Toolkit.KryptonContextMenuItem();
             this.kryptonDockableWorkspace = new Krypton.Docking.KryptonDockableWorkspace();
             this.kryptonWorkspaceCell1 = new Krypton.Workspace.KryptonWorkspaceCell();
             this.kryptonPage1 = new Krypton.Navigator.KryptonPage();
-            this.searchPanel = new System.Windows.Forms.FlowLayoutPanel();
-            this.SearchBox = new System.Windows.Forms.TextBox();
+            this.searchPanel = new Krypton.Toolkit.KryptonPanel();
+            this.SearchBox = new Krypton.Toolkit.KryptonComboBox();
             this.SearchButton = new System.Windows.Forms.Button();
             this.QuantityBox = new System.Windows.Forms.ComboBox();
             this.PreviousButton = new System.Windows.Forms.Button();
@@ -88,7 +87,6 @@ namespace DU_Industry_Tool
             this.buttonFilterToMarket,
             this.buttonExportToSpreadsheet,
             this.buttonFactoryBreakdownForSelected,
-            this.buttonConvertLua2JsonFile,
             this.ribbonAppButtonExit});
             this.kryptonRibbon.RibbonTabs.AddRange(new Krypton.Ribbon.KryptonRibbonTab[] {
                 this.kryptonRibbonTab2});
@@ -162,11 +160,6 @@ namespace DU_Industry_Tool
             // 
             this.buttonFactoryBreakdownForSelected.Text = "&Factory Breakdown for Selected";
             this.buttonFactoryBreakdownForSelected.Click += new System.EventHandler(this.FactoryBreakdownForSelectedToolStripMenuItem_Click);
-            // 
-            // buttonConvertLua2JsonFile
-            // 
-            this.buttonConvertLua2JsonFile.Text = "&Convert LUA table file to JSON file";
-            this.buttonConvertLua2JsonFile.Click += new System.EventHandler(this.ConvertLua2JsonFile_Click);
             // 
             // ribbonAppButtonExit
             // 
@@ -258,11 +251,13 @@ namespace DU_Industry_Tool
             this.SearchBox.Name = "SearchBox";
             this.SearchBox.Size = new System.Drawing.Size(200, 28);
             this.SearchBox.TabIndex = 0;
+            this.SearchBox.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            this.SearchBox.AutoCompleteSource = AutoCompleteSource.ListItems;
             // 
             // SearchButton
             // 
             this.SearchButton.AutoSize = true;
-            this.SearchButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.SearchButton.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.SearchButton.Location = new System.Drawing.Point(207, 3);
             this.SearchButton.Name = "SearchButton";
             this.SearchButton.Size = new System.Drawing.Size(80, 30);
@@ -274,7 +269,7 @@ namespace DU_Industry_Tool
             // QuantityBox
             // 
             this.QuantityBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.QuantityBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.QuantityBox.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.QuantityBox.Items.AddRange(new object[] {
             "1",
             "2",
@@ -293,12 +288,13 @@ namespace DU_Industry_Tool
             this.QuantityBox.Name = "QuantityBox";
             this.QuantityBox.Size = new System.Drawing.Size(50, 28);
             this.QuantityBox.TabIndex = 2;
+            this.QuantityBox.SelectionChangeCommitted += QuantityBoxOnSelectionChangeCommitted;
             // 
             // PreviousButton
             // 
             this.PreviousButton.AutoSize = true;
             this.PreviousButton.Enabled = false;
-            this.PreviousButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.PreviousButton.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.PreviousButton.Location = new System.Drawing.Point(347, 3);
             this.PreviousButton.Name = "PreviousButton";
             this.PreviousButton.Size = new System.Drawing.Size(39, 30);
@@ -334,7 +330,7 @@ namespace DU_Industry_Tool
             this.kryptonNavigator1.StateCommon.CheckButton.Content.ShortText.TextH = Krypton.Toolkit.PaletteRelativeAlign.Center;
             this.kryptonNavigator1.StateCommon.CheckButton.Content.ShortText.TextV = Krypton.Toolkit.PaletteRelativeAlign.Far;
             this.kryptonNavigator1.TabIndex = 7;
-            this.kryptonNavigator1.Text = "kryptonNavigator1";
+            this.kryptonNavigator1.Text = "";
             this.kryptonNavigator1.SelectedPageChanged += KryptonNavigator1OnSelectedPageChanged;
             // 
             // imageListSmall
@@ -352,16 +348,17 @@ namespace DU_Industry_Tool
             // MainForm
             // 
             this.AcceptButton = this.SearchButton;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 20F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(120F, 120F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(1850, 1000);
             this.Controls.Add(this.kryptonNavigator1);
             this.Controls.Add(this.kryptonDockableWorkspace);
             this.Controls.Add(this.kryptonRibbon);
-            this.Font = new System.Drawing.Font("Verdana", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.MinimumSize = new System.Drawing.Size(800, 600);
             this.Name = "MainForm";
             this.Text = "DU Industry Tool (Mercury)";
+            this.StartPosition = FormStartPosition.CenterScreen;;
             this.Load += new System.EventHandler(this.MainForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.kryptonRibbon)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.kryptonDockableWorkspace)).EndInit();
@@ -396,7 +393,6 @@ namespace DU_Industry_Tool
         private Krypton.Toolkit.KryptonContextMenuItem buttonFilterToMarket;
         private Krypton.Toolkit.KryptonContextMenuItem buttonExportToSpreadsheet;
         private Krypton.Toolkit.KryptonContextMenuItem buttonFactoryBreakdownForSelected;
-        private Krypton.Toolkit.KryptonContextMenuItem buttonConvertLua2JsonFile;
         private Krypton.Toolkit.KryptonManager kryptonManager;
         private Krypton.Navigator.KryptonNavigator kryptonNavigator1;
         private Krypton.Docking.KryptonDockingManager kryptonDockingManager;
@@ -404,8 +400,8 @@ namespace DU_Industry_Tool
         private Krypton.Workspace.KryptonWorkspaceCell kryptonWorkspaceCell1;
         private Krypton.Navigator.KryptonPage kryptonPage1;
         private System.Windows.Forms.TreeView treeView;
-        private System.Windows.Forms.FlowLayoutPanel searchPanel;
-        private System.Windows.Forms.TextBox SearchBox;
+        private Krypton.Toolkit.KryptonPanel searchPanel;
+        private Krypton.Toolkit.KryptonComboBox SearchBox;
         private System.Windows.Forms.Button SearchButton;
         private System.Windows.Forms.Button PreviousButton;
         private System.Windows.Forms.ComboBox QuantityBox;

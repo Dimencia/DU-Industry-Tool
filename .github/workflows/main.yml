@@ -3,9 +3,9 @@ on:
         branches:
             - master
         paths-ignore:
-            - '.github/**/*.yml'
             - '.git*'
             - '.vscode'
+            - '.github/**/*.yml'
 
 jobs:
     build:
@@ -27,25 +27,8 @@ jobs:
           id: getversion
           uses: berglie/assembly-version/get@v1
           with:
-            filename: 'Version.txt'
-            directory: '.'
-
-        #- name: Create Tag
-        #  if: github.ref == 'refs/heads/master'  # ONLY ON MASTER
-        #  id: create_tag
-        #  uses: jaywcjlove/create-tag-action@main
-        #  with:
-        #    release: true
-        #    version: ${{ steps.getversion.outputs.version }}
-
-        #- name: Generate Changelog
-        #  if: steps.create_tag.outputs.successful
-        #  id: changelog
-        #  uses: jaywcjlove/changelog-generator@main
-        #  with:
-        #    head-ref: ${{steps.create_tag.outputs.version}}
-        #    filter-author: (tobitege|Dimencia)
-        #    filter: (^[\s]+?[R|r]elease)|(^[R|r]elease)
+            filename: Version.txt
+            directory: './DU-Industry-Tool'
 
         - name: Restore Packages
           run: nuget restore DU-Industry-Tool.sln
@@ -54,18 +37,8 @@ jobs:
           run: |
             msbuild.exe DU-Industry-Tool.sln /p:platform="Any CPU" /p:configuration="Release"
 
-        #- name: Release Notes
-        #  id: release_notes
-        #  uses: suzuito/create-release-by-file@master
-        #  with:
-        #    release_note: ./changelog.md
-        #    prefix: '# '
-        #    check_only: false
-        #  env:
-        #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
         - name: Archive Release
-          if: github.ref == 'refs/heads/master'  # ONLY ON MASTER
+          if: ${{ (github.ref == 'refs/heads/master') }}  # ONLY ON MASTER
           uses: thedoctor0/zip-release@main
           with:
             directory: DU-Industry-Tool/bin/Release/
@@ -74,7 +47,7 @@ jobs:
             exclusions: '*.git* /*node_modules/* *.exe.config *.xml *.pdb *.vs* *.user .editorconfig'
 
         - name: Create Github Release
-          if: github.ref == 'refs/heads/master'  # ONLY ON MASTER
+          if: ${{ (github.ref == 'refs/heads/master') }}  # ONLY ON MASTER
           id: create_release
           uses: actions/create-release@v1
           env:
@@ -84,10 +57,10 @@ jobs:
             release_name: DU-Industry-Tool-v${{ steps.getversion.outputs.version }}
             draft: true
             prerelease: false
-            body_path: changelog.md
+            body_path: latestchanges.md
 
         - name: Upload release
-          if: github.ref == 'refs/heads/master'  # ONLY ON MASTER
+          if: ${{ (github.ref == 'refs/heads/master') }}  # ONLY ON MASTER
           uses: actions/upload-release-asset@v1.0.1
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -98,7 +71,7 @@ jobs:
             asset_content_type: application/zip
 
         - name: Publish release
-          if: github.ref == 'refs/heads/master'  # ONLY ON MASTER
+          if: ${{ (github.ref == 'refs/heads/master') }}  # ONLY ON MASTER
           uses: eregon/publish-release@v1
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

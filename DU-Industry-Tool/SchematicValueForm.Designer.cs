@@ -47,7 +47,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
             dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
             dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
@@ -70,32 +70,34 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.button1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button1.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button1.Location = new System.Drawing.Point(256, 684);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(100, 32);
             this.button1.TabIndex = 1;
-            this.button1.Text = "&Save";
+            this.button1.Text = "&Close";
             this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.button1.Click += new System.EventHandler(this.Button1_Click);
             // 
             // SchematicName
             // 
-            dataGridViewCellStyle5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle5.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.SchematicName.DefaultCellStyle = dataGridViewCellStyle5;
             this.SchematicName.HeaderText = "Schematic Name";
             this.SchematicName.MinimumWidth = 60;
             this.SchematicName.Name = "SchematicName";
+            this.SchematicName.ReadOnly = true;
             this.SchematicName.Width = 225;
             // 
-            // Value
+            // Quanta
             // 
-            dataGridViewCellStyle6.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle6.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Value.DefaultCellStyle = dataGridViewCellStyle6;
-            this.Value.HeaderText = "Value";
+            this.Value.HeaderText = "Quanta";
             this.Value.MinimumWidth = 6;
-            this.Value.Name = "Value";
+            this.Value.Name = "Quanta";
             this.Value.Width = 125;
+            this.Value.ReadOnly = true;
             // 
             // SchematicValueForm
             // 
@@ -107,13 +109,12 @@
             this.ClientSize = new System.Drawing.Size(590, 722);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.schematicsGrid);
-            this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "SchematicValueForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Schematic prices (per 1 item)";
+            this.Text = "Schematic prices (per 1 item!)";
             ((System.ComponentModel.ISupportInitialize)(this.schematicsGrid)).EndInit();
             this.ResumeLayout(false);
-
         }
 
         #endregion

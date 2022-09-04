@@ -9,12 +9,14 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using DocumentFormat.OpenXml.Drawing.ChartDrawing;
+using Krypton.Toolkit;
 
 namespace DU_Industry_Tool
 {
     public class IndustryManager
     {
         private readonly List<string> _sizeList = new List<string> { "XS", "S", "M", "L", "XL" };
+        private readonly List<string> _tierNames = new List<string> { "", "Basic", "Uncommon", "Advanced", "Rare", "Exotic" };
         private SortedDictionary<string, double> _sumParts; // Sums for all parts in a recipe
         private SortedDictionary<string, double> _sumProducts; // Sums for each individual ingredient Product
         private SortedDictionary<string, double> _sumPures; // Sums for each individual ingredient Pure
@@ -44,20 +46,20 @@ namespace DU_Industry_Tool
         public IndustryManager(ProgressBar progressBar = null)
         {
             CultureInfo.CurrentCulture = new CultureInfo("en-us");
-            if (!File.Exists("RecipesGroups.json") || !File.Exists("Groups.json"))
+            if (!File.Exists(@"RecipesGroups.json") || !File.Exists("Groups.json"))
             {
                 MessageBox.Show(@"Files RecipesGroups.json and/or Groups.json are missing! Please re-download!");
                 return;
             }
 
             // On initialization, read all our data from files
-            var json = File.ReadAllText("RecipesGroups.json");
+            var json = File.ReadAllText(@"RecipesGroups.json");
             Recipes = JsonConvert.DeserializeObject<SortedDictionary<string, SchematicRecipe>>(json);
 
             if (progressBar != null)
                 progressBar.Value = 20;
 
-            json = File.ReadAllText("Groups.json");
+            json = File.ReadAllText(@"Groups.json");
             Groups = JsonConvert.DeserializeObject<Dictionary<string, Group>>(json);
             if (progressBar != null)
                 progressBar.Value = 30;
@@ -313,32 +315,17 @@ namespace DU_Industry_Tool
             var dmp = false;
             var dmpRcp = false;
 
-            // NOTE: conversion needs a manual fix, should only be used in special cases!
-            if (File.Exists("items_api_dump.lua") &&
-                MessageBox.Show(@"Convert items lua file to json?", @"Conversion", MessageBoxButtons.YesNo) ==
-                DialogResult.Yes)
-            {
-                dmp = ConvertLua2Json("items_api_dump");
-            }
-
-            if (File.Exists("recipes_api_dump.lua") &&
-                MessageBox.Show(@"Convert recipes lua file to json?", @"Conversion", MessageBoxButtons.YesNo) ==
-                DialogResult.Yes)
-            {
-                dmpRcp = ConvertLua2Json("recipes_api_dump");
-            }
-
             if (File.Exists("items_api_dump.json"))
             {
                 try
                 {
                     _luaItems = JsonConvert.DeserializeObject<SortedDictionary<string, DuLuaItem>>(
-                        File.ReadAllText("items_api_dump.json"));
+                                    File.ReadAllText("items_api_dump.json"));
                     dmp = true;
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    Console.WriteLine(e.Message);
                 }
             }
 
@@ -346,14 +333,13 @@ namespace DU_Industry_Tool
             {
                 try
                 {
-                    _luaRecipes =
-                        JsonConvert.DeserializeObject<SortedDictionary<string, DuLuaRecipe>>(
-                            File.ReadAllText("recipes_api_dump.json"));
+                    _luaRecipes = JsonConvert.DeserializeObject<SortedDictionary<string, DuLuaRecipe>>(
+                                    File.ReadAllText("recipes_api_dump.json"));
                     dmpRcp = true;
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    Console.WriteLine(e.Message);
                 }
             }
 
@@ -409,7 +395,7 @@ namespace DU_Industry_Tool
                     else
                     {
                         Debug.WriteLine("NqId NOT FOUND: " + itemId + " Key: " + kvp.Key);
-                        itemId = kvp.Value.id.ToString();
+                        itemId = kvp.Value.Id.ToString();
                         if (dmp && !_luaItems.ContainsKey(itemId))
                         {
                             Debug.WriteLine("Id NOT FOUND: " + itemId + " Key: " + kvp.Key);
@@ -490,16 +476,15 @@ namespace DU_Industry_Tool
                 if (dmp && kvp.Key.StartsWith("hc"))
                 {
                     var luaItem = _luaItems.FirstOrDefault(x => x.Value.Description.StartsWith("Honeycomb") &&
-                                                                !x.Value.DisplayNameWithSize
-                                                                    .EndsWith("Schematic Copy") &&
-                                                                x.Value.DisplayNameWithSize.Equals(kvp.Value.Name,
-                                                                    StringComparison.InvariantCultureIgnoreCase));
-                    if (luaItem.Key != null && luaItem.Key != kvp.Value.NqId.ToString())
+                                               !x.Value.DisplayNameWithSize.EndsWith("Schematic Copy") &&
+                                               x.Value.DisplayNameWithSize.Equals(kvp.Value.Name,
+                                                    StringComparison.InvariantCultureIgnoreCase));
+                    if (!string.IsNullOrEmpty(luaItem.Key) && luaItem.Key != kvp.Value.NqId.ToString())
                     {
                         if (ulong.TryParse(luaItem.Key, out var uTmp))
                         {
                             kvp.Value.NqId = uTmp;
-                            kvp.Value.id = uTmp;
+                            kvp.Value.Id = uTmp;
                         }
                     }
                 }
@@ -514,6 +499,9 @@ namespace DU_Industry_Tool
                 }
 
                 //if (kvp.Value.Nanocraftable) Debug.WriteLine($"{kvp.Value.Name}");
+
+                // Determine the required industry to produce this item
+                DetermineIndustryFor(kvp.Value);
 
                 if (kvp.Key.StartsWith("Catalyst") ||
                     kvp.Value.ParentGroupName == "Ore" ||
@@ -652,7 +640,7 @@ namespace DU_Industry_Tool
                 }
 
                 // Core Units
-                if (parentName != null && parentName.Equals("Core Units", StringComparison.InvariantCultureIgnoreCase))
+                if (true == parentName?.Equals("core units", StringComparison.InvariantCultureIgnoreCase))
                 {
                     var size = GetElementSize(kvp.Value.Name);
                     idx = "CU-" + size;
@@ -677,19 +665,14 @@ namespace DU_Industry_Tool
                         " Parts",
                         "Logic Operators"
                     };
-                    if (parentName != null && skipGroups.Any(x =>
-                            parentName.EndsWith(x, StringComparison.InvariantCultureIgnoreCase)))
+                    if (parentName != null && skipGroups.Any(x => parentName.EndsWith(x, StringComparison.InvariantCultureIgnoreCase)))
                     {
                         continue;
                     }
 
-                    if (idx == "")
+                    if (idx == "" && GetTopLevelGroup(kvp.Value.ParentGroupName) == "Elements")
                     {
-                        var upGrp = GetTopLevelGroup(kvp.Value.ParentGroupName);
-                        if (upGrp == "Elements")
-                        {
-                            isElement = true;
-                        }
+                        isElement = true;
                     }
 
                     var elemGroups = new List<string>
@@ -817,24 +800,20 @@ namespace DU_Industry_Tool
                     && !kvp.Value.ParentGroupName.EndsWith(" Parts", StringComparison.InvariantCultureIgnoreCase))
                 {
                     var schemaClass = Schematics.FirstOrDefault(x => x.Key == $"T{kvp.Value.Level}{idx}");
-                    if (schemaClass.Value != null)
-                    {
-                        kvp.Value.SchemaType = schemaClass.Key;
-                        kvp.Value.SchemaPrice = schemaClass.Value.Cost;
-                        Console.WriteLine($@"{kvp.Value.Name} = {kvp.Value.SchemaPrice} ({parentName})");
-                    }
+                    if (schemaClass.Value == null) continue;
+                    kvp.Value.SchemaType = schemaClass.Key;
+                    kvp.Value.SchemaPrice = schemaClass.Value.Cost;
+                    Console.WriteLine($@"{kvp.Value.Name} = {kvp.Value.SchemaPrice} ({parentName})");
                 }
                 else if (kvp.Value.ParentGroupName == "Refined Materials" ||
                          (kvp.Value.Level >= 1 &&
                           kvp.Value.Name.EndsWith("product", StringComparison.InvariantCultureIgnoreCase)))
                 {
                     var schemaClass = Schematics.FirstOrDefault(x => x.Key == $"T{kvp.Value.Level}P");
-                    if (schemaClass.Value != null)
-                    {
-                        kvp.Value.SchemaType = schemaClass.Key;
-                        kvp.Value.SchemaPrice = schemaClass.Value.Cost;
-                        Console.WriteLine($@"{kvp.Value.Name} = {kvp.Value.SchemaPrice} ({parentName})");
-                    }
+                    if (schemaClass.Value == null) continue;
+                    kvp.Value.SchemaType = schemaClass.Key;
+                    kvp.Value.SchemaPrice = schemaClass.Value.Cost;
+                    Console.WriteLine($@"{kvp.Value.Name} = {kvp.Value.SchemaPrice} ({parentName})");
                 }
             }
 
@@ -1226,16 +1205,155 @@ namespace DU_Industry_Tool
             File.WriteAllText("schematicValues.json", JsonConvert.SerializeObject(Schematics));
         }
 
-        private string GetElementSize(string elemName)
+        private void DetermineIndustryFor(SchematicRecipe recipe)
         {
-            foreach (var size in _sizeList)
+            if (recipe.ParentGroupName == "Ore" ||
+                recipe.Name.StartsWith("relic plasma", StringComparison.InvariantCultureIgnoreCase))
             {
-                if (elemName.EndsWith(" " + size, StringComparison.InvariantCultureIgnoreCase))
-                {
-                    return size;
-                }
+                recipe.Industry = "";
+                return;
             }
 
+            // elements can be produced by same tier as well as 1 lower tier assemblies:
+            var indPrefix = recipe.Level > 1 ? _tierNames[recipe.Level-1] : _tierNames[recipe.Level];
+            var indSuffix = "";
+
+            var isPart    = recipe.ParentGroupName.EndsWith("Parts", StringComparison.InvariantCultureIgnoreCase);
+            var isPure    = recipe.ParentGroupName.Equals("Pure");
+            var isProduct = recipe.ParentGroupName.Equals("Product");
+            var isScrap   = recipe.ParentGroupName.Equals("Scraps");
+            var isHC      = recipe.ParentGroupName == "Product Honeycomb Materials" ||
+                            recipe.ParentGroupName == "Pure Honeycomb Materials";
+
+            var isElect   = isPart && (
+                                (recipe.Name.IndexOf(" antenna ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                recipe.Name.EndsWith(" antimatter core", StringComparison.InvariantCultureIgnoreCase) ||
+                                recipe.Name.EndsWith(" anti-gravity core", StringComparison.InvariantCultureIgnoreCase) ||
+                                (recipe.Name.IndexOf(" button ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                recipe.Name.EndsWith(" component", StringComparison.InvariantCultureIgnoreCase) ||
+                                recipe.Name.EndsWith(" connector", StringComparison.InvariantCultureIgnoreCase) ||
+                                (recipe.Name.IndexOf(" control system ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                (recipe.Name.IndexOf(" core system ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                (recipe.Name.IndexOf(" electronics", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                (recipe.Name.IndexOf(" mechanical sensor ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                (recipe.Name.IndexOf(" motherboard ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                (recipe.Name.IndexOf(" ore scanner ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                recipe.Name.EndsWith(" power system", StringComparison.InvariantCultureIgnoreCase) ||
+                                (recipe.Name.IndexOf(" power transformer ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                recipe.Name.EndsWith(" processor", StringComparison.InvariantCultureIgnoreCase) ||
+                                recipe.Name.EndsWith(" quantum alignment unit", StringComparison.InvariantCultureIgnoreCase) ||
+                                recipe.Name.EndsWith(" quantum barrier", StringComparison.InvariantCultureIgnoreCase) ||
+                                (recipe.Name.IndexOf("uncommon light", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                false);
+
+            var isMetal   = isPart && !isElect && (
+                                recipe.Name.EndsWith(" burner", StringComparison.InvariantCultureIgnoreCase) ||
+                                (recipe.Name.IndexOf(" chemical container ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                (recipe.Name.IndexOf(" combustion chamber ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                (recipe.Name.IndexOf(" container ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                (recipe.Name.IndexOf(" electric engine ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                (recipe.Name.IndexOf(" firing system ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                (recipe.Name.IndexOf(" frame ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                (recipe.Name.IndexOf(" gas cylinder ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                recipe.Name.EndsWith(" hydraulics", StringComparison.InvariantCultureIgnoreCase) ||
+                                (recipe.Name.IndexOf(" ionic chamber ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                recipe.Name.EndsWith(" magnet", StringComparison.InvariantCultureIgnoreCase) ||
+                                (recipe.Name.IndexOf(" magnetic rail ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                (recipe.Name.IndexOf(" missile silo ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                (recipe.Name.IndexOf(" mobile panel ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                recipe.Name.EndsWith(" pipe", StringComparison.InvariantCultureIgnoreCase) ||
+                                (recipe.Name.IndexOf(" power transformer ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                (recipe.Name.IndexOf(" robotic arm ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                (recipe.Name.IndexOf(" screen ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                recipe.Name.EndsWith(" screw", StringComparison.InvariantCultureIgnoreCase) ||
+                                recipe.Name.EndsWith(" singularity container", StringComparison.InvariantCultureIgnoreCase) ||
+                                recipe.Name.EndsWith(" solid warhead", StringComparison.InvariantCultureIgnoreCase)  ||
+                                false);
+
+            var is3D      = !isElect && !isMetal && (
+                                recipe.Name.Equals("carbon fiber product", StringComparison.InvariantCultureIgnoreCase) ||
+                                (recipe.Name.IndexOf(" casing ", StringComparison.InvariantCultureIgnoreCase) > 0) ||
+                                recipe.Name.EndsWith(" fixation", StringComparison.InvariantCultureIgnoreCase) ||
+                                recipe.Name.EndsWith(" injector", StringComparison.InvariantCultureIgnoreCase) ||
+                                recipe.Name.EndsWith(" quantum core", StringComparison.InvariantCultureIgnoreCase) ||
+                                (recipe.Name.IndexOf(" screen ", StringComparison.InvariantCultureIgnoreCase) > 0) ||
+                                false);
+
+            var isGlass   = !isElect && !isMetal && !is3D && (
+                                recipe.Key.StartsWith("led_", StringComparison.InvariantCultureIgnoreCase) ||
+                                recipe.Key.StartsWith("WarpCell") ||
+                                recipe.Name.EndsWith(" antimatter capsule", StringComparison.InvariantCultureIgnoreCase) ||
+                                (recipe.Name.IndexOf(" laser chamber", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                                recipe.Name.EndsWith(" optics", StringComparison.InvariantCultureIgnoreCase) ||
+                                (recipe.Name.IndexOf("glass", StringComparison.InvariantCultureIgnoreCase) >= 0));
+
+            var isChem    = !isElect && !isMetal && !is3D && !isGlass && (
+                                recipe.Name.StartsWith("Biological") ||
+                                recipe.Name.StartsWith("Catalyst") ||
+                                recipe.Name.EndsWith(" explosive module", StringComparison.InvariantCultureIgnoreCase) ||
+                                recipe.Name.StartsWith("Fluoropolymer") ||
+                                recipe.ParentGroupName.Equals("Fuels") ||
+                                recipe.ParentGroupName.EndsWith("plastic product", StringComparison.InvariantCultureIgnoreCase) ||
+                                false);
+
+            var isAssy = !isElect && !isMetal && !is3D && !isChem && !isGlass &&
+                         !isPart && !isPure && !isProduct && !isScrap && !isHC;
+
+            string getIndyName(string industry) => $"{indPrefix} {industry} {indSuffix}".Trim();
+
+            if (recipe.Key == "OxygenPure" || recipe.Key == "HydrogenPure" || isScrap)
+            {
+                recipe.Industry = getIndyName("Basic Recycler M"); return;
+            }
+            if (isGlass)
+            {
+                recipe.Industry = getIndyName("Glass Furnace M"); return;
+            }
+            if (isChem)
+            {
+                recipe.Industry = getIndyName("Chemical Industry M"); return;
+            }
+            if (is3D)
+            {
+                recipe.Industry = getIndyName("3D Printer M"); return;
+            }
+            if (isElect)
+            {
+                recipe.Industry = getIndyName("Electronics Industry M"); return;
+            }
+            if (isMetal)
+            {
+                recipe.Industry = getIndyName("Metalwork Industry M"); return;
+            }
+            if (isPure || recipe.ParentGroupName == "Refined Materials")
+            {
+                recipe.Industry = getIndyName("Refiner M"); return;
+            }
+            if (isProduct)
+            {
+                recipe.Industry = getIndyName("Smelter M"); return;
+            }
+            if (isHC)
+            {
+                recipe.Industry = getIndyName("Honeycomb Refiner M"); return;
+            }
+            if (isAssy)
+            {
+                // IF a frame as ingredient exists, take its size!
+                var frame = recipe.Ingredients.FirstOrDefault(x => x.Name.IndexOf(" frame ", StringComparison.InvariantCultureIgnoreCase) >= 0);
+                indSuffix = GetElementSize(frame == null ? recipe.Name : frame.Name);
+                recipe.Industry = getIndyName("Assembly Line");
+                return;
+            }
+            Debug.WriteLine(recipe.Name.PadRight(40)+" -> NO INDY!");
+        }
+
+        private string GetElementSize(string elemName)
+        {
+            foreach (var size in _sizeList.Where(size => elemName.EndsWith(" " + size, StringComparison.InvariantCultureIgnoreCase)))
+            {
+                return size;
+            }
             return "";
         }
 
@@ -1243,18 +1361,19 @@ namespace DU_Industry_Tool
         {
             if (groupId == Guid.Empty) return "";
             var grp = Groups.FirstOrDefault(x => x.Value.Id == groupId);
-            if (grp.Value == null || grp.Key == "" || grp.Key == "FurnituresAppliances") return "";
-            if (grp.Key == "Ammo" || grp.Value.Name == "Elements") return "Elements";
-            if (grp.Value.ParentId == Guid.Empty) return "";
-            return FindParent(grp.Value.ParentId);
+            if (grp.Value == null || string.IsNullOrEmpty(grp.Key)) return "";
+            if (grp.Key == "ConsumableDisplay" || grp.Key == "Material" || grp.Key == "Element") return grp.Value.Name;
+            return grp.Value.ParentId == Guid.Empty ? grp.Value.Name : FindParent(grp.Value.ParentId);
         }
 
         private string GetTopLevelGroup(string groupName)
         {
-            if (groupName == "" ||
-                groupName.IndexOf("honeycomb", StringComparison.InvariantCultureIgnoreCase) >= 0) return "";
+            if (string.IsNullOrEmpty(groupName)) return "";
             var grp = Groups.FirstOrDefault(x => x.Value.Name == groupName);
-            if (string.IsNullOrEmpty(grp.Key) || grp.Value.ParentId == Guid.Empty) return "";
+            if (string.IsNullOrEmpty(grp.Key)) return "";
+            if (grp.Value.ParentId == Guid.Empty ||
+                grp.Value.Name == "Product")
+                return grp.Value.Name; // e.g. "Parts"
             var tmp = FindParent(grp.Value.ParentId);
             return tmp;
         }
@@ -1480,13 +1599,9 @@ namespace DU_Industry_Tool
                 else
                 {
                     if (isProduct)
-                    {
                         qty = amount * ingredient.Quantity;
-                    }
                     else
-                    {
                         qty = amount * factor;
-                    }
                 }
 
                 cost = GetTotalCost(ingredient.Type, qty, level, depth + 1, silent);
@@ -1521,10 +1636,10 @@ namespace DU_Industry_Tool
             }
 
             CostResults.AppendLine("");
-            _schematicsCost += CalculateItemCost(_sumOres, "U", 1, amount, "Ores");
-            _schematicsCost += CalculateItemCost(_sumPures, "U", 2, amount, "Pures");
-            _schematicsCost += CalculateItemCost(_sumProducts, "P", 1, amount, "Products");
-            _schematicsCost += CalculateItemCost(_sumParts, "P", 1, amount, "Parts");
+            _schematicsCost += CalculateItemCost(_sumOres, "U", amount, "Ores");
+            _schematicsCost += CalculateItemCost(_sumPures, "U", amount, "Pures");
+            _schematicsCost += CalculateItemCost(_sumProducts, "P", amount, "Products");
+            _schematicsCost += CalculateItemCost(_sumParts, "P", amount, "Parts");
             CostResults.AppendLine("Schematics:".PadRight(16) + $"{_schematicsCost:N1}q".PadLeft(20));
             totalCost *= amount;
             CostResults.AppendLine("Pures/Products:".PadRight(16) + $"{totalCost:N1}q".PadLeft(20));
@@ -1604,8 +1719,7 @@ namespace DU_Industry_Tool
         }
 
         private double CalculateItemCost(SortedDictionary<string, double> itemPrices, string listType = "P",
-            byte minLevel = 1, double quantity = 1, string title = "",
-            bool outputDetails = true)
+            double quantity = 1, string title = "", bool outputDetails = true)
         {
             if (itemPrices.Count == 0) return 0;
             CostResults.AppendLine(title);
@@ -1651,13 +1765,12 @@ namespace DU_Industry_Tool
                 }
 
                 var orePrefix = idx.Substring(0, 2) + " ";
-                if (isT1Ore || isPlasma || !Schematics.ContainsKey(idx))
+                if (isT1Ore || isPlasma || isPart || !Schematics.ContainsKey(idx))
                 {
                     if (outputDetails)
                     {
                         CostResults.AppendLine((isPlasma ? "" : orePrefix) + output);
                     }
-
                     continue;
                 }
 
@@ -1681,10 +1794,8 @@ namespace DU_Industry_Tool
                     output += " | " + $"{cnt} sch.".PadLeft(10) + " = " + $"{tmp:N2} q".PadLeft(14);
                     CostResults.AppendLine(orePrefix + output);
                 }
-
                 outSum += tmp;
             }
-
             return outSum;
         }
 
@@ -1743,46 +1854,5 @@ namespace DU_Industry_Tool
                 : group.Name;
         }
 
-        private static bool ConvertLua2Json(string filename)
-        {
-            try
-            {
-                var sb = new StringBuilder(File.ReadAllText(filename + ".lua"));
-                sb.Replace("_items=", "");
-                sb.Replace("_recipes=", "");
-                sb.Replace("[", "");
-                sb.Replace("]", "");
-                sb.Replace("id=", "\"id\"=");
-                sb.Replace("displayNameWithSize=", "\"displayNameWithSize\"=");
-                sb.Replace("description=", "\"description\"=");
-                sb.Replace("size=", "\"size\"=");
-                sb.Replace("tier=", "\"tier\"=");
-                sb.Replace("time=", "\"time\"=");
-                sb.Replace("quantity=", "\"quantity\"=");
-                sb.Replace("iconPath=", "\"iconPath\"=");
-                sb.Replace("nanocraftable=", "\"nanocraftable\"=");
-                sb.Replace("unitMass=", "\"unitMass\"=");
-                sb.Replace("unitVolume=", "\"unitVolume\"=");
-                sb.Replace("size=", "\"size\"=");
-                sb.Replace("description=", "\"description\"=");
-                sb.Replace("ingredients=", "\"ingredients\"=");
-                sb.Replace("products=", "\"products\"=");
-                sb.Replace("schematics=", "\"schematics\"=");
-                sb.Replace("={}", "=[]");
-                sb.Replace("}}}", "}]}");
-                sb.Replace("}}", "}]");
-                sb.Replace("{{", "[{");
-                sb.Replace("=", ":");
-                sb.Remove(sb.Length - 1, 1);
-                sb.Append("}");
-                File.WriteAllText(filename + ".json", sb.ToString());
-                return true;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return false;
-            }
-        }
     }
 }

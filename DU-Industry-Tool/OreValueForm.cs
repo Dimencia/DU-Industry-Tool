@@ -1,18 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace DU_Industry_Tool
 {
     public partial class OreValueForm : Form
     {
-        private IndustryManager Manager;
+        private readonly IndustryManager Manager;
         public OreValueForm(IndustryManager manager)
         {
             InitializeComponent();
@@ -27,19 +21,17 @@ namespace DU_Industry_Tool
             this.AutoSize = true;
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void Button1_Click(object sender, EventArgs e)
         {
             foreach(var values in oreGrid.Rows)
             {
-                var row = values as DataGridViewRow;
+                if (!(values is DataGridViewRow row)) continue;
                 var oreName = row.Cells[0].Value as string;
                 var oreValueString = row.Cells[1].Value as string;
-                if(double.TryParse(oreValueString, out double oreValue))
-                {
-                    var oreRecipe = Manager.Ores.FirstOrDefault(o => o.Name.Equals(oreName, StringComparison.InvariantCultureIgnoreCase));
-                    if (oreRecipe != null)
-                        oreRecipe.Value = oreValue;
-                }
+                if (!double.TryParse(oreValueString, out var oreValue)) continue;
+                var oreRecipe = Manager.Ores.FirstOrDefault(o => o.Name.Equals(oreName, StringComparison.InvariantCultureIgnoreCase));
+                if (oreRecipe != null)
+                    oreRecipe.Value = oreValue;
             }
             Manager.SaveOreValues();
             this.Close();
