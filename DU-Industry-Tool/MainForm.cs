@@ -26,6 +26,7 @@ namespace DU_Industry_Tool
         private FlowLayoutPanel _costDetailsPanel;
         private FlowLayoutPanel _infoPanel;
         private bool _navUpdating;
+        private int _overrideQty;
 
         public MainForm(IndustryManager manager)
         {
@@ -118,16 +119,16 @@ namespace DU_Industry_Tool
             lbl = AddLabel(_infoPanel.Controls, $"Unit mass: {recipe.UnitMass:N1} volume: {recipe.UnitVolume:N1}"+(recipe.Nanocraftable ? "  *nanocraftable*" : ""));
             lbl.Padding = new Padding(4, 0, 4, 5);
 
-            _manager.ProductQuantity = int.Parse(QuantityBox.Text);
+            _manager.ProductQuantity = _overrideQty > 0 ? _overrideQty : int.Parse(QuantityBox.Text);
             if (!double.TryParse(QuantityBox.Text, out var cnt)) cnt = 1d;
             var costToMake = _manager.GetTotalCost(recipe.Key, cnt, silent: true);
-            AddFlowLabel(_infoPanel.Controls, "Cost To Make " + costToMake.ToString("N02") + "q");
+            AddFlowLabel(_infoPanel.Controls, "Cost for 1: " + costToMake.ToString("N02") + "q");
 
             var cost = _manager.GetBaseCost(recipe.Key);
             AddFlowLabel(_infoPanel.Controls, $"Untalented (without schematics) {cost:N1}q");
 
             cost = recipe.Time > 0 ? 86400/recipe.Time : 0;
-            var pnl = AddFlowLabel(_infoPanel.Controls, $"Per Industry {cost:N1} / Day");
+            var pnl = AddFlowLabel(_infoPanel.Controls, $"Per industry {cost:N1} / day");
             pnl.Padding = new Padding(0, 0, 0, 10);
 
             // IDK why sometimes prices are listed as 0
@@ -172,8 +173,10 @@ namespace DU_Industry_Tool
                 ingGrid.SuspendLayout();
                 foreach (var ingredient in recipe.Ingredients)
                 {
-                    AddLinkedLabel(ingGrid.Controls, ingredient.Name, ingredient.Type).Click += Label_Click;
-                    AddLabel(ingGrid.Controls, ingredient.Quantity.ToString("0.0"));
+                    //var qty = ((_overrideQty == 0 ? 1 : _overrideQty) * ingredient.Quantity).ToString("0");
+                    var qty = ingredient.Quantity.ToString("0");
+                    AddLinkedLabel(ingGrid.Controls, ingredient.Name, ingredient.Type+"#"+qty).Click += Label_Click;
+                    AddLabel(ingGrid.Controls, qty);
                 }
 
                 ingGrid.ResumeLayout(false);
@@ -203,13 +206,16 @@ namespace DU_Industry_Tool
                         AddLabel(grid.Controls, prod.Name);
                     else
                         AddLinkedLabel(grid.Controls, prod.Name, prod.Type).Click += Label_Click;
-                    AddLabel(grid.Controls, prod.Quantity.ToString("0.0"));
+                    //var qty = (_overrideQty == 0 ? prod.Quantity : _overrideQty).ToString("0");
+                    var qty = prod.Quantity.ToString("0");
+                    AddLabel(grid.Controls, qty);
                 }
 
                 grid.ResumeLayout(false);
                 newPanel.Controls.Add(grid);
                 newPanel.ResumeLayout(false);
             }
+            _overrideQty = 0; // must reset here!
 
             // ----- Industry -----
             if (!string.IsNullOrEmpty(recipe.Industry))
@@ -338,6 +344,17 @@ namespace DU_Industry_Tool
         {
             if (!(sender is Label label)) return;
             if (!(label.Tag is string tag)) return;
+            _overrideQty = 0;
+            var hashpos = tag.IndexOf('#');
+            if (hashpos > 0)
+            {
+                var amount = tag.Substring(hashpos+1);
+                if (!int.TryParse(amount, out _overrideQty))
+                {
+                    _overrideQty = 0;
+                }
+                tag = tag.Substring(0, hashpos);
+            }
             if (!_manager.Recipes.ContainsKey(tag))
             {
                 return;
@@ -837,7 +854,7 @@ namespace DU_Industry_Tool
             if(_navUpdating || !(sender is KryptonNavigator nav && nav.SelectedPage != null)) return;
             if (nav.SelectedPage.Controls.Count == 0) return;
             SearchBox.Text = nav.SelectedPage.Text;
-            SearchButton_Click(SearchButton, e);
+            //SearchButton_Click(SearchButton, e);
         }
 
         private void RibbonButtonAboutClick(object sender, EventArgs e)
