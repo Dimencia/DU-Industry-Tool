@@ -1,6 +1,12 @@
 on:
     push:
-        branches: [master]
+        branches:
+            - master
+        paths-ignore:
+            - '.git*'
+            - '.vscode'
+            - '.github/**/*.yml'
+
 jobs:
     build:
         runs-on: windows-2019
@@ -12,7 +18,7 @@ jobs:
           uses: microsoft/setup-msbuild@v1
 
         - name: Setup NuGet
-          uses: NuGet/setup-nuget@v1.0.5
+          uses: NuGet/setup-nuget@v1.0.6
 
         - name: Navigate to Workspace
           run: cd $GITHUB_WORKSPACE
@@ -21,8 +27,8 @@ jobs:
           id: getversion
           uses: berglie/assembly-version/get@v1
           with:
-            filename: 'Version.txt'
-            directory: '.'
+            filename: Version.txt
+            directory: './DU-Industry-Tool'
 
         - name: Restore Packages
           run: nuget restore DU-Industry-Tool.sln
@@ -32,6 +38,7 @@ jobs:
             msbuild.exe DU-Industry-Tool.sln /p:platform="Any CPU" /p:configuration="Release"
 
         - name: Archive Release
+          if: ${{ (github.ref == 'refs/heads/master') }}  # ONLY ON MASTER
           uses: thedoctor0/zip-release@main
           with:
             directory: DU-Industry-Tool/bin/Release/
@@ -39,7 +46,8 @@ jobs:
             filename: DU-Industry-Tool-v${{ steps.getversion.outputs.version }}.zip
             exclusions: '*.git* /*node_modules/* *.exe.config *.xml *.pdb *.vs* *.user .editorconfig'
 
-        - name: Create github Release
+        - name: Create Github Release
+          if: ${{ (github.ref == 'refs/heads/master') }}  # ONLY ON MASTER
           id: create_release
           uses: actions/create-release@v1
           env:
@@ -49,8 +57,10 @@ jobs:
             release_name: DU-Industry-Tool-v${{ steps.getversion.outputs.version }}
             draft: true
             prerelease: false
+            body_path: latestchanges.md
 
         - name: Upload release
+          if: ${{ (github.ref == 'refs/heads/master') }}  # ONLY ON MASTER
           uses: actions/upload-release-asset@v1.0.1
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -61,6 +71,7 @@ jobs:
             asset_content_type: application/zip
 
         - name: Publish release
+          if: ${{ (github.ref == 'refs/heads/master') }}  # ONLY ON MASTER
           uses: eregon/publish-release@v1
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
