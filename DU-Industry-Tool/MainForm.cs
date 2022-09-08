@@ -1,18 +1,15 @@
 ﻿// ReSharper disable LocalizableElement
 // ReSharper disable RedundantUsingDirective
-using ClosedXML.Excel;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Globalization;
-using System.Web.UI.Design;
 using System.Windows.Forms;
+using ClosedXML.Excel;
 using Krypton.Toolkit;
 using Krypton.Navigator;
 using Krypton.Workspace;
-using Krypton.Docking;
-using DocumentFormat.OpenXml.Drawing.ChartDrawing;
 
 namespace DU_Industry_Tool
 {

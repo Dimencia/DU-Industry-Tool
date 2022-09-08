@@ -155,6 +155,7 @@ namespace DU_Industry_Tool
             // 
             this.buttonExportToSpreadsheet.Text = "&Export to CSV";
             this.buttonExportToSpreadsheet.Click += new System.EventHandler(this.ExportToSpreadsheetToolStripMenuItem_Click);
+            this.buttonExportToSpreadsheet.Visible = false;
             // 
             // buttonFactoryBreakdownForSelected
             // 

@@ -1,13 +1,14 @@
 ## Mercury edition
 - Versions 0.500+ by tobitege (https://github.com/tobitege/DU-Industry-Tool)
-- Major recipes update to be current with patch 0.31 "Mercury".
-- Schematic cost is now maintained and associated with the
-corresponding pures, products and elements.
-- Calculated cost output now also lists schematic costs per
-tier and category.
-- Display of Total Ingredients List.
-- Listing of all "superior" recipes which have the item as an ingredient.
-- Display of mass, volume and nanocraftable status.
+- Major updates to recipes to be current with patch 0.31.x "Mercury".
+- Schematic cost is now maintained and associated with the corresponding pures, products and elements.
+- Calculated cost output now also lists schematic costs per tier and category.
+- Display of a Total Ingredients List.
+- Ingredients as links for "drill down".
+- Listing of all "superior" recipes which have the item as an ingredient ("drill up").
+- Display of mass, volume (of item itself) and nanocraftable status.
+- Results can be copied to clipboard.
+- Revamped UI with tabs support and auto-completion search box.
 
 Big thanks to Jericho1060 for making available item/recipe data dumps via
 his website https://du-lua.dev which helped me a lot to update the data displayed!
@@ -24,7 +25,7 @@ GIF showing functionality
 https://gyazo.com/a8740425ac2fe244d87e87980c16a2cf
 
 
-## This project is not being maintained
+# Older releases < 0.5.x are no longer maintained
 
 Anyone could add the mining units or other new items, it's just a json file - but please share it, either through a fork or a PR.  Either add the new stuff manually, or:
 1. Do a hyperion export of all item NqRecipeId's for all items (particularly the new ones), along with Name
