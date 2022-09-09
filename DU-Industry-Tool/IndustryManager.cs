@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -8,8 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using DocumentFormat.OpenXml.Drawing.ChartDrawing;
-using Krypton.Toolkit;
 
 namespace DU_Industry_Tool
 {
@@ -975,19 +972,22 @@ namespace DU_Industry_Tool
                 */
             }
 
-            //SaveRecipes();
+            // 1st check:
+            // Is this a "part", but not an ingredient in any recipe?
+            // Could also be just an API category. Unly uncomment when needed!
+            //var removalEntries = (from kvp in Recipes.Values.Where(x =>
+            //    x.ParentGroupName.EndsWith(" parts", StringComparison.InvariantCultureIgnoreCase))
+            //    let found = Recipes.Values.Any(x => x.Ingredients?.Any(
+            //        y => y.Name.Equals(kvp.Name, StringComparison.InvariantCultureIgnoreCase)) == true)
+            //    where !found select kvp.Key).ToList();
+            //foreach (var removalEntry in removalEntries)
+            //{
+            //    Recipes.Remove(removalEntry);
+            //}
+            // 2nd check: any ingredient has circular reference to Key?
+            //var removalEntries = Recipes.Where(x => x.Value.Ingredients?.Any(y => y.Type == x.Key) == true).ToList();
 
-            // Is this a "part", but not in any recipe?
-            foreach (var kvp in Recipes.Values.Where(x =>
-                         x.ParentGroupName.EndsWith(" parts", StringComparison.InvariantCultureIgnoreCase)))
-            {
-                var found = Recipes.Values.Any(x => x.Ingredients?.Any(y =>
-                    y.Name.Equals(kvp.Name, StringComparison.InvariantCultureIgnoreCase)) == true);
-                if (!found)
-                {
-                    kvp.Name += " (!)";
-                }
-            }
+            //SaveRecipes();
 
             if (progressBar != null)
                 progressBar.Value = 70;
@@ -1467,11 +1467,12 @@ namespace DU_Industry_Tool
         // -> Chemical 562.50 q * 5 = 2812,50 q
         // -> SUM for schematics: 4500 quanta
         // :grimace:
-
+        private string _currentRecipe;
         public double GetTotalCost(string key, double amount = 0, string level = "", int depth = 0, bool silent = false)
         {
             if (depth == 0)
             {
+                _currentRecipe = key;
                 amount = ProductQuantity;
                 CostResults = new StringBuilder();
                 _sumParts = new SortedDictionary<string, double>();
@@ -1482,6 +1483,11 @@ namespace DU_Industry_Tool
                 _sumSchemClass = new SortedDictionary<string, Tuple<int, double>>();
                 _schematicsCost = 0;
                 ApplicableTalents = new List<string>(160);
+            }
+            else
+            if (depth > 10 || key == _currentRecipe) // faulty recipe?!
+            {
+                return 0;
             }
 
             double totalCost = 0;
@@ -1528,13 +1534,13 @@ namespace DU_Industry_Tool
                 var qty = 0d;
                 double factor = 1;
                 var myRecipe = Recipes[ingredient.Type];
-                var isOre = myRecipe.ParentGroupName.Equals("Ore", StringComparison.InvariantCultureIgnoreCase);
-                var isPure = myRecipe.ParentGroupName.Equals("Pure", StringComparison.InvariantCultureIgnoreCase) ||
-                             myRecipe.ParentGroupName.Equals("Refined Materials", StringComparison.InvariantCultureIgnoreCase);
+                var isOre = myRecipe.ParentGroupName.Equals("Ore");
+                var isPure = myRecipe.ParentGroupName.Equals("Pure") ||
+                             myRecipe.ParentGroupName.Equals("Refined Materials");
                 var isPart = myRecipe.ParentGroupName.EndsWith("parts", StringComparison.InvariantCultureIgnoreCase);
-                var isProduct = myRecipe.ParentGroupName.Equals("Product", StringComparison.InvariantCultureIgnoreCase);
+                var isProduct = myRecipe.ParentGroupName.Equals("Product");
                 var isPlasma = myRecipe.ParentGroupName.Equals("Consumables") &&
-                               myRecipe.Key.StartsWith("Plasma", StringComparison.InvariantCultureIgnoreCase);
+                               myRecipe.Key.StartsWith("plasma", StringComparison.InvariantCultureIgnoreCase);
                 var ingName = ingredient.Name;
                 var ingKey = ingName;
                 if (!isPlasma)
@@ -1542,17 +1548,7 @@ namespace DU_Industry_Tool
                     ingKey = "T" + (myRecipe.Level < 2 ? "1" : myRecipe.Level.ToString()) + " " + ingKey;
                 }
 
-                if (!isOre && !isPure)
-                {
-                    if (isPart || isProduct)
-                    {
-                        ingName = (isProduct ? "  " : " ") + ingKey;
-                    }
-
-                    AddIngredient(ingName, ingredient.Quantity * amount);
-                }
-
-                if (depth > 0 && ingredient.Quantity > productQty && (isOre || isPure))
+                if (isOre || isPure || isProduct)
                 {
                     factor = ((productQty + outputAdder) * outputMultiplier) /
                              ((ingredient.Quantity + inputAdder) * inputMultiplier);
@@ -1574,6 +1570,7 @@ namespace DU_Industry_Tool
                     else
                         _sumOres.Add(ingKey, qty);
                     Debug.WriteLineIf(!silent && qty > 0, $"{curLevel}     ({ingredient.Name}: {qty:N2} = {cost:N2}q)");
+                    AddIngredient(ingKey, qty);
                     continue;
                 }
 
@@ -1586,22 +1583,34 @@ namespace DU_Industry_Tool
                         _sumPures[ingKey] += qty;
                     else
                         _sumPures.Add(ingKey, qty);
-                    ingName = "   " + ingKey;
+                    ingName = " " + ingKey;
                     AddIngredient(ingName, qty);
                     continue;
                 }
 
-                // Any other part or product
                 if (depth < 1)
                 {
                     qty = factor;
                 }
+                if (isPart || isProduct)
+                {
+                    if (isPart)
+                    {
+                        ingName = "   " + ingKey;
+                        qty = amount * ingredient.Quantity;
+                        AddIngredient(ingName, qty);
+                    }
+                    else
+                    if (isProduct)
+                    {
+                        ingName = "  " + ingKey;
+                        qty = amount / factor;
+                        AddIngredient(ingName, amount / factor);
+                    }
+                }
                 else
                 {
-                    if (isProduct)
-                        qty = amount * ingredient.Quantity;
-                    else
-                        qty = amount * factor;
+                    qty = amount * factor;
                 }
 
                 cost = GetTotalCost(ingredient.Type, qty, level, depth + 1, silent);
@@ -1636,12 +1645,11 @@ namespace DU_Industry_Tool
             }
 
             CostResults.AppendLine("");
-            _schematicsCost += CalculateItemCost(_sumOres, "U", amount, "Ores");
-            _schematicsCost += CalculateItemCost(_sumPures, "U", amount, "Pures");
-            _schematicsCost += CalculateItemCost(_sumProducts, "P", amount, "Products");
-            _schematicsCost += CalculateItemCost(_sumParts, "P", amount, "Parts");
+            _schematicsCost += CalculateItemCost(_sumOres, "U", 1, "Ores");
+            _schematicsCost += CalculateItemCost(_sumPures, "U", 1, "Pures");
+            _schematicsCost += CalculateItemCost(_sumProducts, "P", 1, "Products");
+            _schematicsCost += CalculateItemCost(_sumParts, "P", 1, "Parts");
             CostResults.AppendLine("Schematics:".PadRight(16) + $"{_schematicsCost:N1}q".PadLeft(20));
-            totalCost *= amount;
             CostResults.AppendLine("Pures/Products:".PadRight(16) + $"{totalCost:N1}q".PadLeft(20));
             totalCost += _schematicsCost;
             var costx1 = totalCost / amount;
@@ -1674,10 +1682,9 @@ namespace DU_Industry_Tool
                 var maxlen = 2 + _sumIngredients.Max(x => x.Key.Length);
                 foreach (var item in _sumIngredients)
                 {
-                    CostResults.AppendLine(item.Key.PadRight(maxlen) + $"{item.Value:N0}".PadLeft(9));
+                    CostResults.AppendLine(item.Key.PadRight(maxlen) + $"{item.Value:N2}".PadLeft(12));
                 }
             }
-
             return costx1;
         }
 
@@ -1745,7 +1752,7 @@ namespace DU_Industry_Tool
                 var orePrice = 0d;
                 if (listType == "U" && (isPlasma || isOre))
                 {
-                    orePrice = Ores.FirstOrDefault(o => o.Key == key)?.Value ?? 0;
+                    orePrice = Ores.FirstOrDefault(o => o.Name == key)?.Value ?? 0;
                 }
 
                 var tmp = item.Value * quantity;

@@ -155,6 +155,7 @@ namespace DU_Industry_Tool
             // 
             this.buttonExportToSpreadsheet.Text = "&Export to CSV";
             this.buttonExportToSpreadsheet.Click += new System.EventHandler(this.ExportToSpreadsheetToolStripMenuItem_Click);
+            this.buttonExportToSpreadsheet.Visible = true;
             // 
             // buttonFactoryBreakdownForSelected
             // 
@@ -279,8 +280,11 @@ namespace DU_Industry_Tool
             "50",
             "100",
             "200",
+            "250",
             "500",
-            "1000"});
+            "1000",
+            "5000",
+            "10000"});
             this.QuantityBox.Location = new System.Drawing.Point(294, 6);
             this.QuantityBox.Margin = new System.Windows.Forms.Padding(4, 6, 0, 0);
             this.QuantityBox.MaxDropDownItems = 10;
