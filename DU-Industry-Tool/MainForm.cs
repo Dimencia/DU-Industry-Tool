@@ -124,8 +124,12 @@ namespace DU_Industry_Tool
             var cost = _manager.GetBaseCost(recipe.Key);
             AddFlowLabel(_infoPanel.Controls, $"Untalented (without schematics) {cost:N1}q");
 
-            cost = recipe.Time > 0 ? 86400/recipe.Time : 0;
-            var pnl = AddFlowLabel(_infoPanel.Controls, $"Per industry {cost:N1} / day");
+            var amt = (recipe.Time > 0 ? 86400/recipe.Time : 0).ToString();
+            //var pnl = AddFlowLabel(_infoPanel.Controls, $"Per industry {cost:N1} / day");
+            var pnl = AddFlowLabel(_infoPanel.Controls, "", flow: FlowDirection.LeftToRight);
+            AddLabel(pnl.Controls, "Per industry ");
+            AddLinkedLabel(pnl.Controls, amt, recipe.Key+"#"+amt).Click += Label_Click;
+            AddLabel(pnl.Controls, " / day");
             pnl.Padding = new Padding(0, 0, 0, 10);
 
             // IDK why sometimes prices are listed as 0
@@ -292,12 +296,14 @@ namespace DU_Industry_Tool
             OnMainformResize(null, null);
         }
 
-        private FlowLayoutPanel AddFlowLabel(System.Windows.Forms.Control.ControlCollection cc, string lblText, FontStyle fstyle = FontStyle.Regular)
+        private FlowLayoutPanel AddFlowLabel(System.Windows.Forms.Control.ControlCollection cc,
+            string lblText, FontStyle fstyle = FontStyle.Regular,
+            FlowDirection flow = FlowDirection.TopDown)
         {
             var panel = new FlowLayoutPanel
             {
                 AutoSize = true,
-                FlowDirection = FlowDirection.TopDown,
+                FlowDirection = flow,
                 Padding = new Padding(0)
             };
             if (!string.IsNullOrEmpty(lblText))
@@ -377,6 +383,10 @@ namespace DU_Industry_Tool
                 if (targetNode != null) break;
             }
             if (targetNode == null) return;
+            if (treeView.SelectedNode == targetNode)
+            {
+                treeView.SelectedNode = null;
+            }
             treeView.SelectedNode = targetNode;
             treeView.SelectedNode.EnsureVisible();
             SearchBox.Text = targetNode.Text;
@@ -646,11 +656,11 @@ namespace DU_Industry_Tool
 
                 int row = 2;
 
-                var recipes = _manager.Recipes.Values.ToList();
+                var recipes = _manager.Recipes.Values.OrderBy(x => x.Name).ToList();
                 if (_marketFiltered)
                 {
-                    recipes = _manager.Recipes.Values
-                        .Where(r => _market.MarketOrders.Values.Any(v => v.ItemType == r.NqId)).ToList();
+                    recipes = _manager.Recipes.Values.Where(r =>
+                        _market.MarketOrders.Values.Any(v => v.ItemType == r.NqId)).ToList();
                 }
 
                 foreach(var recipe in recipes)
@@ -667,13 +677,13 @@ namespace DU_Industry_Tool
                     worksheet.Cell(row, 4).Value = recipe.Time;
                     worksheet.Cell(row, 5).FormulaR1C1 = "=((R[0]C[-2]-R[0]C[-3])/R[0]C[-2])";
                     //worksheet.Cell(row, 5).Value = cost = ((mostRecentOrder.Price - costToMake) / mostRecentOrder.Price);
-                    //worksheet.Cell(row, 5).FormulaR1C1 = "=IF((R[0]C[-2]<>0);(R[0]C[-2]-R[0]C[-3])/R[0]C[-2];0)";
+                    //worksheet.Cell(row, 5).FormulaR1C1 = "=IF((R[0]C[-2]<>0),(R[0]C[-2]-R[0]C[-3])/R[0]C[-2],0)";
                     //cost = (mostRecentOrder.Price - costToMake)*(86400/recipe.Time);
                     worksheet.Cell(row, 6).FormulaR1C1 = "=(R[0]C[-3]-R[0]C[-4])*(86400/R[0]C[-2])";
                     worksheet.Cell(row, 7).FormulaR1C1 = "=86400/R[0]C[-3]";
                     row++;
                 }
-
+                worksheet.Range("A1:G1").Style.Font.Bold = true;
                 worksheet.ColumnsUsed().AdjustToContents(1, 50);
                 workbook.SaveAs("Item Export " + DateTime.Now.ToString("yyyy-MM-dd") + ".xlsx");
                 MessageBox.Show("Exported to Item Export " + DateTime.Now.ToString("yyyy-MM-dd") + ".xlsx in the same folder as the exe!");

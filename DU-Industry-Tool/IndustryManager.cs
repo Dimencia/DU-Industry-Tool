@@ -972,19 +972,22 @@ namespace DU_Industry_Tool
                 */
             }
 
-            //SaveRecipes();
+            // 1st check:
+            // Is this a "part", but not an ingredient in any recipe?
+            // Could also be just an API category. Unly uncomment when needed!
+            //var removalEntries = (from kvp in Recipes.Values.Where(x =>
+            //    x.ParentGroupName.EndsWith(" parts", StringComparison.InvariantCultureIgnoreCase))
+            //    let found = Recipes.Values.Any(x => x.Ingredients?.Any(
+            //        y => y.Name.Equals(kvp.Name, StringComparison.InvariantCultureIgnoreCase)) == true)
+            //    where !found select kvp.Key).ToList();
+            //foreach (var removalEntry in removalEntries)
+            //{
+            //    Recipes.Remove(removalEntry);
+            //}
+            // 2nd check: any ingredient has circular reference to Key?
+            //var removalEntries = Recipes.Where(x => x.Value.Ingredients?.Any(y => y.Type == x.Key) == true).ToList();
 
-            // Is this a "part", but not in any recipe?
-            foreach (var kvp in Recipes.Values.Where(x =>
-                         x.ParentGroupName.EndsWith(" parts", StringComparison.InvariantCultureIgnoreCase)))
-            {
-                var found = Recipes.Values.Any(x => x.Ingredients?.Any(y =>
-                    y.Name.Equals(kvp.Name, StringComparison.InvariantCultureIgnoreCase)) == true);
-                if (!found)
-                {
-                    kvp.Name += " (!)";
-                }
-            }
+            //SaveRecipes();
 
             if (progressBar != null)
                 progressBar.Value = 70;
@@ -1464,11 +1467,12 @@ namespace DU_Industry_Tool
         // -> Chemical 562.50 q * 5 = 2812,50 q
         // -> SUM for schematics: 4500 quanta
         // :grimace:
-
+        private string _currentRecipe;
         public double GetTotalCost(string key, double amount = 0, string level = "", int depth = 0, bool silent = false)
         {
             if (depth == 0)
             {
+                _currentRecipe = key;
                 amount = ProductQuantity;
                 CostResults = new StringBuilder();
                 _sumParts = new SortedDictionary<string, double>();
@@ -1479,6 +1483,11 @@ namespace DU_Industry_Tool
                 _sumSchemClass = new SortedDictionary<string, Tuple<int, double>>();
                 _schematicsCost = 0;
                 ApplicableTalents = new List<string>(160);
+            }
+            else
+            if (depth > 10 || key == _currentRecipe) // faulty recipe?!
+            {
+                return 0;
             }
 
             double totalCost = 0;
