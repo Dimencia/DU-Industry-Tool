@@ -22,5 +22,29 @@ namespace DU_Industry_Tool.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Office2010Blue")]
+        public string ThemeName {
+            get {
+                return ((string)(this["ThemeName"]));
+            }
+            set {
+                this["ThemeName"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ProdListDirectory {
+            get {
+                return ((string)(this["ProdListDirectory"]));
+            }
+            set {
+                this["ProdListDirectory"] = value;
+            }
+        }
     }
 }

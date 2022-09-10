@@ -5,6 +5,7 @@ namespace DU_Industry_Tool
     partial class ContentDocument
     {
         private Krypton.Toolkit.KryptonPanel kryptonPanel;
+        public System.Windows.Forms.FlowLayoutPanel InfoPanel;
 
         /// <summary> 
         /// Required designer variable.
@@ -71,7 +72,6 @@ namespace DU_Industry_Tool
             this.Controls.Add(this.kryptonPanel);
             this.Name = "ContentDocument";
             this.Size = new System.Drawing.Size(610, 600);
-            this.Load += new System.EventHandler(this.ContentDocument_Load);
             ((System.ComponentModel.ISupportInitialize)(this.kryptonPanel)).EndInit();
             this.kryptonPanel.ResumeLayout(false);
             this.ResumeLayout(false);

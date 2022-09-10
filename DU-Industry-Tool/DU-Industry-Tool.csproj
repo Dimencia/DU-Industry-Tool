@@ -70,83 +70,93 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AboutForm.cs">
+    <Compile Include="Classes\CalculatorClass.cs" />
+    <Compile Include="Forms\AboutForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AboutForm.Designer.cs">
+    <Compile Include="Forms\AboutForm.Designer.cs">
       <DependentUpon>AboutForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="ContentDocument.cs">
+    <Compile Include="Forms\ContentDocument.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="ContentDocument.designer.cs">
+    <Compile Include="Forms\ContentDocument.designer.cs">
       <DependentUpon>ContentDocument.cs</DependentUpon>
     </Compile>
-    <Compile Include="IndustryManager.cs" />
-    <Compile Include="LoadingForm.cs">
+    <Compile Include="Classes\IndustryManager.cs" />
+    <Compile Include="Forms\LoadingForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="LoadingForm.Designer.cs">
+    <Compile Include="Forms\LoadingForm.Designer.cs">
       <DependentUpon>LoadingForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="MainForm.cs">
+    <Compile Include="Forms\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MainForm.Designer.cs">
+    <Compile Include="Forms\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="MarketData.cs" />
-    <Compile Include="MarketManager.cs" />
-    <Compile Include="OreValueForm.cs">
+    <Compile Include="Classes\MarketData.cs" />
+    <Compile Include="Classes\MarketManager.cs" />
+    <Compile Include="Forms\OreValueForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="OreValueForm.Designer.cs">
+    <Compile Include="Forms\OreValueForm.Designer.cs">
       <DependentUpon>OreValueForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ProductionListForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ProductionListForm.Designer.cs">
+      <DependentUpon>ProductionListForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Recipe.cs" />
-    <Compile Include="SchematicValueForm.cs">
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Classes\Recipe.cs" />
+    <Compile Include="Forms\SchematicValueForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="SchematicValueForm.Designer.cs">
+    <Compile Include="Forms\SchematicValueForm.Designer.cs">
       <DependentUpon>SchematicValueForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="SkillForm.cs">
+    <Compile Include="Forms\SkillForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="SkillForm.Designer.cs">
+    <Compile Include="Forms\SkillForm.Designer.cs">
       <DependentUpon>SkillForm.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="AboutForm.resx">
+    <EmbeddedResource Include="Forms\AboutForm.resx">
       <DependentUpon>AboutForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ContentDocument.resx">
+    <EmbeddedResource Include="Forms\ContentDocument.resx">
       <DependentUpon>ContentDocument.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="LoadingForm.resx">
+    <EmbeddedResource Include="Forms\LoadingForm.resx">
       <DependentUpon>LoadingForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="MainForm.resx">
+    <EmbeddedResource Include="Forms\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="OreValueForm.resx">
+    <EmbeddedResource Include="Forms\OreValueForm.resx">
       <DependentUpon>OreValueForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ProductionListForm.resx">
+      <DependentUpon>ProductionListForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <EmbeddedResource Include="SchematicValueForm.resx">
+    <EmbeddedResource Include="Forms\SchematicValueForm.resx">
       <DependentUpon>SchematicValueForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="SkillForm.resx">
+    <EmbeddedResource Include="Forms\SkillForm.resx">
       <DependentUpon>SkillForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="changelog.md">
@@ -158,6 +168,7 @@
     <None Include="KryptonToolkit.license">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Properties\DataSources\IndustryManager.datasource" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -179,6 +190,28 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="reshot-icon-factory.ico" />
+    <None Include="Resources\Add1.png" />
+    <None Include="Resources\Export To Document.png" />
+    <None Include="Resources\Gear.png" />
+    <None Include="Resources\Minus Red Button.png" />
+    <None Include="Resources\gtk-stop.png" />
+    <None Include="Resources\add2.png" />
+    <None Include="Resources\dialog-cancel.png" />
+    <None Include="Resources\filesave.png" />
+    <None Include="Resources\fileopen.png" />
+    <None Include="Resources\stock_add-bookmark.png" />
+    <None Include="Resources\gtk-delete.png" />
+    <None Include="Resources\RB2007BlackN.png" />
+    <None Include="Resources\RB2010BlueN.png" />
+    <None Include="Resources\RB2010SilverN.png" />
+    <None Include="Resources\Blue Ball.png" />
+    <None Include="Resources\Green Ball.png" />
+    <None Include="Resources\Grey Ball.png" />
+    <None Include="Resources\Orange Ball.png" />
+    <None Include="Resources\Purple Ball.png" />
+    <None Include="Resources\Red Ball.png" />
+    <None Include="Resources\Yellow Ball.png" />
+    <None Include="Resources\Black Ball.png" />
     <Content Include="Version.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -217,6 +250,9 @@
     <PackageReference Include="Newtonsoft.Json">
       <Version>13.0.1</Version>
     </PackageReference>
+    <PackageReference Include="PortableJsonSettingsProvider">
+      <Version>0.2.1</Version>
+    </PackageReference>
     <PackageReference Include="System.IO.FileSystem.Primitives">
       <Version>4.3.0</Version>
     </PackageReference>
@@ -227,5 +263,6 @@
       <Version>4.3.0</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

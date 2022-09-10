@@ -7,6 +7,7 @@ namespace DU_Industry_Tool
     public partial class OreValueForm : Form
     {
         private readonly IndustryManager Manager;
+
         public OreValueForm(IndustryManager manager)
         {
             InitializeComponent();

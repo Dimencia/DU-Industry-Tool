@@ -36,10 +36,6 @@ namespace DU_Industry_Tool
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.kryptonRibbon = new Krypton.Ribbon.KryptonRibbon();
-            this.kryptonRibbonTab2 = new Krypton.Ribbon.KryptonRibbonTab();
-            this.kryptonRibbonGroup5 = new Krypton.Ribbon.KryptonRibbonGroup();
-            this.kryptonRibbonGroupLines1 = new Krypton.Ribbon.KryptonRibbonGroupLines();
-            this.kryptonRibbonGroupButton19 = new Krypton.Ribbon.KryptonRibbonGroupButton();
             this.buttonOreValues = new Krypton.Toolkit.KryptonContextMenuItem();
             this.buttonSchematicValues = new Krypton.Toolkit.KryptonContextMenuItem();
             this.buttonSkillLevels = new Krypton.Toolkit.KryptonContextMenuItem();
@@ -48,8 +44,22 @@ namespace DU_Industry_Tool
             this.buttonExportToSpreadsheet = new Krypton.Toolkit.KryptonContextMenuItem();
             this.buttonFactoryBreakdownForSelected = new Krypton.Toolkit.KryptonContextMenuItem();
             this.ribbonAppButtonExit = new Krypton.Toolkit.KryptonContextMenuItem();
+            this.rbnTabTools = new Krypton.Ribbon.KryptonRibbonTab();
+            this.kryptonRibbonGroup1 = new Krypton.Ribbon.KryptonRibbonGroup();
+            this.kryptonRibbonGroupTriple1 = new Krypton.Ribbon.KryptonRibbonGroupTriple();
+            this.RbnBtnProductionList = new Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.rbnTabThemes = new Krypton.Ribbon.KryptonRibbonTab();
+            this.rbnGrpThemes = new Krypton.Ribbon.KryptonRibbonGroup();
+            this.rbnTrippleThemes = new Krypton.Ribbon.KryptonRibbonGroupTriple();
+            this.rbnBtnThemeBlue = new Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.rbnBtnThemeSilver = new Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.rbnBtnThemeBlack = new Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.kryptonRibbonTab2 = new Krypton.Ribbon.KryptonRibbonTab();
+            this.kryptonRibbonGroup5 = new Krypton.Ribbon.KryptonRibbonGroup();
+            this.kryptonRibbonGroupLines1 = new Krypton.Ribbon.KryptonRibbonGroupLines();
+            this.kryptonRibbonGroupButton19 = new Krypton.Ribbon.KryptonRibbonGroupButton();
+            this.cmdThemeBlue = new Krypton.Toolkit.KryptonCommand();
             this.kryptonDockableWorkspace = new Krypton.Docking.KryptonDockableWorkspace();
-            this.kryptonWorkspaceCell1 = new Krypton.Workspace.KryptonWorkspaceCell();
             this.kryptonPage1 = new Krypton.Navigator.KryptonPage();
             this.searchPanel = new Krypton.Toolkit.KryptonPanel();
             this.SearchBox = new Krypton.Toolkit.KryptonComboBox();
@@ -57,18 +67,22 @@ namespace DU_Industry_Tool
             this.QuantityBox = new System.Windows.Forms.ComboBox();
             this.PreviousButton = new System.Windows.Forms.Button();
             this.treeView = new System.Windows.Forms.TreeView();
+            this.kryptonWorkspaceCell1 = new Krypton.Workspace.KryptonWorkspaceCell();
             this.kryptonNavigator1 = new Krypton.Navigator.KryptonNavigator();
             this.imageListSmall = new System.Windows.Forms.ImageList(this.components);
             this.kryptonDockingManager = new Krypton.Docking.KryptonDockingManager();
             this.kryptonManager = new Krypton.Toolkit.KryptonManager(this.components);
+            this.kryptonRibbonGroupGallery1 = new Krypton.Ribbon.KryptonRibbonGroupGallery();
             ((System.ComponentModel.ISupportInitialize)(this.kryptonRibbon)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.kryptonDockableWorkspace)).BeginInit();
             this.kryptonDockableWorkspace.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.kryptonWorkspaceCell1)).BeginInit();
-            this.kryptonWorkspaceCell1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.kryptonPage1)).BeginInit();
             this.kryptonPage1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.searchPanel)).BeginInit();
             this.searchPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.SearchBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.kryptonWorkspaceCell1)).BeginInit();
+            this.kryptonWorkspaceCell1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.kryptonNavigator1)).BeginInit();
             this.kryptonNavigator1.SuspendLayout();
             this.SuspendLayout();
@@ -88,43 +102,15 @@ namespace DU_Industry_Tool
             this.buttonExportToSpreadsheet,
             this.buttonFactoryBreakdownForSelected,
             this.ribbonAppButtonExit});
-            this.kryptonRibbon.RibbonTabs.AddRange(new Krypton.Ribbon.KryptonRibbonTab[] {
-                this.kryptonRibbonTab2});
             this.kryptonRibbon.RibbonAppButton.AppButtonShowRecentDocs = false;
-            this.kryptonRibbon.SelectedContext = null;
-            this.kryptonRibbon.SelectedTab = null;
+            this.kryptonRibbon.RibbonTabs.AddRange(new Krypton.Ribbon.KryptonRibbonTab[] {
+            this.rbnTabTools,
+            this.rbnTabThemes,
+            this.kryptonRibbonTab2});
+            this.kryptonRibbon.SelectedTab = this.rbnTabTools;
             this.kryptonRibbon.ShowMinimizeButton = false;
-            this.kryptonRibbon.Size = new System.Drawing.Size(1850, 134);
+            this.kryptonRibbon.Size = new System.Drawing.Size(1850, 136);
             this.kryptonRibbon.TabIndex = 0;
-            // 
-            // kryptonRibbonTab2
-            // 
-            this.kryptonRibbonTab2.Groups.AddRange(new Krypton.Ribbon.KryptonRibbonGroup[] {
-                this.kryptonRibbonGroup5});
-            this.kryptonRibbonTab2.KeyTip = "O";
-            this.kryptonRibbonTab2.Text = "Options";
-            // 
-            // kryptonRibbonGroup5
-            // 
-            this.kryptonRibbonGroup5.Image = ((System.Drawing.Image)(resources.GetObject("Blocks.Image")));
-            this.kryptonRibbonGroup5.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupContainer[] {
-                this.kryptonRibbonGroupLines1});
-            this.kryptonRibbonGroup5.KeyTipDialogLauncher = "OA";
-            this.kryptonRibbonGroup5.KeyTipGroup = "A";
-            this.kryptonRibbonGroup5.TextLine1 = "About";
-            // 
-            // kryptonRibbonGroupLines1
-            // 
-            this.kryptonRibbonGroupLines1.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupItem[] {
-                this.kryptonRibbonGroupButton19});
-            this.kryptonRibbonGroupLines1.MinimumSize = Krypton.Ribbon.GroupItemSize.Large;
-            // 
-            // kryptonRibbonGroupButton19
-            // 
-            this.kryptonRibbonGroupButton19.ImageLarge = ((System.Drawing.Image)(resources.GetObject("kryptonRibbonGroupButton19.ImageLarge")));
-            this.kryptonRibbonGroupButton19.ImageSmall = ((System.Drawing.Image)(resources.GetObject("kryptonRibbonGroupButton19.ImageSmall")));
-            this.kryptonRibbonGroupButton19.TextLine1 = "About";
-            this.kryptonRibbonGroupButton19.Click += new System.EventHandler(this.RibbonButtonAboutClick);
             // 
             // buttonOreValues
             // 
@@ -155,7 +141,6 @@ namespace DU_Industry_Tool
             // 
             this.buttonExportToSpreadsheet.Text = "&Export to CSV";
             this.buttonExportToSpreadsheet.Click += new System.EventHandler(this.ExportToSpreadsheetToolStripMenuItem_Click);
-            this.buttonExportToSpreadsheet.Visible = true;
             // 
             // buttonFactoryBreakdownForSelected
             // 
@@ -167,64 +152,142 @@ namespace DU_Industry_Tool
             this.ribbonAppButtonExit.Text = "E&xit";
             this.ribbonAppButtonExit.Click += new System.EventHandler(this.RibbonAppButtonExit_Click);
             // 
+            // rbnTabTools
+            // 
+            this.rbnTabTools.Groups.AddRange(new Krypton.Ribbon.KryptonRibbonGroup[] {
+            this.kryptonRibbonGroup1});
+            this.rbnTabTools.Text = "Tools";
+            // 
+            // kryptonRibbonGroup1
+            // 
+            this.kryptonRibbonGroup1.Image = global::DU_Industry_Tool.Properties.Resources.stock_add_bookmark;
+            this.kryptonRibbonGroup1.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupContainer[] {
+            this.kryptonRibbonGroupTriple1});
+            this.kryptonRibbonGroup1.MinimumWidth = 100;
+            this.kryptonRibbonGroup1.TextLine1 = "Production List";
+            // 
+            // kryptonRibbonGroupTriple1
+            // 
+            this.kryptonRibbonGroupTriple1.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupItem[] {
+            this.RbnBtnProductionList});
+            // 
+            // RbnBtnProductionList
+            // 
+            this.RbnBtnProductionList.ImageLarge = global::DU_Industry_Tool.Properties.Resources.stock_add_bookmark;
+            this.RbnBtnProductionList.ImageSmall = global::DU_Industry_Tool.Properties.Resources.stock_add_bookmark;
+            this.RbnBtnProductionList.TextLine1 = "Production";
+            this.RbnBtnProductionList.TextLine2 = "List";
+            // 
+            // rbnTabThemes
+            // 
+            this.rbnTabThemes.Groups.AddRange(new Krypton.Ribbon.KryptonRibbonGroup[] {
+            this.rbnGrpThemes});
+            this.rbnTabThemes.Text = "Themes";
+            // 
+            // rbnGrpThemes
+            // 
+            this.rbnGrpThemes.AllowCollapsed = false;
+            this.rbnGrpThemes.Image = null;
+            this.rbnGrpThemes.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupContainer[] {
+            this.rbnTrippleThemes});
+            this.rbnGrpThemes.TextLine1 = "Themes";
+            // 
+            // rbnTrippleThemes
+            // 
+            this.rbnTrippleThemes.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupItem[] {
+            this.rbnBtnThemeBlue,
+            this.rbnBtnThemeSilver,
+            this.rbnBtnThemeBlack});
+            this.rbnTrippleThemes.MinimumSize = Krypton.Ribbon.GroupItemSize.Large;
+            // 
+            // rbnBtnThemeBlue
+            // 
+            this.rbnBtnThemeBlue.ImageLarge = global::DU_Industry_Tool.Properties.Resources.RB2010BlueN;
+            this.rbnBtnThemeBlue.ImageSmall = global::DU_Industry_Tool.Properties.Resources.RB2010BlueN;
+            this.rbnBtnThemeBlue.TextLine1 = "Office 2010 - Blue";
+            this.rbnBtnThemeBlue.Click += new System.EventHandler(this.RbOffice2010Blue_Click);
+            // 
+            // rbnBtnThemeSilver
+            // 
+            this.rbnBtnThemeSilver.ImageLarge = global::DU_Industry_Tool.Properties.Resources.Grey_Ball;
+            this.rbnBtnThemeSilver.ImageSmall = global::DU_Industry_Tool.Properties.Resources.Grey_Ball;
+            this.rbnBtnThemeSilver.KeyTip = "S";
+            this.rbnBtnThemeSilver.TextLine1 = "Office 2010 - Silver";
+            this.rbnBtnThemeSilver.Click += new System.EventHandler(this.RbOffice2010BSilver_Click);
+            // 
+            // rbnBtnThemeBlack
+            // 
+            this.rbnBtnThemeBlack.ImageLarge = global::DU_Industry_Tool.Properties.Resources.Black_Ball;
+            this.rbnBtnThemeBlack.ImageSmall = global::DU_Industry_Tool.Properties.Resources.Black_Ball;
+            this.rbnBtnThemeBlack.KeyTip = "A";
+            this.rbnBtnThemeBlack.TextLine1 = "Office 2010 - Black";
+            this.rbnBtnThemeBlack.Click += new System.EventHandler(this.RbOffice2010Black_Click);
+            // 
+            // kryptonRibbonTab2
+            // 
+            this.kryptonRibbonTab2.Groups.AddRange(new Krypton.Ribbon.KryptonRibbonGroup[] {
+            this.kryptonRibbonGroup5});
+            this.kryptonRibbonTab2.KeyTip = "O";
+            this.kryptonRibbonTab2.Text = "About";
+            // 
+            // kryptonRibbonGroup5
+            // 
+            this.kryptonRibbonGroup5.Image = null;
+            this.kryptonRibbonGroup5.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupContainer[] {
+            this.kryptonRibbonGroupLines1});
+            this.kryptonRibbonGroup5.KeyTipDialogLauncher = "OA";
+            this.kryptonRibbonGroup5.KeyTipGroup = "A";
+            this.kryptonRibbonGroup5.TextLine1 = "About";
+            // 
+            // kryptonRibbonGroupLines1
+            // 
+            this.kryptonRibbonGroupLines1.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupItem[] {
+            this.kryptonRibbonGroupButton19});
+            this.kryptonRibbonGroupLines1.MinimumSize = Krypton.Ribbon.GroupItemSize.Large;
+            // 
+            // kryptonRibbonGroupButton19
+            // 
+            this.kryptonRibbonGroupButton19.ImageLarge = ((System.Drawing.Image)(resources.GetObject("kryptonRibbonGroupButton19.ImageLarge")));
+            this.kryptonRibbonGroupButton19.ImageSmall = ((System.Drawing.Image)(resources.GetObject("kryptonRibbonGroupButton19.ImageSmall")));
+            this.kryptonRibbonGroupButton19.TextLine1 = "About";
+            this.kryptonRibbonGroupButton19.Click += new System.EventHandler(this.RibbonButtonAboutClick);
+            // 
             // kryptonDockableWorkspace
             // 
+            this.kryptonDockableWorkspace.ActivePage = this.kryptonPage1;
             this.kryptonDockableWorkspace.AutoHiddenHost = false;
             this.kryptonDockableWorkspace.CompactFlags = Krypton.Workspace.CompactFlags.AtLeastOneVisibleCell;
             this.kryptonDockableWorkspace.ContainerBackStyle = Krypton.Toolkit.PaletteBackStyle.TabDock;
             this.kryptonDockableWorkspace.Dock = System.Windows.Forms.DockStyle.Left;
-            this.kryptonDockableWorkspace.Location = new System.Drawing.Point(0, 134);
+            this.kryptonDockableWorkspace.Location = new System.Drawing.Point(0, 136);
             this.kryptonDockableWorkspace.MinimumSize = new System.Drawing.Size(300, 400);
             this.kryptonDockableWorkspace.Name = "kryptonDockableWorkspace";
-            this.kryptonDockableWorkspace.PaletteMode = Krypton.Toolkit.PaletteMode.Office2007Blue;
+            this.kryptonDockableWorkspace.PaletteMode = Krypton.Toolkit.PaletteMode.Office2010BlueDarkMode;
+            // 
+            // 
+            // 
             this.kryptonDockableWorkspace.Root.Children.AddRange(new System.ComponentModel.Component[] {
             this.kryptonWorkspaceCell1});
             this.kryptonDockableWorkspace.Root.UniqueName = "D51970B3EA2C496AD51970B3EA2C496A";
             this.kryptonDockableWorkspace.Root.WorkspaceControl = this.kryptonDockableWorkspace;
             this.kryptonDockableWorkspace.SeparatorStyle = Krypton.Toolkit.SeparatorStyle.HighProfile;
             this.kryptonDockableWorkspace.ShowMaximizeButton = false;
-            this.kryptonDockableWorkspace.Size = new System.Drawing.Size(420, 1120);
+            this.kryptonDockableWorkspace.Size = new System.Drawing.Size(420, 864);
             this.kryptonDockableWorkspace.SplitterWidth = 8;
             this.kryptonDockableWorkspace.TabIndex = 0;
             this.kryptonDockableWorkspace.TabStop = true;
             this.kryptonDockableWorkspace.WorkspaceCellAdding += new System.EventHandler<Krypton.Workspace.WorkspaceCellEventArgs>(this.KryptonDockableWorkspace_WorkspaceCellAdding);
             // 
-            // kryptonWorkspaceCell1
-            // 
-            this.kryptonWorkspaceCell1.AllowPageDrag = true;
-            this.kryptonWorkspaceCell1.AllowPageReorder = false;
-            this.kryptonWorkspaceCell1.AllowTabFocus = false;
-            this.kryptonWorkspaceCell1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.kryptonWorkspaceCell1.Button.ButtonDisplayLogic = Krypton.Navigator.ButtonDisplayLogic.None;
-            this.kryptonWorkspaceCell1.Button.CloseButtonAction = Krypton.Navigator.CloseButtonAction.None;
-            this.kryptonWorkspaceCell1.Button.CloseButtonDisplay = Krypton.Navigator.ButtonDisplay.Hide;
-            this.kryptonWorkspaceCell1.Button.ContextButtonAction = Krypton.Navigator.ContextButtonAction.None;
-            this.kryptonWorkspaceCell1.Button.ContextButtonDisplay = Krypton.Navigator.ButtonDisplay.Hide;
-            this.kryptonWorkspaceCell1.Button.NextButtonAction = Krypton.Navigator.DirectionButtonAction.None;
-            this.kryptonWorkspaceCell1.Button.NextButtonDisplay = Krypton.Navigator.ButtonDisplay.Hide;
-            this.kryptonWorkspaceCell1.Button.PreviousButtonAction = Krypton.Navigator.DirectionButtonAction.None;
-            this.kryptonWorkspaceCell1.Button.PreviousButtonDisplay = Krypton.Navigator.ButtonDisplay.Hide;
-            this.kryptonWorkspaceCell1.MaximumSize = new System.Drawing.Size(500, 0);
-            this.kryptonWorkspaceCell1.Name = "kryptonWorkspaceCell1";
-            this.kryptonWorkspaceCell1.NavigatorMode = Krypton.Navigator.NavigatorMode.BarCheckButtonGroupOutside;
-            this.kryptonWorkspaceCell1.Pages.AddRange(new Krypton.Navigator.KryptonPage[] {
-            this.kryptonPage1});
-            this.kryptonWorkspaceCell1.SelectedIndex = 0;
-            this.kryptonWorkspaceCell1.Size = new System.Drawing.Size(420, 1120);
-            this.kryptonWorkspaceCell1.UniqueName = "B46823ED744B4A87B46823ED744B4A87";
-            // 
             // kryptonPage1
             // 
             this.kryptonPage1.AutoHiddenSlideSize = new System.Drawing.Size(200, 200);
-            this.kryptonPage1.AutoSizeMode = AutoSizeMode.GrowOnly;
-            this.kryptonPage1.Dock = DockStyle.Fill;
             this.kryptonPage1.Controls.Add(this.searchPanel);
             this.kryptonPage1.Controls.Add(this.treeView);
             this.kryptonPage1.Flags = 32;
             this.kryptonPage1.LastVisibleSet = true;
             this.kryptonPage1.MinimumSize = new System.Drawing.Size(400, 450);
             this.kryptonPage1.Name = "kryptonPage1";
-            this.kryptonPage1.Size = new System.Drawing.Size(420, 600);
+            this.kryptonPage1.Size = new System.Drawing.Size(418, 831);
             this.kryptonPage1.Text = "Recipes Explorer";
             this.kryptonPage1.TextDescription = "";
             this.kryptonPage1.TextTitle = "";
@@ -241,19 +304,22 @@ namespace DU_Industry_Tool
             this.searchPanel.Dock = System.Windows.Forms.DockStyle.Top;
             this.searchPanel.Location = new System.Drawing.Point(0, 0);
             this.searchPanel.Name = "searchPanel";
-            this.searchPanel.Size = new System.Drawing.Size(417, 36);
+            this.searchPanel.Size = new System.Drawing.Size(418, 39);
             this.searchPanel.TabIndex = 0;
             // 
             // SearchBox
             // 
+            this.SearchBox.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+            this.SearchBox.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
+            this.SearchBox.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
+            this.SearchBox.DropDownWidth = 200;
+            this.SearchBox.IntegralHeight = false;
             this.SearchBox.Location = new System.Drawing.Point(4, 6);
             this.SearchBox.Margin = new System.Windows.Forms.Padding(4, 6, 0, 0);
             this.SearchBox.MaxLength = 30;
             this.SearchBox.Name = "SearchBox";
-            this.SearchBox.Size = new System.Drawing.Size(200, 28);
+            this.SearchBox.Size = new System.Drawing.Size(200, 25);
             this.SearchBox.TabIndex = 0;
-            this.SearchBox.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-            this.SearchBox.AutoCompleteSource = AutoCompleteSource.ListItems;
             // 
             // SearchButton
             // 
@@ -261,7 +327,7 @@ namespace DU_Industry_Tool
             this.SearchButton.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.SearchButton.Location = new System.Drawing.Point(207, 3);
             this.SearchButton.Name = "SearchButton";
-            this.SearchButton.Size = new System.Drawing.Size(80, 30);
+            this.SearchButton.Size = new System.Drawing.Size(80, 33);
             this.SearchButton.TabIndex = 1;
             this.SearchButton.Text = "Search";
             this.SearchButton.UseVisualStyleBackColor = true;
@@ -290,9 +356,8 @@ namespace DU_Industry_Tool
             this.QuantityBox.MaxDropDownItems = 10;
             this.QuantityBox.MaxLength = 4;
             this.QuantityBox.Name = "QuantityBox";
-            this.QuantityBox.Size = new System.Drawing.Size(50, 28);
+            this.QuantityBox.Size = new System.Drawing.Size(50, 31);
             this.QuantityBox.TabIndex = 2;
-            this.QuantityBox.SelectionChangeCommitted += QuantityBoxOnSelectionChangeCommitted;
             // 
             // PreviousButton
             // 
@@ -301,7 +366,7 @@ namespace DU_Industry_Tool
             this.PreviousButton.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.PreviousButton.Location = new System.Drawing.Point(347, 3);
             this.PreviousButton.Name = "PreviousButton";
-            this.PreviousButton.Size = new System.Drawing.Size(39, 30);
+            this.PreviousButton.Size = new System.Drawing.Size(44, 33);
             this.PreviousButton.TabIndex = 3;
             this.PreviousButton.Text = "<<";
             this.PreviousButton.UseVisualStyleBackColor = true;
@@ -310,13 +375,36 @@ namespace DU_Industry_Tool
             // treeView
             // 
             this.treeView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-                                                                          | System.Windows.Forms.AnchorStyles.Left) 
-                                                                         | System.Windows.Forms.AnchorStyles.Right)));
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.treeView.Location = new System.Drawing.Point(0, 40);
             this.treeView.MinimumSize = new System.Drawing.Size(400, 400);
             this.treeView.Name = "treeView";
-            this.treeView.Size = new System.Drawing.Size(415, 1050);
+            this.treeView.Size = new System.Drawing.Size(413, 1009);
             this.treeView.TabIndex = 3;
+            // 
+            // kryptonWorkspaceCell1
+            // 
+            this.kryptonWorkspaceCell1.AllowPageDrag = true;
+            this.kryptonWorkspaceCell1.AllowPageReorder = false;
+            this.kryptonWorkspaceCell1.AllowTabFocus = false;
+            this.kryptonWorkspaceCell1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.kryptonWorkspaceCell1.Button.ButtonDisplayLogic = Krypton.Navigator.ButtonDisplayLogic.None;
+            this.kryptonWorkspaceCell1.Button.CloseButtonAction = Krypton.Navigator.CloseButtonAction.None;
+            this.kryptonWorkspaceCell1.Button.CloseButtonDisplay = Krypton.Navigator.ButtonDisplay.Hide;
+            this.kryptonWorkspaceCell1.Button.ContextButtonAction = Krypton.Navigator.ContextButtonAction.None;
+            this.kryptonWorkspaceCell1.Button.ContextButtonDisplay = Krypton.Navigator.ButtonDisplay.Hide;
+            this.kryptonWorkspaceCell1.Button.NextButtonAction = Krypton.Navigator.DirectionButtonAction.None;
+            this.kryptonWorkspaceCell1.Button.NextButtonDisplay = Krypton.Navigator.ButtonDisplay.Hide;
+            this.kryptonWorkspaceCell1.Button.PreviousButtonAction = Krypton.Navigator.DirectionButtonAction.None;
+            this.kryptonWorkspaceCell1.Button.PreviousButtonDisplay = Krypton.Navigator.ButtonDisplay.Hide;
+            this.kryptonWorkspaceCell1.MaximumSize = new System.Drawing.Size(500, 0);
+            this.kryptonWorkspaceCell1.Name = "kryptonWorkspaceCell1";
+            this.kryptonWorkspaceCell1.NavigatorMode = Krypton.Navigator.NavigatorMode.BarCheckButtonGroupOutside;
+            this.kryptonWorkspaceCell1.Pages.AddRange(new Krypton.Navigator.KryptonPage[] {
+            this.kryptonPage1});
+            this.kryptonWorkspaceCell1.SelectedIndex = 0;
+            this.kryptonWorkspaceCell1.UniqueName = "B46823ED744B4A87B46823ED744B4A87";
             // 
             // kryptonNavigator1
             // 
@@ -334,8 +422,6 @@ namespace DU_Industry_Tool
             this.kryptonNavigator1.StateCommon.CheckButton.Content.ShortText.TextH = Krypton.Toolkit.PaletteRelativeAlign.Center;
             this.kryptonNavigator1.StateCommon.CheckButton.Content.ShortText.TextV = Krypton.Toolkit.PaletteRelativeAlign.Far;
             this.kryptonNavigator1.TabIndex = 7;
-            this.kryptonNavigator1.Text = "";
-            this.kryptonNavigator1.SelectedPageChanged += KryptonNavigator1OnSelectedPageChanged;
             // 
             // imageListSmall
             // 
@@ -347,7 +433,11 @@ namespace DU_Industry_Tool
             // 
             // kryptonManager
             // 
-            this.kryptonManager.GlobalPaletteMode = Krypton.Toolkit.PaletteModeManager.Office2010Silver;
+            this.kryptonManager.GlobalPaletteMode = Krypton.Toolkit.PaletteModeManager.Office2010Blue;
+            // 
+            // kryptonRibbonGroupGallery1
+            // 
+            this.kryptonRibbonGroupGallery1.ImageList = null;
             // 
             // MainForm
             // 
@@ -359,26 +449,29 @@ namespace DU_Industry_Tool
             this.Controls.Add(this.kryptonDockableWorkspace);
             this.Controls.Add(this.kryptonRibbon);
             this.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(800, 600);
             this.Name = "MainForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "DU Industry Tool (Mercury)";
-            this.StartPosition = FormStartPosition.CenterScreen;;
             this.Load += new System.EventHandler(this.MainForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.kryptonRibbon)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.kryptonDockableWorkspace)).EndInit();
             this.kryptonDockableWorkspace.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.kryptonWorkspaceCell1)).EndInit();
-            this.kryptonWorkspaceCell1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.kryptonPage1)).EndInit();
             this.kryptonPage1.ResumeLayout(false);
             this.kryptonPage1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.searchPanel)).EndInit();
             this.searchPanel.ResumeLayout(false);
             this.searchPanel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.SearchBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.kryptonWorkspaceCell1)).EndInit();
+            this.kryptonWorkspaceCell1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.kryptonNavigator1)).EndInit();
             this.kryptonNavigator1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
-            this.Resize += OnMainformResize;
+
         }
 
         #endregion
@@ -409,5 +502,17 @@ namespace DU_Industry_Tool
         private System.Windows.Forms.Button SearchButton;
         private System.Windows.Forms.Button PreviousButton;
         private System.Windows.Forms.ComboBox QuantityBox;
+        private Krypton.Ribbon.KryptonRibbonTab rbnTabTools;
+        private Krypton.Ribbon.KryptonRibbonGroup kryptonRibbonGroup1;
+        private Krypton.Ribbon.KryptonRibbonGroupGallery kryptonRibbonGroupGallery1;
+        private Krypton.Ribbon.KryptonRibbonGroupTriple kryptonRibbonGroupTriple1;
+        private Krypton.Ribbon.KryptonRibbonGroupButton RbnBtnProductionList;
+        private Krypton.Ribbon.KryptonRibbonTab rbnTabThemes;
+        private Krypton.Ribbon.KryptonRibbonGroup rbnGrpThemes;
+        private Krypton.Ribbon.KryptonRibbonGroupTriple rbnTrippleThemes;
+        private Krypton.Ribbon.KryptonRibbonGroupButton rbnBtnThemeBlue;
+        private Krypton.Ribbon.KryptonRibbonGroupButton rbnBtnThemeSilver;
+        private Krypton.Ribbon.KryptonRibbonGroupButton rbnBtnThemeBlack;
+        private Krypton.Toolkit.KryptonCommand cmdThemeBlue;
     }
 }
