@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -12,33 +13,29 @@ namespace DU_Industry_Tool
 {
     public class IndustryManager
     {
+        private const string CompoundName = "COMPOUNDLIST";
+
         private readonly List<string> _sizeList = new List<string> { "XS", "S", "M", "L", "XL" };
         private readonly List<string> _tierNames = new List<string> { "", "Basic", "Uncommon", "Advanced", "Rare", "Exotic" };
-        private SortedDictionary<string, double> _sumParts; // Sums for all parts in a recipe
-        private SortedDictionary<string, double> _sumProducts; // Sums for each individual ingredient Product
-        private SortedDictionary<string, double> _sumPures; // Sums for each individual ingredient Pure
-        private SortedDictionary<string, double> _sumOres; // Sums for each individual ingredient Ore
-        private SortedDictionary<string, double> _sumIngredients; // Sums for each ingredient
-        private SortedDictionary<string, Tuple<int, double>> _sumSchemClass; // Sums for each schematic class
-        private double _schematicsCost = 0;
 
         private readonly SortedDictionary<string, DuLuaItem> _luaItems; // List of items from du-lua.dev
         private readonly SortedDictionary<string, DuLuaRecipe> _luaRecipes; // List of recipes from du-lua.dev
 
         public readonly SortedDictionary<string, SchematicRecipe> Recipes; // Global list of all our recipes, from the json
+        public List<string> RecipeNames { get; private set; } = new List<string>();
+        public BindingList<ProductionItem> ProductionBindingList { get; set; }
 
         public readonly Dictionary<string, Group> Groups;
         public List<Ore> Ores { get; } = new List<Ore>();
         public SortedDictionary<string, Schematic> Schematics { get; } = new SortedDictionary<string, Schematic>();
         public List<string> ApplicableTalents { get; private set; }
-
         public List<Talent> Talents { get; } = new List<Talent>();
-
         public List<string> Groupnames { get; } = new List<string>(370);
+        public StringBuilder CostResults { get; set; }
+        public SchematicRecipe CompoundRecipe { get; private set; }
 
-        public StringBuilder CostResults { get; private set; }
-
-        public int ProductQuantity { get; set; } = 10;
+        public int ProductQuantity { get; set; } = 1;
+        public bool ProductionListMode { get; set; }
 
         public IndustryManager(ProgressBar progressBar = null)
         {
@@ -78,8 +75,8 @@ namespace DU_Industry_Tool
             // Schematics and prices
             // mostly by formula as of patch 0.31.6
 
-            var csPriceList = new int[] { 150, 375, 1000, 3000, 0 }; // Construct Support
-            var cuPriceList = new int[] { 250, 5000, 62500, 725000, 0 }; // Core Units
+            var csPriceList = new [] { 150, 375, 1000, 3000, 0 }; // Construct Support
+            var cuPriceList = new [] { 250, 5000, 62500, 725000, 0 }; // Core Units
 
             if (File.Exists("schematicValues.json"))
             {
@@ -97,10 +94,10 @@ namespace DU_Industry_Tool
                 // SC = Scraps, e.g. T2SC
                 // TxEy = Tier x, Element size y, e.g. T2XL tier 2, XL
                 var groups = new[] { "U", "P", "HU", "HP", "SC" };
-                var prices = new double[] { 187.5d, 180d, 125d, 50d, 30d }; // only first price for each group
-                var scraps = new double[] { 30d, 75d, 187.48d, 468.72 };
-                var factors = new double[] { 3.125d, 3.3333333d, 3.75d, 5.0d };
-                int[] batchTimes = new int[] { 1500, 1800, 625, 250, 150 };
+                var prices = new [] { 187.5d, 180d, 125d, 50d, 30d }; // only first price for each group
+                var scraps = new [] { 30d, 75d, 187.48d, 468.72 };
+                var factors = new [] { 3.125d, 3.3333333d, 3.75d, 5.0d };
+                var batchTimes = new [] { 1500, 1800, 625, 250, 150 };
 
                 for (byte i = 0; i <= 4; i++)
                 {
@@ -135,19 +132,17 @@ namespace DU_Industry_Tool
                 }
 
                 // Element schematics
-                prices = new double[] { 375d, 937.5d, 2343.7d, 5859.3d, 14648.4d };
-                factors = new double[] { 4.000085d, 3.3333333d, 3d, 4d };
-                var batchSizes = new byte[] { 10, 5, 3, 2, 1 };
-                batchTimes = new int[] { 750, 1875, 4687, 11700, 29280 }; // seconds for XS per tier 1-5
+                prices = new [] { 375d, 937.5d, 2343.7d, 5859.3d, 14648.4d };
+                factors = new [] { 4.000085d, 3.3333333d, 3d, 4d };
+                var batchSizes = new [] { 10, 5, 3, 2, 1 };
+                batchTimes = new [] { 750, 1875, 4687, 11700, 29280 }; // seconds for XS per tier 1-5
                 var batchTimeFactors = new List<double[]>
                 {
-                    new double[] { 2.0, 2.0, 2.0, 2.0 }, // factor of time between T1 sizes (XS->S->M...)
-                    new double[]
-                        { 2.5, 2.4997333, 2.496266, 2.502564 }, // factor of time between T2 sizes (XS->S->M...)
-                    new double[] { 1.997013, 1.997863, 1.996805, 2 }, // factor of time between T3 sizes (XS->S->M...)
-                    new double[]
-                        { 2.005128, 1.997442, 2.001280, 1.996161 }, // factor of time between T4 sizes (XS->S->M...)
-                    new double[] { 2.002049, 1.998976, 1.996927, 2.0 } // factor of time between T5 sizes (XS->S->M...)
+                    new [] { 2.0, 2.0, 2.0, 2.0 }, // factor of time between T1 sizes (XS->S->M...)
+                    new [] { 2.5, 2.4997333, 2.496266, 2.502564 }, // factor of time between T2 sizes (XS->S->M...)
+                    new [] { 1.997013, 1.997863, 1.996805, 2 }, // factor of time between T3 sizes (XS->S->M...)
+                    new [] { 2.005128, 1.997442, 2.001280, 1.996161 }, // factor of time between T4 sizes (XS->S->M...)
+                    new [] { 2.002049, 1.998976, 1.996927, 2.0 } // factor of time between T5 sizes (XS->S->M...)
                 };
                 for (byte tier = 1; tier <= 5; tier++)
                 {
@@ -174,9 +169,9 @@ namespace DU_Industry_Tool
 
                 // Add Construct Support and Core Units schematics
                 var csTime = 750;
-                var batchSizesCs = new byte[] { 25, 20, 15, 10 };
-                var batchSizesCu = new byte[] { 10, 5, 2, 1 };
-                var batchTimesCu = new int[] { 750, 5000, 25020, 145020 };
+                var batchSizesCs = new [] { 25, 20, 15, 10 };
+                var batchSizesCu = new [] { 10, 5, 2, 1 };
+                var batchTimesCu = new [] { 750, 5000, 25020, 145020 };
                 for (var idx = 0; idx <= 3; idx++) // XS - L
                 {
                     var size = _sizeList[idx];
@@ -204,8 +199,8 @@ namespace DU_Industry_Tool
                 }
 
                 // Ammo schematics, tiers T2-T4, sizes XS-L
-                prices = new double[] { 600d, 1500d, 3750d }; // starting prices per tier' XS
-                batchTimes = new int[] { 3000, 7500, 18780 }; // starting duration per tier' XS
+                prices = new [] { 600d, 1500d, 3750d }; // starting prices per tier' XS
+                batchTimes = new [] { 3000, 7500, 18780 }; // starting duration per tier' XS
                 for (byte i = 2; i <= 4; i++)
                 {
                     var time = batchTimes[i - 2];
@@ -377,15 +372,13 @@ namespace DU_Industry_Tool
 
                         if (kvp.Value.UnitMass != 0 && kvp.Value.UnitMass != dmpItem.Value.UnitMass)
                         {
-                            Debug.WriteLine(
-                                $"{kvp.Value.Name} UnitMass {kvp.Value.UnitMass:N2} to {dmpItem.Value.UnitMass:N2}");
+                            Debug.WriteLine($"{kvp.Value.Name} UnitMass {kvp.Value.UnitMass:N2} to {dmpItem.Value.UnitMass:N2}");
                         }
                         kvp.Value.UnitMass = dmpItem.Value.UnitMass;
 
                         if (kvp.Value.UnitVolume != 0 && kvp.Value.UnitVolume != dmpItem.Value.UnitVolume)
                         {
-                            Debug.WriteLine(
-                                $"{kvp.Value.Name} UnitVolume {kvp.Value.UnitVolume:N2} to {dmpItem.Value.UnitVolume:N2}");
+                            Debug.WriteLine($"{kvp.Value.Name} UnitVolume {kvp.Value.UnitVolume:N2} to {dmpItem.Value.UnitVolume:N2}");
                         }
                         kvp.Value.UnitVolume = dmpItem.Value.UnitVolume;
                     }
@@ -498,7 +491,7 @@ namespace DU_Industry_Tool
                 //if (kvp.Value.Nanocraftable) Debug.WriteLine($"{kvp.Value.Name}");
 
                 // Determine the required industry to produce this item
-                DetermineIndustryFor(kvp.Value);
+                //DetermineIndustryFor(kvp.Value);
 
                 if (kvp.Key.StartsWith("Catalyst") ||
                     kvp.Value.ParentGroupName == "Ore" ||
@@ -989,6 +982,10 @@ namespace DU_Industry_Tool
 
             //SaveRecipes();
 
+            RecipeNames.AddRange(Recipes.Where(x => !string.IsNullOrEmpty(x.Value.Industry) &&
+                                                    x.Value.Industry.IndexOf("Honeycomb", StringComparison.InvariantCultureIgnoreCase) < 0)
+                                        .Select(x => x.Value.Name).OrderBy(y => y).ToList());
+
             if (progressBar != null)
                 progressBar.Value = 70;
 
@@ -1243,8 +1240,7 @@ namespace DU_Industry_Tool
                                 recipe.Name.EndsWith(" processor", StringComparison.InvariantCultureIgnoreCase) ||
                                 recipe.Name.EndsWith(" quantum alignment unit", StringComparison.InvariantCultureIgnoreCase) ||
                                 recipe.Name.EndsWith(" quantum barrier", StringComparison.InvariantCultureIgnoreCase) ||
-                                (recipe.Name.IndexOf("uncommon light", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
-                                false);
+                                (recipe.Name.IndexOf("uncommon light", StringComparison.InvariantCultureIgnoreCase) >= 0));
 
             var isMetal   = isPart && !isElect && (
                                 recipe.Name.EndsWith(" burner", StringComparison.InvariantCultureIgnoreCase) ||
@@ -1267,8 +1263,7 @@ namespace DU_Industry_Tool
                                 (recipe.Name.IndexOf(" screen ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
                                 recipe.Name.EndsWith(" screw", StringComparison.InvariantCultureIgnoreCase) ||
                                 recipe.Name.EndsWith(" singularity container", StringComparison.InvariantCultureIgnoreCase) ||
-                                recipe.Name.EndsWith(" solid warhead", StringComparison.InvariantCultureIgnoreCase)  ||
-                                false);
+                                recipe.Name.EndsWith(" solid warhead", StringComparison.InvariantCultureIgnoreCase));
 
             var is3D      = !isElect && !isMetal && (
                                 recipe.Name.Equals("carbon fiber product", StringComparison.InvariantCultureIgnoreCase) ||
@@ -1276,8 +1271,7 @@ namespace DU_Industry_Tool
                                 recipe.Name.EndsWith(" fixation", StringComparison.InvariantCultureIgnoreCase) ||
                                 recipe.Name.EndsWith(" injector", StringComparison.InvariantCultureIgnoreCase) ||
                                 recipe.Name.EndsWith(" quantum core", StringComparison.InvariantCultureIgnoreCase) ||
-                                (recipe.Name.IndexOf(" screen ", StringComparison.InvariantCultureIgnoreCase) > 0) ||
-                                false);
+                                (recipe.Name.IndexOf(" screen ", StringComparison.InvariantCultureIgnoreCase) > 0));
 
             var isGlass   = !isElect && !isMetal && !is3D && (
                                 recipe.Key.StartsWith("led_", StringComparison.InvariantCultureIgnoreCase) ||
@@ -1293,8 +1287,7 @@ namespace DU_Industry_Tool
                                 recipe.Name.EndsWith(" explosive module", StringComparison.InvariantCultureIgnoreCase) ||
                                 recipe.Name.StartsWith("Fluoropolymer") ||
                                 recipe.ParentGroupName.Equals("Fuels") ||
-                                recipe.ParentGroupName.EndsWith("plastic product", StringComparison.InvariantCultureIgnoreCase) ||
-                                false);
+                                recipe.ParentGroupName.EndsWith("plastic product", StringComparison.InvariantCultureIgnoreCase));
 
             var isAssy = !isElect && !isMetal && !is3D && !isChem && !isGlass &&
                          !isPart && !isPure && !isProduct && !isScrap && !isHC;
@@ -1335,24 +1328,73 @@ namespace DU_Industry_Tool
             }
             if (isHC)
             {
-                recipe.Industry = getIndyName("Honeycomb Refiner M"); return;
+                recipe.Industry = getIndyName("Honeycomb Refinery M"); return;
             }
             if (isAssy)
             {
-                // IF a frame as ingredient exists, take its size!
-                var frame = recipe.Ingredients.FirstOrDefault(x => x.Name.IndexOf(" frame ", StringComparison.InvariantCultureIgnoreCase) >= 0);
-                indSuffix = GetElementSize(frame == null ? recipe.Name : frame.Name);
+                // special cases, there may be more :(
+                var noLowerTier =
+                    (recipe.Name.IndexOf("assembly line s", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                    (recipe.Name.IndexOf("3d printer", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                    (recipe.Name.IndexOf(" furnace ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                    (recipe.Name.IndexOf(" comb refinery ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                    (recipe.Name.IndexOf(" industry ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                    (recipe.Name.IndexOf(" refiner ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                    (recipe.Name.IndexOf(" recycler ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                    (recipe.Name.IndexOf(" smelter ", StringComparison.InvariantCultureIgnoreCase) >= 0) ||
+                    recipe.Name.StartsWith("ammo", StringComparison.InvariantCultureIgnoreCase)  ||
+                    recipe.Name.Equals("antennalarge", StringComparison.InvariantCultureIgnoreCase)  ||
+                    recipe.Name.Equals("antennamedium", StringComparison.InvariantCultureIgnoreCase)  ||
+                    recipe.Name.Equals("AntennaSmall", StringComparison.InvariantCultureIgnoreCase)  ||
+                    recipe.ParentGroupName.Equals("Furniture & Appliances", StringComparison.InvariantCultureIgnoreCase)  ||
+                    false;
+                indSuffix = GetElementSize(recipe.Name, noLowerTier);
+                // and more special cases:
+                if (recipe.Name.Equals("Territory Unit XL", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    indSuffix = "M";
+                }
+                else
+                if (recipe.Name.Equals("vertical light l", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    indSuffix = "S";
+                }
+                else
+                if (recipe.Name.Equals("vertical light m", StringComparison.InvariantCultureIgnoreCase) ||
+                    recipe.Name.Equals("long light m", StringComparison.InvariantCultureIgnoreCase) ||
+                    recipe.Name.Equals("long light l", StringComparison.InvariantCultureIgnoreCase) ||
+                    recipe.Name.StartsWith("square light", StringComparison.InvariantCultureIgnoreCase) ||
+                    false)
+                {
+                    indSuffix = "XS";
+                }
+                else
+                switch (recipe.Key)
+                {
+                    case "AdjunctTipSmall":
+                    case "AdjunctTipMedium": indSuffix = "XS"; break;
+                    case "AdjunctTipLarge": indSuffix = "S"; break;
+                    case "AileronLarge2": indSuffix = "M"; break;
+                    case "AileronMedium2": indSuffix = "S"; break;
+                    case "AileronShortLarge2": indSuffix = "M"; break;
+                    case "AileronShortMedium2": indSuffix = "S"; break;
+                    case "antenna_5_xl": indSuffix = "M"; break;
+                }
                 recipe.Industry = getIndyName("Assembly Line");
                 return;
             }
             Debug.WriteLine(recipe.Name.PadRight(40)+" -> NO INDY!");
         }
 
-        private string GetElementSize(string elemName)
+        private string GetElementSize(string elemName, bool noLowerTier = false)
         {
-            foreach (var size in _sizeList.Where(size => elemName.EndsWith(" " + size, StringComparison.InvariantCultureIgnoreCase)))
+            for (var idx = 0; idx < 5; idx++)
             {
-                return size;
+                if (elemName.EndsWith(" " + _sizeList[idx], StringComparison.InvariantCultureIgnoreCase))
+                {
+                    // most XL cannot be produced on an L assembler so "idx < 4" condition
+                    return _sizeList[(idx > 0 && idx < 4 && !noLowerTier) ? idx - 1 : idx];
+                }
             }
             return "";
         }
@@ -1474,14 +1516,10 @@ namespace DU_Industry_Tool
             {
                 _currentRecipe = key;
                 amount = ProductQuantity;
-                CostResults = new StringBuilder();
-                _sumParts = new SortedDictionary<string, double>();
-                _sumProducts = new SortedDictionary<string, double>();
-                _sumPures = new SortedDictionary<string, double>();
-                _sumOres = new SortedDictionary<string, double>();
-                _sumIngredients = new SortedDictionary<string, double>();
-                _sumSchemClass = new SortedDictionary<string, Tuple<int, double>>();
-                _schematicsCost = 0;
+                if (!ProductionListMode)
+                {
+                    Calculator.Initialize();
+                }
                 ApplicableTalents = new List<string>(160);
             }
             else
@@ -1489,6 +1527,7 @@ namespace DU_Industry_Tool
             {
                 return 0;
             }
+            if (CostResults == null) CostResults = new StringBuilder();
 
             double totalCost = 0;
             if (key.StartsWith("Catalyst"))
@@ -1530,9 +1569,9 @@ namespace DU_Industry_Tool
                     continue;
                 }
 
-                var cost = 0d;
+                double cost;
                 var qty = 0d;
-                double factor = 1;
+                double factor;
                 var myRecipe = Recipes[ingredient.Type];
                 var isOre = myRecipe.ParentGroupName.Equals("Ore");
                 var isPure = myRecipe.ParentGroupName.Equals("Pure") ||
@@ -1565,12 +1604,9 @@ namespace DU_Industry_Tool
                     qty = isPlasma ? 1 : amount / factor;
                     cost = qty * Ores.First(o => o.Key == ingredient.Type).Value;
                     totalCost += cost;
-                    if (_sumOres.ContainsKey(ingKey))
-                        _sumOres[ingKey] += qty;
-                    else
-                        _sumOres.Add(ingKey, qty);
+                    Calculator.Add(SummationType.ORES, ingKey, qty);
                     Debug.WriteLineIf(!silent && qty > 0, $"{curLevel}     ({ingredient.Name}: {qty:N2} = {cost:N2}q)");
-                    AddIngredient(ingKey, qty);
+                    Calculator.Add(SummationType.INGREDIENTS, ingKey, qty);
                     continue;
                 }
 
@@ -1579,12 +1615,9 @@ namespace DU_Industry_Tool
                     qty = amount / factor;
                     cost = GetTotalCost(ingredient.Type, qty, level, depth + 1, silent);
                     totalCost += cost;
-                    if (_sumPures.ContainsKey(ingKey))
-                        _sumPures[ingKey] += qty;
-                    else
-                        _sumPures.Add(ingKey, qty);
+                    Calculator.Add(SummationType.PURES, ingKey, qty);
                     ingName = " " + ingKey;
-                    AddIngredient(ingName, qty);
+                    Calculator.Add(SummationType.INGREDIENTS, ingName, qty);
                     continue;
                 }
 
@@ -1598,14 +1631,14 @@ namespace DU_Industry_Tool
                     {
                         ingName = "   " + ingKey;
                         qty = amount * ingredient.Quantity;
-                        AddIngredient(ingName, qty);
+                        Calculator.Add(SummationType.INGREDIENTS, ingName, qty);
                     }
                     else
                     if (isProduct)
                     {
                         ingName = "  " + ingKey;
                         qty = amount / factor;
-                        AddIngredient(ingName, amount / factor);
+                        Calculator.Add(SummationType.INGREDIENTS, ingName, qty);
                     }
                 }
                 else
@@ -1619,50 +1652,58 @@ namespace DU_Industry_Tool
 
                 if (isPart)
                 {
-                    if (_sumParts.ContainsKey(ingKey))
-                        _sumParts[ingKey] += qty;
-                    else
-                        _sumParts.Add(ingKey, qty);
+                    Calculator.Add(SummationType.PARTS, ingKey, qty);
                     continue;
                 }
 
                 if (!isProduct) continue;
-                if (_sumProducts.ContainsKey(ingKey))
-                    _sumProducts[ingKey] += qty;
-                else
-                    _sumProducts.Add(ingKey, qty);
+                Calculator.Add(SummationType.PRODUCTS, ingKey, qty);
             }
 
             if (depth != 0) return totalCost;
 
             // Only on top-level we calculate total cost for all schematics for each ingredient
             CostResults.AppendLine($"Cost for {amount} {recipe.Name}");
+            if (ProductionListMode && recipe.Key == CompoundName)
+            {
+                var prdCost = 0d;
+                foreach (var prd in recipe.Products)
+                {
+                    var prdRec = Recipes.FirstOrDefault(x => x.Key == prd.Type);
+                    if (prdRec.Key == null) continue;
+                    var prdEntryCost = prdRec.Value.SchemaPrice * prd.Quantity;
+                    Calculator.AddSchema(prdRec.Value.SchemaType, (int)prd.Quantity, prdEntryCost);
+                    prdCost += prdEntryCost;
+                }
+                Calculator.AddSchematicCost(prdCost);
+            }
+            else
             if (!string.IsNullOrEmpty(recipe.SchemaType))
             {
-                var schemaPrice = amount * recipe.SchemaPrice;
-                _schematicsCost += schemaPrice;
-                CostResults.AppendLine($"Item schematic(s) {recipe.SchemaType}: {schemaPrice:N1}q");
+                var schemaCost = amount * recipe.SchemaPrice;
+                Calculator.AddSchematicCost(schemaCost);
+                CostResults.AppendLine($"Item schematic(s) {recipe.SchemaType}: {schemaCost:N2}q");
             }
 
             CostResults.AppendLine("");
-            _schematicsCost += CalculateItemCost(_sumOres, "U", 1, "Ores");
-            _schematicsCost += CalculateItemCost(_sumPures, "U", 1, "Pures");
-            _schematicsCost += CalculateItemCost(_sumProducts, "P", 1, "Products");
-            _schematicsCost += CalculateItemCost(_sumParts, "P", 1, "Parts");
-            CostResults.AppendLine("Schematics:".PadRight(16) + $"{_schematicsCost:N1}q".PadLeft(20));
-            CostResults.AppendLine("Pures/Products:".PadRight(16) + $"{totalCost:N1}q".PadLeft(20));
-            totalCost += _schematicsCost;
+            Calculator.AddSchematicCost(CalculateItemCost(Calculator.Get(SummationType.ORES), "U", 1, "Ores"));
+            Calculator.AddSchematicCost(CalculateItemCost(Calculator.Get(SummationType.PURES), "U", 1, "Pures"));
+            Calculator.AddSchematicCost(CalculateItemCost(Calculator.Get(SummationType.PRODUCTS), "P", 1, "Products"));
+            CalculateItemCost(Calculator.Get(SummationType.PARTS), "P", 1, "Parts");
+            CostResults.AppendLine("Schematics:".PadRight(16) + $"{Calculator.SchematicsCost:N2}q".PadLeft(20));
+            CostResults.AppendLine("Pures/Products:".PadRight(16) + $"{totalCost:N2}q".PadLeft(20));
+            totalCost += Calculator.SchematicsCost;
             var costx1 = totalCost / amount;
-            CostResults.AppendLine("Total Cost:".PadRight(16) + $"{totalCost:N1}q".PadLeft(20));
-            CostResults.AppendLine("Cost x1:".PadRight(16) + $"{costx1:N1}q".PadLeft(20));
+            CostResults.AppendLine("Total Cost:".PadRight(16) + $"{totalCost:N2}q".PadLeft(20));
+            CostResults.AppendLine("Cost x1:".PadRight(16) + $"{costx1:N2}q".PadLeft(20));
             Debug.WriteLineIf(!silent, CostResults.ToString());
 
-            if (_sumSchemClass?.Any() == true)
+            if (Calculator.SumSchemClass?.Any() == true)
             {
                 CostResults.AppendLine();
                 CostResults.AppendLine("----- Schematics details -----");
                 CostResults.AppendLine("Schema.  amount              cost    copy time (1 slot)");
-                foreach (var schem in _sumSchemClass)
+                foreach (var schem in Calculator.SumSchemClass)
                 {
                     var s = Schematics.FirstOrDefault(x => x.Key == schem.Key);
                     var numBatches = Math.Ceiling(schem.Value.Item1 / (double)s.Value.BatchSize);
@@ -1670,30 +1711,24 @@ namespace DU_Industry_Tool
                     var sp = TimeSpan.FromSeconds(batchTime);
                     CostResults.AppendLine(schem.Key.PadRight(4) +
                                            $"x{schem.Value.Item1:N0}".PadLeft(11) +
-                                           $"{schem.Value.Item2:N1}q".PadLeft(21) +
+                                           $"{schem.Value.Item2:N2}q".PadLeft(21) +
                                            " (" + sp.ToString(@"dd\.hh\:mm\:ss") + ")");
                 }
             }
 
-            if (_sumIngredients?.Any() == true)
-            {
-                CostResults.AppendLine();
-                CostResults.AppendLine("----- Total Ingredients List -----");
-                var maxlen = 2 + _sumIngredients.Max(x => x.Key.Length);
-                foreach (var item in _sumIngredients)
-                {
-                    CostResults.AppendLine(item.Key.PadRight(maxlen) + $"{item.Value:N2}".PadLeft(12));
-                }
-            }
-            return costx1;
-        }
+            // Total Ingredients List
+            var sumIng = Calculator.Get(SummationType.INGREDIENTS);
+            if (sumIng?.Any() != true) return costx1;
 
-        private void AddIngredient(string name, double amount)
-        {
-            if (_sumIngredients.ContainsKey(name))
-                _sumIngredients[name] += amount;
-            else
-                _sumIngredients.Add(name, amount);
+            CostResults.AppendLine();
+            CostResults.AppendLine("----- Total Ingredients List -----");
+            var maxlen = 2 + sumIng.Max(x => x.Key.Length);
+            foreach (var item in sumIng)
+            {
+                CostResults.AppendLine(item.Key.PadRight(maxlen) + $"{item.Value:N2}".PadLeft(12));
+            }
+
+            return costx1;
         }
 
         public void GetTalentsForKey(string key, out double inputMultiplier, out double inputAdder,
@@ -1747,7 +1782,7 @@ namespace DU_Industry_Tool
 
                 var isOre = recipe.ParentGroupName == "Ore";
                 var isPart = recipe.ParentGroupName.EndsWith("parts", StringComparison.InvariantCultureIgnoreCase);
-                var isT1Ore = listType == "U" && isOre && recipe?.Level <= 1;
+                var isT1Ore = listType == "U" && isOre && recipe.Level <= 1;
                 var isPlasma = recipe.ParentGroupName == "Consumables" && recipe.Key.StartsWith("Plasma");
                 var orePrice = 0d;
                 if (listType == "U" && (isPlasma || isOre))
@@ -1786,15 +1821,7 @@ namespace DU_Industry_Tool
                 var allQuantity = item.Value * quantity;
                 var cnt = (int)Math.Ceiling(allQuantity / 100);
                 tmp = schem.Cost * cnt;
-                if (_sumSchemClass.ContainsKey(idx))
-                {
-                    var item1 = _sumSchemClass[idx].Item1 + cnt;
-                    var item2 = _sumSchemClass[idx].Item2 + tmp;
-                    _sumSchemClass.Remove(idx);
-                    _sumSchemClass.Add(idx, new Tuple<int, double>(item1, item2));
-                }
-                else
-                    _sumSchemClass.Add(idx, new Tuple<int, double>(cnt, tmp));
+                Calculator.AddSchema(idx, cnt, tmp);
 
                 if (outputDetails)
                 {
@@ -1859,6 +1886,67 @@ namespace DU_Industry_Tool
             return group.ParentId != Guid.Empty
                 ? Groups.Values.FirstOrDefault(g => g.Id == group.ParentId)?.Name ?? "xxx"
                 : group.Name;
+        }
+
+        public bool PrepareProductListRecipe()
+        {
+            if (ProductionBindingList.Count < 1) return false;
+            var cmp = new SchematicRecipe
+            {
+                Key = CompoundName,
+                Name = "Production List"
+            };
+            var cnt = 0;
+            foreach (var prodItem in ProductionBindingList)
+            {
+                // Sanity checks
+                if (string.IsNullOrEmpty(prodItem.Name) || prodItem.Quantity <= 0)
+                    continue;
+                var rec = Recipes.FirstOrDefault(x => x.Value.Name.Equals(prodItem.Name, StringComparison.InvariantCultureIgnoreCase));
+                if (rec.Key == null || rec.Value?.Ingredients?.Any() != true || rec.Value?.Products?.Any() != true)
+                    continue;
+
+                // Accumulate crafting time over all products
+                cmp.Time += (rec.Value.Time * prodItem.Quantity);
+
+                // Sum up top-level ingredients
+                foreach (var ing in rec.Value.Ingredients)
+                {
+                    var tmp = cmp.Ingredients.FirstOrDefault(x => x.Name.Equals(ing.Name, StringComparison.InvariantCultureIgnoreCase));
+                    if (tmp != null)
+                    {
+                        tmp.Quantity += (ing.Quantity * prodItem.Quantity);
+                    }
+                    else
+                    {
+                        ing.Quantity *= prodItem.Quantity;
+                        cmp.Ingredients.Add(ing);
+                    }
+                }
+
+                // Process products
+                foreach (var prd in rec.Value.Products)
+                {
+                    var tmp = cmp.Products.FirstOrDefault(x => x.Name.Equals(prd.Name, StringComparison.InvariantCultureIgnoreCase));
+                    if (tmp != null)
+                    {
+                        tmp.Quantity += (prd.Quantity * prodItem.Quantity);
+                    }
+                    else
+                    {
+                        prd.Quantity *= prodItem.Quantity;
+                        cmp.Products.Add(prd);
+                    }
+                }
+                cnt++;
+            }
+            if (cnt == 0) return false;
+            CompoundRecipe = cmp;
+
+            // Add compound recipe to main recipe list, check first to remove an existing one
+            Recipes.Remove(CompoundName);
+            Recipes[CompoundName] = cmp;
+            return true;
         }
 
     }

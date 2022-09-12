@@ -164,4 +164,10 @@ namespace DU_Industry_Tool
         [DataMember(Name="input")]
         public List<Tuple<string,decimal>> Inputs { get; set; }
     }
+
+    public class ProductionItem
+    {
+        public string Name { get; set; }
+        public int Quantity { get; set; }
+    }
 }

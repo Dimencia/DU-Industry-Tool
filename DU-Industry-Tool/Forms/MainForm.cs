@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Globalization;
+using System.Text;
 using System.Windows.Forms;
 using ClosedXML.Excel;
 using Krypton.Toolkit;
@@ -107,53 +108,87 @@ namespace DU_Industry_Tool
             }
             _infoPanel.Controls.Clear();
 
-            var lbl = AddLabel(_infoPanel.Controls, $"{recipe.Name} (T{recipe.Level})", FontStyle.Bold);
+            var lbl = AddLabel(_infoPanel.Controls, recipe.Name + (_manager.ProductionListMode ? "" : $" (T{recipe.Level})"), FontStyle.Bold);
             lbl.Anchor = (AnchorStyles)(AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right);
             lbl.Font = new Font(_infoPanel.Font.FontFamily, 12f, FontStyle.Bold);
             lbl.Padding = new Padding(2, 5, 4, 2);
             lbl.Height = 30;
             lbl.Width = 370;
-            lbl = AddLabel(_infoPanel.Controls, $"Unit mass: {recipe.UnitMass:N1} volume: {recipe.UnitVolume:N1}"+(recipe.Nanocraftable ? "  *nanocraftable*" : ""));
-            lbl.Padding = new Padding(4, 0, 4, 5);
 
-            _manager.ProductQuantity = _overrideQty > 0 ? _overrideQty : int.Parse(QuantityBox.Text);
-            if (!double.TryParse(QuantityBox.Text, out var cnt)) cnt = 1d;
+            var tmp = recipe.UnitMass > 0 ? $"mass: {recipe.UnitMass:N2} " : "";
+            tmp += recipe.UnitVolume > 0 ? $"volume: {recipe.UnitMass:N2} " : "";
+            tmp += recipe.Nanocraftable ? "*nanocraftable*" : "";
+            if (tmp != "")
+            {
+                lbl = AddLabel(_infoPanel.Controls, "Unit " + tmp);
+                lbl.Padding = new Padding(4, 0, 4, 5);
+            }
+
+            _manager.CostResults = new StringBuilder();
+            var cnt = 1;
+            if (_manager.ProductionListMode)
+            {
+                _manager.ProductQuantity = 1;
+            }
+            else
+            {
+                _manager.ProductQuantity = _overrideQty > 0 ? _overrideQty : int.Parse(QuantityBox.Text);
+                if (!int.TryParse(QuantityBox.Text, out cnt)) cnt = 1;
+            }
+
+            // ***** primary calculation *****
             var costToMake = _manager.GetTotalCost(recipe.Key, cnt, silent: true);
             AddFlowLabel(_infoPanel.Controls, "Cost for 1: " + costToMake.ToString("N02") + "q");
 
-            var cost = _manager.GetBaseCost(recipe.Key);
-            AddFlowLabel(_infoPanel.Controls, $"Untalented (without schematics) {cost:N1}q");
-
-            var amt = (recipe.Time > 0 ? 86400/recipe.Time : 0).ToString();
-            //var pnl = AddFlowLabel(_infoPanel.Controls, $"Per industry {cost:N1} / day");
-            var pnl = AddFlowLabel(_infoPanel.Controls, "", flow: FlowDirection.LeftToRight);
-            AddLabel(pnl.Controls, "Per industry ");
-            AddLinkedLabel(pnl.Controls, amt, recipe.Key+"#"+amt).Click += Label_Click;
-            AddLabel(pnl.Controls, " / day");
-            pnl.Padding = new Padding(0, 0, 0, 10);
-
-            // IDK why sometimes prices are listed as 0
-            var orders = _market.MarketOrders.Values.Where(o => o.ItemType == recipe.NqId &&
-                                                                o.BuyQuantity < 0 &&
-                                                                DateTime.Now < o.ExpirationDate &&
-                                                                o.Price > 0);
-            var mostRecentOrder = orders.OrderBy(o => o.Price).FirstOrDefault();
-            if (mostRecentOrder?.Price > 0.00d)
+            if (!_manager.ProductionListMode)
             {
-                var costPanel = new FlowLayoutPanel
+                var cost = _manager.GetBaseCost(recipe.Key);
+                AddFlowLabel(_infoPanel.Controls, $"Untalented (no schematics): {cost:N1}q");
+            }
+
+            if (recipe.Time > 0)
+            {
+                var sp = TimeSpan.FromSeconds(recipe.Time);
+                lbl = AddLabel(_infoPanel.Controls, "Time to craft:  " +
+                                                    (sp.Days > 0 ? $"{sp.Days}d : " : "") +
+                                                    (sp.Hours > 0 ? $"{sp.Hours}h : " : "") +
+                                                    $"{sp.Minutes}m " +
+                                                    (sp.Seconds > 0 ? $" : {sp.Seconds}s" : ""));
+                lbl.Padding = new Padding(4, 0, 4, 5);
+
+                var amt = (86400 / recipe.Time).ToString();
+                var pnl = AddFlowLabel(_infoPanel.Controls, "", flow: FlowDirection.LeftToRight);
+                AddLabel(pnl.Controls, "Per industry ");
+                AddLinkedLabel(pnl.Controls, amt, recipe.Key+"#"+amt).Click += Label_Click;
+                AddLabel(pnl.Controls, " / day");
+                pnl.Padding = new Padding(0, 0, 0, 10);
+            }
+
+            if (!_manager.ProductionListMode)
+            {
+                // IDK why sometimes prices are listed as 0
+                var orders = _market.MarketOrders.Values.Where(o => o.ItemType == recipe.NqId &&
+                                                                    o.BuyQuantity < 0 &&
+                                                                    DateTime.Now < o.ExpirationDate &&
+                                                                    o.Price > 0);
+                var mostRecentOrder = orders.OrderBy(o => o.Price).FirstOrDefault();
+                if (mostRecentOrder?.Price > 0.00d)
                 {
-                    AutoSize = true,
-                    FlowDirection = FlowDirection.TopDown,
-                    Padding = new Padding(0)
-                };
-                AddLabel(costPanel.Controls, "Market " + mostRecentOrder.Price.ToString("N02") + "q");
-                AddLabel(costPanel.Controls, "Until " + mostRecentOrder.ExpirationDate);
-                AddLabel(costPanel.Controls, "Profit Margin ");
-                cost = ((mostRecentOrder.Price-costToMake) / mostRecentOrder.Price);
-                AddLabel(costPanel.Controls, cost.ToString("0%"));
-                cost = (mostRecentOrder.Price - costToMake)*(86400/recipe.Time);
-                AddLabel(costPanel.Controls, "Profit/Day/Industry " + cost.ToString("N02") + "q");
-                _infoPanel.Controls.Add(costPanel);
+                    var costPanel = new FlowLayoutPanel
+                    {
+                        AutoSize = true,
+                        FlowDirection = FlowDirection.TopDown,
+                        Padding = new Padding(0)
+                    };
+                    AddLabel(costPanel.Controls, "Market " + mostRecentOrder.Price.ToString("N02") + "q");
+                    AddLabel(costPanel.Controls, "Until " + mostRecentOrder.ExpirationDate);
+                    AddLabel(costPanel.Controls, "Profit Margin ");
+                    var cost = ((mostRecentOrder.Price-costToMake) / mostRecentOrder.Price);
+                    AddLabel(costPanel.Controls, cost.ToString("0%"));
+                    cost = (mostRecentOrder.Price - costToMake)*(86400/recipe.Time);
+                    AddLabel(costPanel.Controls, "Profit/Day/Industry " + cost.ToString("N02") + "q");
+                    _infoPanel.Controls.Add(costPanel);
+                }
             }
 
             // ----- Ingredients -----
@@ -223,14 +258,17 @@ namespace DU_Industry_Tool
             {
                 var newPanel = AddFlowLabel(_infoPanel.Controls, "Industry", FontStyle.Bold);
                 AddLinkedLabel(newPanel.Controls, recipe.Industry, recipe.Industry).Click += LabelIndustry_Click;
+                lbl = AddLabel(newPanel.Controls, "*not 100% correct!",FontStyle.Italic);
+                lbl.Font = new Font("Segoe UI", 8F, FontStyle.Regular, GraphicsUnit.Point, 0);
             }
 
             // ----- Reverse recipes -----
-            if (recipe.ParentGroupName.EndsWith("Ore", StringComparison.InvariantCultureIgnoreCase) ||
+            if (recipe.ParentGroupName != null &&
+                (recipe.ParentGroupName.EndsWith("Ore", StringComparison.InvariantCultureIgnoreCase) ||
                 recipe.ParentGroupName.EndsWith("Parts", StringComparison.InvariantCultureIgnoreCase) ||
                 recipe.ParentGroupName.EndsWith("Product", StringComparison.InvariantCultureIgnoreCase) ||
                 recipe.ParentGroupName.EndsWith("Pure", StringComparison.InvariantCultureIgnoreCase) ||
-                recipe.Name?.StartsWith("Relic Plasma", StringComparison.InvariantCultureIgnoreCase) == true)
+                recipe.Name?.StartsWith("Relic Plasma", StringComparison.InvariantCultureIgnoreCase) == true))
             {
                 var containedIn = _manager.Recipes.Values.Where(x =>
                     true == x.Ingredients?.Any(y => y.Name.Equals(recipe.Name, StringComparison.InvariantCultureIgnoreCase))).ToList();
@@ -270,7 +308,7 @@ namespace DU_Industry_Tool
                 _costDetailsPanel.Dock = DockStyle.None;
                 _costDetailsPanel.AutoSize = true;
                 _costDetailsPanel.AutoScroll = true;
-                _costDetailsPanel.Font = new Font("Lucida Console", 10F, FontStyle.Regular, GraphicsUnit.Point, (0));
+                _costDetailsPanel.Font = new Font("Lucida Console", 10F, FontStyle.Regular, GraphicsUnit.Point, 0);
                 _costDetailsPanel.Size = new Size(600, 500);
                 _costDetailsLabel = new TextBox
                 {
@@ -749,10 +787,10 @@ namespace DU_Industry_Tool
 
         private void OnMainformResize(object sender, EventArgs e)
         {
-            kryptonNavigator1.Left = searchPanel.Width + 6;
-            kryptonNavigator1.Top = kryptonRibbon.Height;
-            kryptonNavigator1.Height = kryptonWorkspaceCell1.Height - 4;
-            kryptonNavigator1.Width = ClientSize.Width - searchPanel.Width - 10;
+            kryptonNavigator1.Left = searchPanel.Width + 0;
+            kryptonNavigator1.Top = kryptonRibbon.Height + 0;
+            kryptonNavigator1.Height = kryptonWorkspaceCell1.Height - 2;
+            kryptonNavigator1.Width = ClientSize.Width - searchPanel.Width - 0;
             _infoPanel = null;
             _costDetailsPanel = null;
             _costDetailsLabel = null;
@@ -797,11 +835,30 @@ namespace DU_Industry_Tool
             }
             kryptonDockingManager.ManageFloating(this);
 
+            Properties.Settings.Default.Reload();
+            switch (Properties.Settings.Default.ThemeName)
+            {
+                case "Office2010Black":
+                    RbOffice2010Black_Click(null, null);
+                    break;
+                case "Office2010Silver":
+                    RbOffice2010BSilver_Click(null, null);
+                    break;
+                default:
+                    RbOffice2010Blue_Click(null, null);
+                    break;
+            }
+
             // Do not allow the left-side page to be closed or made auto hidden/docked
             kryptonPage1.ClearFlags(KryptonPageFlags.DockingAllowAutoHidden |
                             KryptonPageFlags.DockingAllowDocked |
                             KryptonPageFlags.DockingAllowClose);
+
+            QuantityBox.SelectionChangeCommitted += QuantityBoxOnSelectionChangeCommitted;
+            kryptonNavigator1.SelectedPageChanged += KryptonNavigator1OnSelectedPageChanged;
+            RbnBtnProductionList.Click += RbnBtnProductionList_Click;
             OnMainformResize(sender, e);
+            this.Resize += OnMainformResize;
         }
 
         private static KryptonPage NewPage(string name, Control content)
@@ -868,6 +925,65 @@ namespace DU_Industry_Tool
         {
             var form = new AboutForm();
             form.ShowDialog(this);
+        }
+
+        private void RbOffice2010Blue_Click(object sender, EventArgs e)
+        {
+            kryptonManager.GlobalPaletteMode = PaletteModeManager.Office2010Blue;
+            SaveSettings();
+        }
+
+        private void RbOffice2010BSilver_Click(object sender, EventArgs e)
+        {
+            kryptonManager.GlobalPaletteMode = PaletteModeManager.Office2010Silver;
+            SaveSettings();
+        }
+
+        private void RbOffice2010Black_Click(object sender, EventArgs e)
+        {
+            kryptonManager.GlobalPaletteMode = PaletteModeManager.Office2010Black;
+            SaveSettings();
+        }
+
+        private void SaveSettings()
+        {
+            Properties.Settings.Default.ThemeName = kryptonManager.GlobalPaletteMode.ToString();
+            Properties.Settings.Default.Save();
+        }
+
+        private void RbnBtnProductionList_Click(object sender, EventArgs e)
+        {
+            var form = new ProductionListForm(_manager);
+
+            foreach (var entry in _manager.RecipeNames)
+            {
+                form.RecipeNames.Items.Add(entry);
+            }
+            var result = form.ShowDialog(this);
+            if (result == DialogResult.Cancel) return;
+
+            // Let Manager prepare the compound recipe which includes
+            // all items' ingredients and the items as products.
+            if (!_manager.PrepareProductListRecipe())
+            {
+                KryptonMessageBox.Show("Production list could not be prepared!", "Failure");
+                return;
+            }
+
+            // TODO develop new ContentDocument/method for displaying these results?
+            Calculator.Initialize();
+            try
+            {
+                _manager.ProductionListMode = true;
+                SelectRecipe(new TreeNode{
+                    Text = "Production List",
+                    Tag = _manager.CompoundRecipe
+                });
+            }
+            finally
+            {
+                _manager.ProductionListMode = false;
+            }
         }
 
     } // Mainform
