@@ -13,13 +13,8 @@ namespace DU_Industry_Tool
 {
     public class IndustryManager
     {
-        private const string CompoundName = "COMPOUNDLIST";
-
-        private readonly List<string> _sizeList = new List<string> { "XS", "S", "M", "L", "XL" };
-        private readonly List<string> _tierNames = new List<string> { "", "Basic", "Uncommon", "Advanced", "Rare", "Exotic" };
-
-        private readonly SortedDictionary<string, DuLuaItem> _luaItems; // List of items from du-lua.dev
-        private readonly SortedDictionary<string, DuLuaRecipe> _luaRecipes; // List of recipes from du-lua.dev
+        private readonly bool SkipProcessing = true;
+        private readonly string CompoundName = "COMPOUNDLIST";
 
         public readonly SortedDictionary<string, SchematicRecipe> Recipes; // Global list of all our recipes, from the json
         public List<string> RecipeNames { get; private set; } = new List<string>();
@@ -32,11 +27,17 @@ namespace DU_Industry_Tool
         public List<Talent> Talents { get; } = new List<Talent>();
         public List<string> Groupnames { get; } = new List<string>(370);
         public StringBuilder CostResults { get; set; }
+
+        // Used products quantity for cost calculations
+        public int ProductQuantity { get; set; } = 1;
+
+        // True, if CompoundRecipe is to be used as calculation target,
+        // which can contain any amount of items and is created with the
+        // help of the Production List dialogue
+        public bool ProductionListMode { get; set; }
         public SchematicRecipe CompoundRecipe { get; private set; }
 
-        public int ProductQuantity { get; set; } = 1;
-        public bool ProductionListMode { get; set; }
-
+        // Constructor
         public IndustryManager(ProgressBar progressBar = null)
         {
             CultureInfo.CurrentCulture = new CultureInfo("en-us");
@@ -149,12 +150,12 @@ namespace DU_Industry_Tool
                     var timeFactors = batchTimeFactors[tier - 1];
                     var price = prices[tier - 1];
                     var btime = batchTimes[tier - 1];
-                    for (byte size = 0; size < _sizeList.Count; size++)
+                    for (byte size = 0; size < Consts.SizeList.Count; size++)
                     {
                         var schem = new Schematic
                         {
-                            Name = $"Tier {tier} {_sizeList[size]} Element Schematic",
-                            Key = $"T{tier}E{_sizeList[size]}",
+                            Name = $"Tier {tier} {Consts.SizeList[size]} Element Schematic",
+                            Key = $"T{tier}E{Consts.SizeList[size]}",
                             Level = tier,
                             Cost = Math.Round(price, 2),
                             BatchSize = batchSizes[size],
@@ -174,7 +175,7 @@ namespace DU_Industry_Tool
                 var batchTimesCu = new [] { 750, 5000, 25020, 145020 };
                 for (var idx = 0; idx <= 3; idx++) // XS - L
                 {
-                    var size = _sizeList[idx];
+                    var size = Consts.SizeList[idx];
                     // Construct Support
                     var key = "CS-" + size;
                     Schematics.Add(key, new Schematic()
@@ -205,7 +206,7 @@ namespace DU_Industry_Tool
                 {
                     var time = batchTimes[i - 2];
                     var price = prices[i - 2];
-                    foreach (var size in _sizeList)
+                    foreach (var size in Consts.SizeList)
                     {
                         if (size == "XL") continue;
                         var key = $"T{i}A{size}";
@@ -311,7 +312,7 @@ namespace DU_Industry_Tool
             {
                 try
                 {
-                    _luaItems = JsonConvert.DeserializeObject<SortedDictionary<string, DuLuaItem>>(
+                    Utils.LuaItems = JsonConvert.DeserializeObject<SortedDictionary<string, DuLuaItem>>(
                                     File.ReadAllText("items_api_dump.json"));
                     dmp = true;
                 }
@@ -325,7 +326,7 @@ namespace DU_Industry_Tool
             {
                 try
                 {
-                    _luaRecipes = JsonConvert.DeserializeObject<SortedDictionary<string, DuLuaRecipe>>(
+                    Utils.LuaRecipes = JsonConvert.DeserializeObject<SortedDictionary<string, DuLuaRecipe>>(
                                     File.ReadAllText("recipes_api_dump.json"));
                     dmpRcp = true;
                 }
@@ -344,7 +345,7 @@ namespace DU_Industry_Tool
                 // Check against Items from du-lua.dev (optional)
                 if (dmp)
                 {
-                    var dmpItem = _luaItems.FirstOrDefault(x => x.Key == itemId);
+                    var dmpItem = Utils.LuaItems.FirstOrDefault(x => x.Key == itemId);
                     if (dmpItem.Value != null)
                     {
                         // Transfer updateable values and only protocol to debug console
@@ -386,7 +387,7 @@ namespace DU_Industry_Tool
                     {
                         Debug.WriteLine("NqId NOT FOUND: " + itemId + " Key: " + kvp.Key);
                         itemId = kvp.Value.Id.ToString();
-                        if (dmp && !_luaItems.ContainsKey(itemId))
+                        if (dmp && !Utils.LuaItems.ContainsKey(itemId))
                         {
                             Debug.WriteLine("Id NOT FOUND: " + itemId + " Key: " + kvp.Key);
                         }
@@ -397,7 +398,7 @@ namespace DU_Industry_Tool
                 // and transfer usable values
                 if (dmpRcp)
                 {
-                    var dmpItem = _luaRecipes.FirstOrDefault(x =>
+                    var dmpItem = Utils.LuaRecipes.FirstOrDefault(x =>
                         x.Value.Products?.Count > 0 &&
                         x.Value.Products[0].Id == kvp.Value.NqId);
                     if (dmpItem.Value != null)
@@ -465,10 +466,10 @@ namespace DU_Industry_Tool
                 // If item dump exists, do a special honeycomb check for wrong ID's
                 if (dmp && kvp.Key.StartsWith("hc"))
                 {
-                    var luaItem = _luaItems.FirstOrDefault(x => x.Value.Description.StartsWith("Honeycomb") &&
-                                               !x.Value.DisplayNameWithSize.EndsWith("Schematic Copy") &&
-                                               x.Value.DisplayNameWithSize.Equals(kvp.Value.Name,
-                                                    StringComparison.InvariantCultureIgnoreCase));
+                    var luaItem = Utils.LuaItems.FirstOrDefault(x => x.Value.Description.StartsWith("Honeycomb") &&
+                                                                    !x.Value.DisplayNameWithSize.EndsWith("Schematic Copy") &&
+                                                                     x.Value.DisplayNameWithSize.Equals(kvp.Value.Name,
+                                                                     StringComparison.InvariantCultureIgnoreCase));
                     if (!string.IsNullOrEmpty(luaItem.Key) && luaItem.Key != kvp.Value.NqId.ToString())
                     {
                         if (ulong.TryParse(luaItem.Key, out var uTmp))
@@ -489,9 +490,6 @@ namespace DU_Industry_Tool
                 }
 
                 //if (kvp.Value.Nanocraftable) Debug.WriteLine($"{kvp.Value.Name}");
-
-                // Determine the required industry to produce this item
-                //DetermineIndustryFor(kvp.Value);
 
                 if (kvp.Key.StartsWith("Catalyst") ||
                     kvp.Value.ParentGroupName == "Ore" ||
@@ -581,16 +579,21 @@ namespace DU_Industry_Tool
                 }
                 */
 
-                // IF schematic is already assigned, skip further processing
-                if (!string.IsNullOrEmpty(kvp.Value.SchemaType) && kvp.Value.SchemaPrice > 0)
+                // Determine the required industry to produce this item
+                //if (string.IsNullOrEmpty(kvp.Value.Industry))
+                //{
+                //    DetermineIndustryFor(kvp.Value);
+                //}
+
+                // Skip further processing on some conditions...
+                if (SkipProcessing ||
+                    (!string.IsNullOrEmpty(kvp.Value.SchemaType) && kvp.Value.SchemaPrice > 0) ||
+                    kvp.Value.ParentGroupName.EndsWith("parts", StringComparison.InvariantCultureIgnoreCase) ||
+                    kvp.Value.Level < 1 ||
+                    kvp.Value.Name.StartsWith("catalyst", StringComparison.InvariantCultureIgnoreCase))
                 {
                     continue;
                 }
-
-                // Skip entries without level and Catalysts
-                if (kvp.Value.Level < 1 ||
-                    kvp.Value.Name.StartsWith("catalyst", StringComparison.InvariantCultureIgnoreCase))
-                    continue;
 
                 var idx = "";
                 var isElement = false;
@@ -635,7 +638,7 @@ namespace DU_Industry_Tool
                     var size = GetElementSize(kvp.Value.Name);
                     idx = "CU-" + size;
                     kvp.Value.SchemaType = idx;
-                    kvp.Value.SchemaPrice = cuPriceList[_sizeList.IndexOf(size)];
+                    kvp.Value.SchemaPrice = cuPriceList[Consts.SizeList.IndexOf(size)];
                     continue;
                 }
 
@@ -708,7 +711,7 @@ namespace DU_Industry_Tool
                         var size = GetElementSize(kvp.Value.Name);
                         idx = "CS-" + size;
                         kvp.Value.SchemaType = idx;
-                        kvp.Value.SchemaPrice = csPriceList[_sizeList.IndexOf(size)];
+                        kvp.Value.SchemaPrice = csPriceList[Consts.SizeList.IndexOf(size)];
                         continue;
                     }
 
@@ -1157,17 +1160,19 @@ namespace DU_Industry_Tool
                 // Ammo talents... they have uncommon, advanced of each of xs, s, m, l
                 var typeList = new[] { "Uncommon", "Advanced" };
                 foreach (var type in typeList)
-                foreach (var size in _sizeList)
                 {
-                    if (size == "XL") continue;
-                    Talents.Add(new Talent()
+                    foreach (var size in Consts.SizeList)
                     {
-                        Name = type + " Ammo " + size + " Productivity", Addition = 1, Multiplier = 0,
-                        ApplicableRecipes = Recipes.Values
-                            .Where(r => r.ParentGroupName.Contains("Ammo") && r.Level == (type == "Uncommon" ? 2 : 3) &&
-                                        r.Name.ToLower().EndsWith(" ammo " + size.ToLower())).Select(r => r.Key)
-                            .ToList()
-                    });
+                        if (size == "XL") continue;
+                        Talents.Add(new Talent()
+                        {
+                            Name = type + " Ammo " + size + " Productivity", Addition = 1, Multiplier = 0,
+                            ApplicableRecipes = Recipes.Values
+                                .Where(r => r.ParentGroupName.Contains("Ammo") && r.Level == (type == "Uncommon" ? 2 : 3) &&
+                                            r.Name.ToLower().EndsWith(" ammo " + size.ToLower())).Select(r => r.Key)
+                                .ToList()
+                        });
+                    }
                 }
                 Talents.Sort(TalentComparer);
                 SaveTalents();
@@ -1212,7 +1217,7 @@ namespace DU_Industry_Tool
             }
 
             // elements can be produced by same tier as well as 1 lower tier assemblies:
-            var indPrefix = recipe.Level > 1 ? _tierNames[recipe.Level-1] : _tierNames[recipe.Level];
+            var indPrefix = recipe.Level > 1 ? Consts.TierNames[recipe.Level-1] : Consts.TierNames[recipe.Level];
             var indSuffix = "";
 
             var isPart    = recipe.ParentGroupName.EndsWith("Parts", StringComparison.InvariantCultureIgnoreCase);
@@ -1390,10 +1395,10 @@ namespace DU_Industry_Tool
         {
             for (var idx = 0; idx < 5; idx++)
             {
-                if (elemName.EndsWith(" " + _sizeList[idx], StringComparison.InvariantCultureIgnoreCase))
+                if (elemName.EndsWith(" " + Consts.SizeList[idx], StringComparison.InvariantCultureIgnoreCase))
                 {
                     // most XL cannot be produced on an L assembler so "idx < 4" condition
-                    return _sizeList[(idx > 0 && idx < 4 && !noLowerTier) ? idx - 1 : idx];
+                    return Consts.SizeList[(idx > 0 && idx < 4 && !noLowerTier) ? idx - 1 : idx];
                 }
             }
             return "";
@@ -1495,20 +1500,224 @@ namespace DU_Industry_Tool
             return totalCost;
         }
 
-        // Hold for each Product and Pure the Litres sum to afterwards calculate the needed schematics.
-        // Example: if in the end we need 380 L of Product "Polycalcite", we need to find out
-        // the required amount of schematics for each Calcium and Polycalcite
-        // (with an avatar having all T5 skills).
-        // Polycalcite:  per batch: Input 85.00 L Calcium,   Output: 86.25 L
-        // -> 380/86.25 = 4.40 batches -> rounded up to 5 schematics for the Polycalcite (Chemical).
-        // Pure Calcium: per batch: Input 55.25 L Limestone, Output: 51.75 L
-        // So for above 5 batches we need to calculate the number of needed Calcium batches (Refiner):
-        // -> 5 * 85 L = 425 L total -> 425 L / 51.75 L = 8.21 -> rounded to 9 schematics for the Calcium.
-        // The refiner requires Tier 2 Pure schematics, the chemical Tier 2 Product schematics.
-        // -> Refiner  187.50 q * 9 = 1687.50 q
-        // -> Chemical 562.50 q * 5 = 2812,50 q
-        // -> SUM for schematics: 4500 quanta
-        // :grimace:
+        public void GetTalentsForKey(string key, out double inputMultiplier, out double inputAdder,
+            out double outputMultiplier, out double outputAdder)
+        {
+            inputMultiplier = 1;
+            inputAdder = 0;
+            outputMultiplier = 1;
+            outputAdder = 0;
+            foreach (var talent in Talents.Where(t => t.ApplicableRecipes.Contains(key)))
+            {
+                if (!ApplicableTalents.Contains(talent.Name))
+                {
+                    ApplicableTalents.Add(talent.Name);
+                }
+
+                if (talent.InputTalent)
+                {
+                    inputMultiplier +=
+                        talent.Multiplier *
+                        talent.Value; // Add each talent's multipler and adder so that we get values like 1.15 or 0.85, for pos/neg multipliers
+                    inputAdder += talent.Addition * talent.Value;
+                }
+                else
+                {
+                    outputMultiplier += talent.Multiplier * talent.Value;
+                    outputAdder += talent.Addition * talent.Value;
+                }
+            }
+        }
+
+        private double CalculateItemCost(SortedDictionary<string, double> itemPrices, string listType = "P",
+            double quantity = 1, string title = "", bool outputDetails = true)
+        {
+            if (itemPrices.Count == 0) return 0;
+            CostResults.AppendLine(title);
+            double outSum = 0;
+            foreach (var item in itemPrices)
+            {
+                var key = item.Key;
+                if (key.StartsWith("T"))
+                {
+                    key = key.Substring(3); // assume tier at start, e.g. "T2 "
+                }
+                var recipe = Recipes.Values.FirstOrDefault(x => x.Name.Equals(key, StringComparison.InvariantCultureIgnoreCase));
+                if (recipe == null)
+                {
+                    Debug.WriteLine("NOT FOUND: " + key);
+                    continue;
+                }
+
+                var isOre = recipe.ParentGroupName == "Ore";
+                var isPart = recipe.ParentGroupName.EndsWith("parts", StringComparison.InvariantCultureIgnoreCase);
+                var isT1Ore = listType == "U" && isOre && recipe.Level <= 1;
+                var isPlasma = recipe.ParentGroupName == "Consumables" && recipe.Key.StartsWith("Plasma");
+                var orePrice = 0d;
+                if (listType == "U" && (isPlasma || isOre))
+                {
+                    orePrice = Ores.FirstOrDefault(o => o.Name == key)?.Value ?? 0;
+                }
+
+                var tmp = item.Value * quantity;
+                var recName = recipe.Name.Substring(0, Math.Min(recipe.Name.Length, 29));
+                var output = $"{recName}:".PadRight(30) + $"{tmp:N2}".PadLeft(10) + (isPlasma || isPart ? "  " : " L");
+                if ((isPlasma || isOre) && orePrice > 0.00d)
+                {
+                    tmp *= orePrice;
+                    output += " = " + $"{tmp:N2} q".PadLeft(15);
+                }
+
+                var idx = recipe.SchemaType;
+                var lvl = recipe.Level < 2 ? 1 : recipe.Level;
+                if (string.IsNullOrEmpty(idx))
+                {
+                    idx = $"T{lvl}{listType}";
+                }
+
+                var orePrefix = idx.Substring(0, 2) + " ";
+                if (isT1Ore || isPlasma || isPart || !Schematics.ContainsKey(idx))
+                {
+                    if (outputDetails)
+                    {
+                        CostResults.AppendLine((isPlasma ? "" : orePrefix) + output);
+                    }
+                    continue;
+                }
+
+                // for every "started" batch we need a schematic (no talents for this in DU yet)
+                var schem = Schematics[idx];
+                var allQuantity = item.Value * quantity;
+                var cnt = (int)Math.Ceiling(allQuantity / 100);
+                tmp = schem.Cost * cnt;
+                Calculator.AddSchema(idx, cnt, tmp);
+
+                if (outputDetails)
+                {
+                    output += " | " + $"{cnt} sch.".PadLeft(10) + " = " + $"{tmp:N2} q".PadLeft(14);
+                    CostResults.AppendLine(orePrefix + output);
+                }
+                outSum += tmp;
+            }
+            return outSum;
+        }
+
+        public List<ProductDetail> GetOreComponents(string key)
+        {
+            // Un-talented only
+            var products = new List<ProductDetail>();
+            var recipe = Recipes[key];
+
+            // Skip catalysts entirely tho.
+            if (Groups.Values.FirstOrDefault(g => g.Id == recipe.GroupId)?.Name == "Catalyst")
+                return products;
+
+            foreach (var ingredient in recipe.Ingredients)
+            {
+                if (Recipes[ingredient.Type].ParentGroupName == "Ore")
+                {
+                    products.Add(new ProductDetail()
+                    {
+                        Name = ingredient.Name, Quantity = ingredient.Quantity / recipe.Products[0].Quantity,
+                        Type = ingredient.Type
+                    });
+                }
+                else
+                {
+                    foreach (var result in GetOreComponents(ingredient.Type))
+                    {
+                        products.Add(new ProductDetail()
+                        {
+                            Name = result.Name,
+                            Quantity = (result.Quantity * ingredient.Quantity) / recipe.Products[0].Quantity,
+                            Type = result.Type
+                        });
+                    }
+                }
+            }
+
+            // Now flatten them into totals
+            var results = new List<ProductDetail>();
+            foreach (var group in products.GroupBy(p => p.Type))
+            {
+                results.Add(new ProductDetail()
+                    { Name = group.First().Name, Type = group.Key, Quantity = group.Sum(p => p.Quantity) });
+            }
+
+            return results;
+        }
+
+        // This was going to be recursive but those are way too generic. We just want one parent up.
+        private string GetParentGroupName(Guid id)
+        {
+            var group = Groups.Values.FirstOrDefault(g => g.Id == id);
+            if (group == null) return null;
+            return group.ParentId != Guid.Empty
+                ? Groups.Values.FirstOrDefault(g => g.Id == group.ParentId)?.Name ?? "xxx"
+                : group.Name;
+        }
+
+        public bool PrepareProductListRecipe()
+        {
+            if (ProductionBindingList.Count < 1) return false;
+            var cmp = new SchematicRecipe
+            {
+                Key = CompoundName,
+                Name = "Production List"
+            };
+            var cnt = 0;
+            foreach (var prodItem in ProductionBindingList)
+            {
+                // Sanity checks
+                if (string.IsNullOrEmpty(prodItem.Name) || prodItem.Quantity <= 0)
+                    continue;
+                var rec = Recipes.FirstOrDefault(x => x.Value.Name.Equals(prodItem.Name, StringComparison.InvariantCultureIgnoreCase));
+                if (rec.Key == null || rec.Value?.Ingredients?.Any() != true || rec.Value?.Products?.Any() != true)
+                    continue;
+
+                // Accumulate crafting time over all products
+                cmp.Time += (rec.Value.Time * prodItem.Quantity);
+
+                // Sum up top-level ingredients
+                foreach (var ing in rec.Value.Ingredients)
+                {
+                    var tmp = cmp.Ingredients.FirstOrDefault(x => x.Name.Equals(ing.Name, StringComparison.InvariantCultureIgnoreCase));
+                    if (tmp != null)
+                    {
+                        tmp.Quantity += (ing.Quantity * prodItem.Quantity);
+                    }
+                    else
+                    {
+                        ing.Quantity *= prodItem.Quantity;
+                        cmp.Ingredients.Add(ing);
+                    }
+                }
+
+                // Process products
+                foreach (var prd in rec.Value.Products)
+                {
+                    var tmp = cmp.Products.FirstOrDefault(x => x.Name.Equals(prd.Name, StringComparison.InvariantCultureIgnoreCase));
+                    if (tmp != null)
+                    {
+                        tmp.Quantity += (prd.Quantity * prodItem.Quantity);
+                    }
+                    else
+                    {
+                        prd.Quantity *= prodItem.Quantity;
+                        cmp.Products.Add(prd);
+                    }
+                }
+                cnt++;
+            }
+            if (cnt == 0) return false;
+            CompoundRecipe = cmp;
+
+            // Add compound recipe to main recipe list, check first to remove an existing one
+            Recipes.Remove(CompoundName);
+            Recipes[CompoundName] = cmp;
+            return true;
+        }
+
         private string _currentRecipe;
         public double GetTotalCost(string key, double amount = 0, string level = "", int depth = 0, bool silent = false)
         {
@@ -1729,224 +1938,6 @@ namespace DU_Industry_Tool
             }
 
             return costx1;
-        }
-
-        public void GetTalentsForKey(string key, out double inputMultiplier, out double inputAdder,
-            out double outputMultiplier, out double outputAdder)
-        {
-            inputMultiplier = 1;
-            inputAdder = 0;
-            outputMultiplier = 1;
-            outputAdder = 0;
-            foreach (var talent in Talents.Where(t => t.ApplicableRecipes.Contains(key)))
-            {
-                if (!ApplicableTalents.Contains(talent.Name))
-                {
-                    ApplicableTalents.Add(talent.Name);
-                }
-
-                if (talent.InputTalent)
-                {
-                    inputMultiplier +=
-                        talent.Multiplier *
-                        talent.Value; // Add each talent's multipler and adder so that we get values like 1.15 or 0.85, for pos/neg multipliers
-                    inputAdder += talent.Addition * talent.Value;
-                }
-                else
-                {
-                    outputMultiplier += talent.Multiplier * talent.Value;
-                    outputAdder += talent.Addition * talent.Value;
-                }
-            }
-        }
-
-        private double CalculateItemCost(SortedDictionary<string, double> itemPrices, string listType = "P",
-            double quantity = 1, string title = "", bool outputDetails = true)
-        {
-            if (itemPrices.Count == 0) return 0;
-            CostResults.AppendLine(title);
-            double outSum = 0;
-            foreach (var item in itemPrices)
-            {
-                var key = item.Key;
-                if (key.StartsWith("T"))
-                {
-                    key = key.Substring(3); // assume tier at start, e.g. "T2 "
-                }
-                var recipe = Recipes.Values.FirstOrDefault(x => x.Name.Equals(key, StringComparison.InvariantCultureIgnoreCase));
-                if (recipe == null)
-                {
-                    Debug.WriteLine("NOT FOUND: " + key);
-                    continue;
-                }
-
-                var isOre = recipe.ParentGroupName == "Ore";
-                var isPart = recipe.ParentGroupName.EndsWith("parts", StringComparison.InvariantCultureIgnoreCase);
-                var isT1Ore = listType == "U" && isOre && recipe.Level <= 1;
-                var isPlasma = recipe.ParentGroupName == "Consumables" && recipe.Key.StartsWith("Plasma");
-                var orePrice = 0d;
-                if (listType == "U" && (isPlasma || isOre))
-                {
-                    orePrice = Ores.FirstOrDefault(o => o.Name == key)?.Value ?? 0;
-                }
-
-                var tmp = item.Value * quantity;
-                var recName = recipe.Name.Substring(0, Math.Min(recipe.Name.Length, 29));
-                var output = $"{recName}:".PadRight(30) + $"{tmp:N2}".PadLeft(10) + (isPlasma || isPart ? "  " : " L");
-                if ((isPlasma || isOre) && orePrice > 0.00d)
-                {
-                    tmp *= orePrice;
-                    output += " = " + $"{tmp:N2} q".PadLeft(15);
-                }
-
-                var idx = recipe.SchemaType;
-                var lvl = recipe.Level < 2 ? 1 : recipe.Level;
-                if (string.IsNullOrEmpty(idx))
-                {
-                    idx = $"T{lvl}{listType}";
-                }
-
-                var orePrefix = idx.Substring(0, 2) + " ";
-                if (isT1Ore || isPlasma || isPart || !Schematics.ContainsKey(idx))
-                {
-                    if (outputDetails)
-                    {
-                        CostResults.AppendLine((isPlasma ? "" : orePrefix) + output);
-                    }
-                    continue;
-                }
-
-                // for every "started" batch we need a schematic (no talents for this in DU yet)
-                var schem = Schematics[idx];
-                var allQuantity = item.Value * quantity;
-                var cnt = (int)Math.Ceiling(allQuantity / 100);
-                tmp = schem.Cost * cnt;
-                Calculator.AddSchema(idx, cnt, tmp);
-
-                if (outputDetails)
-                {
-                    output += " | " + $"{cnt} sch.".PadLeft(10) + " = " + $"{tmp:N2} q".PadLeft(14);
-                    CostResults.AppendLine(orePrefix + output);
-                }
-                outSum += tmp;
-            }
-            return outSum;
-        }
-
-        public List<ProductDetail> GetOreComponents(string key)
-        {
-            // Un-talented only
-            var products = new List<ProductDetail>();
-            var recipe = Recipes[key];
-
-            // Skip catalysts entirely tho.
-            if (Groups.Values.FirstOrDefault(g => g.Id == recipe.GroupId)?.Name == "Catalyst")
-                return products;
-
-            foreach (var ingredient in recipe.Ingredients)
-            {
-                if (Recipes[ingredient.Type].ParentGroupName == "Ore")
-                {
-                    products.Add(new ProductDetail()
-                    {
-                        Name = ingredient.Name, Quantity = ingredient.Quantity / recipe.Products[0].Quantity,
-                        Type = ingredient.Type
-                    });
-                }
-                else
-                {
-                    foreach (var result in GetOreComponents(ingredient.Type))
-                    {
-                        products.Add(new ProductDetail()
-                        {
-                            Name = result.Name,
-                            Quantity = (result.Quantity * ingredient.Quantity) / recipe.Products[0].Quantity,
-                            Type = result.Type
-                        });
-                    }
-                }
-            }
-
-            // Now flatten them into totals
-            var results = new List<ProductDetail>();
-            foreach (var group in products.GroupBy(p => p.Type))
-            {
-                results.Add(new ProductDetail()
-                    { Name = group.First().Name, Type = group.Key, Quantity = group.Sum(p => p.Quantity) });
-            }
-
-            return results;
-        }
-
-        // This was going to be recursive but those are way too generic. We just want one parent up.
-        private string GetParentGroupName(Guid id)
-        {
-            var group = Groups.Values.FirstOrDefault(g => g.Id == id);
-            if (group == null) return null;
-            return group.ParentId != Guid.Empty
-                ? Groups.Values.FirstOrDefault(g => g.Id == group.ParentId)?.Name ?? "xxx"
-                : group.Name;
-        }
-
-        public bool PrepareProductListRecipe()
-        {
-            if (ProductionBindingList.Count < 1) return false;
-            var cmp = new SchematicRecipe
-            {
-                Key = CompoundName,
-                Name = "Production List"
-            };
-            var cnt = 0;
-            foreach (var prodItem in ProductionBindingList)
-            {
-                // Sanity checks
-                if (string.IsNullOrEmpty(prodItem.Name) || prodItem.Quantity <= 0)
-                    continue;
-                var rec = Recipes.FirstOrDefault(x => x.Value.Name.Equals(prodItem.Name, StringComparison.InvariantCultureIgnoreCase));
-                if (rec.Key == null || rec.Value?.Ingredients?.Any() != true || rec.Value?.Products?.Any() != true)
-                    continue;
-
-                // Accumulate crafting time over all products
-                cmp.Time += (rec.Value.Time * prodItem.Quantity);
-
-                // Sum up top-level ingredients
-                foreach (var ing in rec.Value.Ingredients)
-                {
-                    var tmp = cmp.Ingredients.FirstOrDefault(x => x.Name.Equals(ing.Name, StringComparison.InvariantCultureIgnoreCase));
-                    if (tmp != null)
-                    {
-                        tmp.Quantity += (ing.Quantity * prodItem.Quantity);
-                    }
-                    else
-                    {
-                        ing.Quantity *= prodItem.Quantity;
-                        cmp.Ingredients.Add(ing);
-                    }
-                }
-
-                // Process products
-                foreach (var prd in rec.Value.Products)
-                {
-                    var tmp = cmp.Products.FirstOrDefault(x => x.Name.Equals(prd.Name, StringComparison.InvariantCultureIgnoreCase));
-                    if (tmp != null)
-                    {
-                        tmp.Quantity += (prd.Quantity * prodItem.Quantity);
-                    }
-                    else
-                    {
-                        prd.Quantity *= prodItem.Quantity;
-                        cmp.Products.Add(prd);
-                    }
-                }
-                cnt++;
-            }
-            if (cnt == 0) return false;
-            CompoundRecipe = cmp;
-
-            // Add compound recipe to main recipe list, check first to remove an existing one
-            Recipes.Remove(CompoundName);
-            Recipes[CompoundName] = cmp;
-            return true;
         }
 
     }
