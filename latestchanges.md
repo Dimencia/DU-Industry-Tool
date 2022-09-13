@@ -1,5 +1,8 @@
 # Latest Changes
 
+## v0.8.1
+- Fix in DLL version mismatch at startup since 0.8.0
+
 ## v0.8.0
 - New feature: in new "Tools" menu you can find a new "Production List" item:
   in a special dialogue build a list of craftable recipes to be calculated in one bulk operation.

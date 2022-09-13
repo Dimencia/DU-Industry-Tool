@@ -1,13 +1,5 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
 
 namespace DU_Industry_Tool
 {
@@ -67,17 +59,17 @@ namespace DU_Industry_Tool
                 SumSchemClass.Add(schemaKey, new Tuple<int, double>(qty, amount));
         }
 
-        public static void Add(SummationType sumType, string ingKey, double quantity)
+        public static void Add(SummationType sumType, string key, double quantity)
         {
             if (!_sums.ContainsKey(sumType))
             {
                 _sums.Add(sumType, new SortedDictionary<string, double>());
             }
 
-            if (_sums[sumType].ContainsKey(ingKey))
-                _sums[sumType][ingKey] += quantity;
+            if (_sums[sumType].ContainsKey(key))
+                _sums[sumType][key] += quantity;
             else
-                _sums[sumType].Add(ingKey, quantity);
+                _sums[sumType].Add(key, quantity);
         }
 
         public static SortedDictionary<string, double> Get(SummationType sumType)

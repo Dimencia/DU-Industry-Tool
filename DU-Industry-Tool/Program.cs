@@ -13,11 +13,12 @@ namespace DU_Industry_Tool
         [STAThread]
         static void Main()
         {
-            PortableJsonSettingsProvider.SettingsFileName = "DU-Industry-Tool.usersettings.json";
-            PortableJsonSettingsProvider.SettingsDirectory = Path.GetDirectoryName(Application.ExecutablePath);
-            PortableJsonSettingsProvider.ApplyProvider(Properties.Settings.Default);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            //Application.SetHighDpiMode(HighDpiMode.SystemAware);
+            PortableJsonSettingsProvider.SettingsFileName = "DU-Industry-Tool.usersettings.json";
+            PortableSettingsProviderBase.SettingsDirectory = Application.StartupPath;
+            PortableJsonSettingsProvider.ApplyProvider(Properties.Settings.Default);
             Application.Run(new MainForm(new IndustryManager()));
         }
     }
