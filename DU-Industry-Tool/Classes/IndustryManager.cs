@@ -1588,15 +1588,22 @@ namespace DU_Industry_Tool
                 // for every "started" batch we need a schematic (no talents for this in DU yet)
                 var schem = Schematics[idx];
                 var allQuantity = item.Value * quantity;
-                var cnt = (int)Math.Ceiling(allQuantity / 100);
-                tmp = schem.Cost * cnt;
-                Calculator.AddSchema(idx, cnt, tmp);
+                int cnt = 0;
+                if (recipe.SchemaType != null)
+                {
+                    var productQuantity = recipe.Products
+                        .FirstOrDefault(x => x.Name.Equals(key, StringComparison.InvariantCultureIgnoreCase)).Quantity;
+                    cnt = (int)Math.Ceiling(allQuantity / productQuantity);
+                    tmp = schem.Cost * cnt;
+                    Calculator.AddSchema(idx, cnt, tmp);
+                    output += " | " + $"{cnt} sch.".PadLeft(10) + " = " + $"{tmp:N2} q".PadLeft(14);
+                }
 
                 if (outputDetails)
                 {
-                    output += " | " + $"{cnt} sch.".PadLeft(10) + " = " + $"{tmp:N2} q".PadLeft(14);
                     CostResults.AppendLine(orePrefix + output);
                 }
+
                 outSum += tmp;
             }
             return outSum;
@@ -1911,14 +1918,14 @@ namespace DU_Industry_Tool
             {
                 CostResults.AppendLine();
                 CostResults.AppendLine("----- Schematics details -----");
-                CostResults.AppendLine("Schema.  amount              cost    copy time (1 slot)");
+                CostResults.AppendLine("Schema.                                 amount              cost    copy time (1 slot)");
                 foreach (var schem in Calculator.SumSchemClass)
                 {
                     var s = Schematics.FirstOrDefault(x => x.Key == schem.Key);
                     var numBatches = Math.Ceiling(schem.Value.Item1 / (double)s.Value.BatchSize);
                     var batchTime = (s.Value?.BatchTime ?? 0) * numBatches;
                     var sp = TimeSpan.FromSeconds(batchTime);
-                    CostResults.AppendLine(schem.Key.PadRight(4) +
+                    CostResults.AppendLine(schem.Key.PadRight(35) +
                                            $"x{schem.Value.Item1:N0}".PadLeft(11) +
                                            $"{schem.Value.Item2:N2}q".PadLeft(21) +
                                            " (" + sp.ToString(@"dd\.hh\:mm\:ss") + ")");
