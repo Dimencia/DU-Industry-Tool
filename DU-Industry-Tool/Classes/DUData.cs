@@ -556,11 +556,11 @@ namespace DU_Industry_Tool
             {
                 changed = true;
                 Ores = new List<Ore>();
-                foreach (var recipe in Recipes.Values.Where(r => r.ParentGroupName == "Ore"))
+                foreach (var recipe in Recipes.Where(r => r.Value.ParentGroupName == "Ore"))
                 {
                     Ores.Add(new Ore()
                     {
-                        Key = recipe.Key, Name = recipe.Name, Value = 25 * recipe.Level, Level = recipe.Level
+                        Key = recipe.Key, Name = recipe.Value.Name, Value = 25 * recipe.Value.Level, Level = recipe.Value.Level
                     }); // BS some values
                 }
             }

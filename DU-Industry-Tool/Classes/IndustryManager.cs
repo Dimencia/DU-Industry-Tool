@@ -28,8 +28,8 @@ namespace DU_Industry_Tool
             }
 
             // On initialization, read all our data from files
-            DUData.LoadOres();
             DUData.LoadRecipes();
+            DUData.LoadOres();
             DUData.LoadGroups();
             DUData.LoadTalents();
             DUData.LoadSchematics();
