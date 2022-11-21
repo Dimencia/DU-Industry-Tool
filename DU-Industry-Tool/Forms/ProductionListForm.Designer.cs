@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
-using DocumentFormat.OpenXml.Office.PowerPoint.Y2021.M06.Main;
-using Krypton.Toolkit;
+﻿using Krypton.Toolkit;
 
 namespace DU_Industry_Tool
 {
@@ -44,6 +41,7 @@ namespace DU_Industry_Tool
             this.kCmdClose = new Krypton.Toolkit.KryptonCommand();
             this.dgvProductionList = new Krypton.Toolkit.KryptonDataGridView();
             this.Column1 = new Krypton.Toolkit.KryptonDataGridViewComboBoxColumn();
+            this.productionListBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.Column2 = new Krypton.Toolkit.KryptonDataGridViewNumericUpDownColumn();
             this.PanelTop = new Krypton.Toolkit.KryptonPanel();
             this.BtnClear = new Krypton.Toolkit.KryptonButton();
@@ -60,15 +58,15 @@ namespace DU_Industry_Tool
             this.ComboRecipeNames = new Krypton.Toolkit.KryptonComboBox();
             this.kryptonLabel1 = new Krypton.Toolkit.KryptonLabel();
             this.LblLoaded = new Krypton.Toolkit.KryptonLabel();
-            this.productionListBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.recipeNamesBindingSource = new System.Windows.Forms.BindingSource(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.MainPanel)).BeginInit();
             this.MainPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvProductionList)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.productionListBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.PanelTop)).BeginInit();
             this.PanelTop.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ComboRecipeNames)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.productionListBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.recipeNamesBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
@@ -94,6 +92,7 @@ namespace DU_Industry_Tool
             this.BtnCalculate.Name = "BtnCalculate";
             this.BtnCalculate.Size = new System.Drawing.Size(150, 42);
             this.BtnCalculate.TabIndex = 4;
+            this.toolTip1.SetToolTip(this.BtnCalculate, "Run the full calculation for the current production list.");
             this.BtnCalculate.Values.Text = "Calculate";
             // 
             // kCmdCalculate
@@ -101,7 +100,6 @@ namespace DU_Industry_Tool
             this.kCmdCalculate.ImageLarge = global::DU_Industry_Tool.Properties.Resources.Add;
             this.kCmdCalculate.ImageSmall = global::DU_Industry_Tool.Properties.Resources.Add;
             this.kCmdCalculate.Text = "Calculate";
-            this.kCmdCalculate.TextLine1 = "Calculate";
             // 
             // BtnClose
             // 
@@ -113,6 +111,7 @@ namespace DU_Industry_Tool
             this.BtnClose.Name = "BtnClose";
             this.BtnClose.Size = new System.Drawing.Size(105, 42);
             this.BtnClose.TabIndex = 3;
+            this.toolTip1.SetToolTip(this.BtnClose, "Close without any calculation.");
             this.BtnClose.Values.Text = "Add";
             // 
             // kCmdClose
@@ -120,7 +119,6 @@ namespace DU_Industry_Tool
             this.kCmdClose.ImageLarge = global::DU_Industry_Tool.Properties.Resources.Minus_Red_Button;
             this.kCmdClose.ImageSmall = global::DU_Industry_Tool.Properties.Resources.Minus_Red_Button;
             this.kCmdClose.Text = "Close";
-            this.kCmdClose.TextLine1 = "Close";
             // 
             // dgvProductionList
             // 
@@ -160,7 +158,7 @@ namespace DU_Industry_Tool
             this.Column1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.Column1.DataPropertyName = "Name";
             this.Column1.DataSource = this.productionListBindingSource;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Column1.DefaultCellStyle = dataGridViewCellStyle1;
             this.Column1.DisplayMember = "Name";
             this.Column1.DropDownWidth = 300;
@@ -173,12 +171,17 @@ namespace DU_Industry_Tool
             this.Column1.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
             this.Column1.Width = 412;
             // 
+            // productionListBindingSource
+            // 
+            this.productionListBindingSource.DataMember = "ProductionBindingList";
+            this.productionListBindingSource.DataSource = typeof(DU_Industry_Tool.DUDataBindings);
+            // 
             // Column2
             // 
             this.Column2.AllowDecimals = false;
             this.Column2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
             this.Column2.DataPropertyName = "Quantity";
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Column2.DefaultCellStyle = dataGridViewCellStyle2;
             this.Column2.FillWeight = 50F;
             this.Column2.HeaderText = "Quantity";
@@ -224,6 +227,7 @@ namespace DU_Industry_Tool
             this.BtnClear.StateNormal.Border.ImageStyle = Krypton.Toolkit.PaletteImageStyle.CenterMiddle;
             this.BtnClear.StateNormal.Border.Rounding = 2F;
             this.BtnClear.TabIndex = 8;
+            this.toolTip1.SetToolTip(this.BtnClear, "Clear the current production list.");
             this.BtnClear.ToolTipValues.Description = "Clear current list";
             this.BtnClear.ToolTipValues.EnableToolTips = true;
             this.BtnClear.ToolTipValues.Heading = "Clear";
@@ -233,8 +237,6 @@ namespace DU_Industry_Tool
             // 
             this.kCmdClearList.ImageLarge = global::DU_Industry_Tool.Properties.Resources.dialog_cancel;
             this.kCmdClearList.ImageSmall = global::DU_Industry_Tool.Properties.Resources.dialog_cancel;
-            this.kCmdClearList.Text = "Clear";
-            this.kCmdClearList.TextLine1 = "Clear List";
             // 
             // BtnSave
             // 
@@ -250,6 +252,8 @@ namespace DU_Industry_Tool
             this.BtnSave.StateNormal.Border.ImageStyle = Krypton.Toolkit.PaletteImageStyle.CenterMiddle;
             this.BtnSave.StateNormal.Border.Rounding = 2F;
             this.BtnSave.TabIndex = 7;
+            this.toolTip1.SetToolTip(this.BtnSave, "Save the current production list to a file. That file could be shared with other " +
+        "users.");
             this.BtnSave.ToolTipValues.Description = "Save current list to file";
             this.BtnSave.ToolTipValues.EnableToolTips = true;
             this.BtnSave.ToolTipValues.Heading = "Save";
@@ -259,8 +263,6 @@ namespace DU_Industry_Tool
             // 
             this.kCmdSaveList.ImageLarge = global::DU_Industry_Tool.Properties.Resources.filesave;
             this.kCmdSaveList.ImageSmall = global::DU_Industry_Tool.Properties.Resources.filesave;
-            this.kCmdSaveList.Text = "Save";
-            this.kCmdSaveList.TextLine1 = "Save List";
             // 
             // BtnLoad
             // 
@@ -276,6 +278,7 @@ namespace DU_Industry_Tool
             this.BtnLoad.StateNormal.Border.ImageStyle = Krypton.Toolkit.PaletteImageStyle.CenterMiddle;
             this.BtnLoad.StateNormal.Border.Rounding = 2F;
             this.BtnLoad.TabIndex = 6;
+            this.toolTip1.SetToolTip(this.BtnLoad, "Load a production list from a file.");
             this.BtnLoad.ToolTipValues.Description = "Load a list from file";
             this.BtnLoad.ToolTipValues.EnableToolTips = true;
             this.BtnLoad.ToolTipValues.Heading = "Load";
@@ -285,13 +288,11 @@ namespace DU_Industry_Tool
             // 
             this.kCmdLoadList.ImageLarge = global::DU_Industry_Tool.Properties.Resources.fileopen;
             this.kCmdLoadList.ImageSmall = global::DU_Industry_Tool.Properties.Resources.fileopen;
-            this.kCmdLoadList.Text = "Load";
-            this.kCmdLoadList.TextLine1 = "Load List";
             // 
             // lblQty
             // 
             this.lblQty.LabelStyle = Krypton.Toolkit.LabelStyle.BoldControl;
-            this.lblQty.Location = new System.Drawing.Point(10, 100);
+            this.lblQty.Location = new System.Drawing.Point(9, 102);
             this.lblQty.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.lblQty.Name = "lblQty";
             this.lblQty.Size = new System.Drawing.Size(79, 24);
@@ -301,7 +302,7 @@ namespace DU_Industry_Tool
             // lblRecipe
             // 
             this.lblRecipe.LabelStyle = Krypton.Toolkit.LabelStyle.BoldControl;
-            this.lblRecipe.Location = new System.Drawing.Point(10, 62);
+            this.lblRecipe.Location = new System.Drawing.Point(12, 61);
             this.lblRecipe.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.lblRecipe.Name = "lblRecipe";
             this.lblRecipe.Size = new System.Drawing.Size(64, 24);
@@ -335,7 +336,7 @@ namespace DU_Industry_Tool
             // 
             this.BtnAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.BtnAdd.KryptonCommand = this.kCmdAddToList;
-            this.BtnAdd.Location = new System.Drawing.Point(331, 100);
+            this.BtnAdd.Location = new System.Drawing.Point(331, 95);
             this.BtnAdd.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.BtnAdd.Name = "BtnAdd";
             this.BtnAdd.Size = new System.Drawing.Size(168, 40);
@@ -367,13 +368,13 @@ namespace DU_Industry_Tool
             this.ComboRecipeNames.MaxDropDownItems = 15;
             this.ComboRecipeNames.MaxLength = 40;
             this.ComboRecipeNames.Name = "ComboRecipeNames";
-            this.ComboRecipeNames.Size = new System.Drawing.Size(400, 30);
+            this.ComboRecipeNames.Size = new System.Drawing.Size(400, 27);
             this.ComboRecipeNames.Sorted = true;
             this.ComboRecipeNames.StateCommon.ComboBox.Border.DrawBorders = ((Krypton.Toolkit.PaletteDrawBorders)((((Krypton.Toolkit.PaletteDrawBorders.Top | Krypton.Toolkit.PaletteDrawBorders.Bottom) 
             | Krypton.Toolkit.PaletteDrawBorders.Left) 
             | Krypton.Toolkit.PaletteDrawBorders.Right)));
             this.ComboRecipeNames.StateCommon.ComboBox.Border.Rounding = 2F;
-            this.ComboRecipeNames.StateCommon.ComboBox.Content.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ComboRecipeNames.StateCommon.ComboBox.Content.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ComboRecipeNames.StateCommon.ComboBox.Content.TextH = Krypton.Toolkit.PaletteRelativeAlign.Near;
             this.ComboRecipeNames.TabIndex = 0;
             // 
@@ -383,11 +384,11 @@ namespace DU_Industry_Tool
             this.kryptonLabel1.Location = new System.Drawing.Point(10, 18);
             this.kryptonLabel1.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.kryptonLabel1.Name = "kryptonLabel1";
-            this.kryptonLabel1.Size = new System.Drawing.Size(516, 32);
-            this.kryptonLabel1.StateCommon.LongText.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.kryptonLabel1.StateCommon.ShortText.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.kryptonLabel1.Size = new System.Drawing.Size(453, 24);
+            this.kryptonLabel1.StateCommon.LongText.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.kryptonLabel1.StateCommon.ShortText.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.kryptonLabel1.TabIndex = 0;
-            this.kryptonLabel1.Values.Text = "Pick recipe, quantity and click Add button to add to list.";
+            this.kryptonLabel1.Values.Text = "Pick a recipe, the quantity and click Add button to add to the list.";
             // 
             // LblLoaded
             // 
@@ -400,15 +401,10 @@ namespace DU_Industry_Tool
             this.LblLoaded.Values.Text = "Loaded:";
             this.LblLoaded.Visible = false;
             // 
-            // productionListBindingSource
-            // 
-            this.productionListBindingSource.DataMember = "ProductionBindingList";
-            this.productionListBindingSource.DataSource = typeof(DU_Industry_Tool.IndustryManager);
-            // 
             // recipeNamesBindingSource
             // 
-            this.recipeNamesBindingSource.DataMember = "RecipeNames";
-            this.recipeNamesBindingSource.DataSource = typeof(DU_Industry_Tool.IndustryManager);
+            this.recipeNamesBindingSource.DataMember = "RecipeNamesBindingList";
+            this.recipeNamesBindingSource.DataSource = typeof(DU_Industry_Tool.DUDataBindings);
             // 
             // ProductionListForm
             // 
@@ -417,21 +413,20 @@ namespace DU_Industry_Tool
             this.Controls.Add(this.LblLoaded);
             this.Controls.Add(this.MainPanel);
             this.DoubleBuffered = true;
-            this.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
+            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel, ((byte)(0)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.MinimumSize = new System.Drawing.Size(550, 650);
             this.Name = "ProductionListForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Production List";
             ((System.ComponentModel.ISupportInitialize)(this.MainPanel)).EndInit();
             this.MainPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvProductionList)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.productionListBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.PanelTop)).EndInit();
             this.PanelTop.ResumeLayout(false);
             this.PanelTop.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ComboRecipeNames)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.productionListBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.recipeNamesBindingSource)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -465,5 +460,6 @@ namespace DU_Industry_Tool
         private KryptonDataGridViewComboBoxColumn Column1;
         private KryptonDataGridViewNumericUpDownColumn Column2;
         private KryptonLabel LblLoaded;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }

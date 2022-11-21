@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DU_Industry_Tool
 {
@@ -17,7 +14,7 @@ namespace DU_Industry_Tool
         public ulong PlayerId { get; set; }
         public ulong OrganizationId { get; set; }
         public string OwnerName { get; set; }
-        public double Price { get; set; }
+        public decimal Price { get; set; }
         public DateTime LogDate { get; set; }
     }
 

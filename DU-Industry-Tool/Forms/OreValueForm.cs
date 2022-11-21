@@ -1,25 +1,22 @@
 ﻿using System;
 using System.Linq;
 using System.Windows.Forms;
+using Krypton.Toolkit;
 
 namespace DU_Industry_Tool
 {
-    public partial class OreValueForm : Form
+    public partial class OreValueForm : KryptonForm
     {
-        private readonly IndustryManager Manager;
-
-        public OreValueForm(IndustryManager manager)
+        public OreValueForm()
         {
             InitializeComponent();
-            Manager = manager;
             // This is intended to have a DataGrid that they can paste the ore values into
             // So we parse out the names and store them back in after they save
-            foreach(var ore in manager.Ores.OrderBy(o => o.Name))
+            foreach(var ore in DUData.Ores.OrderBy(o => o.Name))
             {
                 oreGrid.Rows.Add(ore.Name, ore.Value);
             }
             oreGrid.AutoSize = true;
-            this.AutoSize = true;
         }
 
         private void Button1_Click(object sender, EventArgs e)
@@ -29,12 +26,12 @@ namespace DU_Industry_Tool
                 if (!(values is DataGridViewRow row)) continue;
                 var oreName = row.Cells[0].Value as string;
                 var oreValueString = row.Cells[1].Value as string;
-                if (!double.TryParse(oreValueString, out var oreValue)) continue;
-                var oreRecipe = Manager.Ores.FirstOrDefault(o => o.Name.Equals(oreName, StringComparison.InvariantCultureIgnoreCase));
+                if (!decimal.TryParse(oreValueString, out var oreValue)) continue;
+                var oreRecipe = DUData.Ores.FirstOrDefault(o => o.Name.Equals(oreName, StringComparison.InvariantCultureIgnoreCase));
                 if (oreRecipe != null)
                     oreRecipe.Value = oreValue;
             }
-            Manager.SaveOreValues();
+            DUData.SaveOreValues();
             this.Close();
         }
     }
