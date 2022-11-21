@@ -203,6 +203,16 @@ namespace DU_Industry_Tool.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap ore_bauxite {
+            get {
+                object obj = ResourceManager.GetObject("ore_bauxite", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Purple_Ball {
             get {
                 object obj = ResourceManager.GetObject("Purple Ball", resourceCulture);

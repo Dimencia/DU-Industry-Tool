@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
-using System.Text;
 using System.Windows.Forms;
 using Krypton.Toolkit;
 
@@ -17,8 +14,8 @@ namespace DU_Industry_Tool
             discordLink.Click += LinkOnClick;
             DimenciaGithubLink.Click += LinkOnClick;
             TobiReleasesLink.Click += LinkOnClick;
-            var version = File.ReadAllText("Version.txt");
-            labelMain.Values.Text = this.labelMain.Values.Text.Replace("XXX", version);
+            //var version = File.ReadAllText("Version.txt");
+            labelMain.Values.Text = labelMain.Values.Text.Replace("XXX", Utils.GetVersion());
         }
 
         private static void LinkOnClick(object sender, EventArgs e)

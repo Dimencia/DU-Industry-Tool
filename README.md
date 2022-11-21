@@ -1,22 +1,21 @@
-## Mercury edition
-- Versions 0.500+ by tobitege (https://github.com/tobitege/DU-Industry-Tool)
-- Major updates to recipes to be current with patch 0.31.x "Mercury".
+## Release edition
+- v1.0.0 requires .NET Framework 4.8.1 from here: https://dotnet.microsoft.com/en-us/download/dotnet-framework/thank-you/net481-web-installer
+- Maintained by tobitege since v0.5+ by tobitege (https://github.com/tobitege/DU-Industry-Tool)
+- Major updates to recipes to be current as of 2022-11-19.
+- User interface completely overhauled with tree-display of all ingredients and schematics.
+- Incremental recipe search with customizable quantity dropdown.
+- Double-click items in tree to "drill down".
 - Schematic cost is now maintained and associated with the corresponding pures, products and elements.
-- Calculated cost output now also lists schematic costs per tier and category.
-- Display of a Total Ingredients List.
-- Ingredients as links for "drill down".
-- Listing of all "superior" recipes which have the item as an ingredient ("drill up").
+- Production List: load/save a list of any items to be calculated together.
+- Display of industry, clickable to see a list of all items produced by that type.
 - Display of mass, volume (of item itself) and nanocraftable status.
-- Results can be copied to clipboard.
-- Revamped UI with tabs support and auto-completion search box.
+- Options to remember window position and to auto-load production list on startup.
 
 Big thanks to Jericho1060 for making available item/recipe data dumps via
 his website https://du-lua.dev which helped me a lot to update the data displayed!
 
-Binary releases available here (v0.500+):
+Binary releases available here:
 https://github.com/tobitege/DU-Industry-Tool/releases
-
-![Mercury Overview](https://github.com/tobitege/DU-Industry-Tool/blob/master/DU%20Industry%20Tool%20(Mercury)%20Screenshot.png?raw=true)
 
 # DU-Industry-Tool
 Basic WinForms project that allows you to view calculated values of all known in-game recipes. Has search bar, and ability to drill down through intermediates to find their recipes as well
@@ -25,7 +24,7 @@ GIF showing functionality
 https://gyazo.com/a8740425ac2fe244d87e87980c16a2cf
 
 
-# Older releases < 0.5.x are no longer maintained
+# Older releases < v1.x are no longer maintained
 
 Anyone could add the mining units or other new items, it's just a json file - but please share it, either through a fork or a PR.  Either add the new stuff manually, or:
 1. Do a hyperion export of all item NqRecipeId's for all items (particularly the new ones), along with Name

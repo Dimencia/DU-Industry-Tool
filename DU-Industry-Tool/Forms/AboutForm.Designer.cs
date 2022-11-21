@@ -62,7 +62,7 @@ namespace DU_Industry_Tool
             this.pictureBox1.Location = new System.Drawing.Point(0, 0);
             this.pictureBox1.Margin = new System.Windows.Forms.Padding(0);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Padding = new System.Windows.Forms.Padding(13, 13, 13, 13);
+            this.pictureBox1.Padding = new System.Windows.Forms.Padding(13);
             this.pictureBox1.Size = new System.Drawing.Size(90, 415);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.pictureBox1.TabIndex = 0;
@@ -122,8 +122,8 @@ namespace DU_Industry_Tool
             this.labelMain.Name = "labelMain";
             this.labelMain.Size = new System.Drawing.Size(545, 155);
             this.labelMain.TabIndex = 7;
-            this.labelMain.Values.Text = "DU Industry Tool vXXX\r\nA tool to find cost for elements in Dual Universe.\r\n\r\nCr" +
-    "eated by Dimencia (2020-2021)\r\nContributor: tobitege (2022)\r\n";
+            this.labelMain.Values.Text = "DU Industry Tool vXXX\r\nA tool to find cost for elements in Dual Universe.\r\n\r\nCrea" +
+    "ted by Dimencia (2020-2021)\r\nMaintainer: tobitege (2022)";
             // 
             // kryptonLabel4
             // 

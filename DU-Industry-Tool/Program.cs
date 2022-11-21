@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
 using Bluegrams.Application;
-using Path = System.IO.Path;
 
 namespace DU_Industry_Tool
 {

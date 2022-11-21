@@ -5,26 +5,30 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Globalization;
-using System.Text;
+using System.IO;
+using System.Windows;
 using System.Windows.Forms;
+using BrightIdeasSoftware;
 using ClosedXML.Excel;
-using Krypton.Toolkit;
+using DU_Industry_Tool.Interfaces;
 using Krypton.Navigator;
+using Krypton.Ribbon;
 using Krypton.Workspace;
+using Krypton.Toolkit;
+using Newtonsoft.Json;
+using Point = System.Drawing.Point;
 
 namespace DU_Industry_Tool
 {
     public partial class MainForm : KryptonForm
     {
+        private bool _startUp = true;
         private readonly IndustryManager _manager;
         private readonly MarketManager _market;
         private bool _marketFiltered;
-        private TextBox _costDetailsLabel;
         private readonly List<string> _breadcrumbs = new List<string>();
-        private FlowLayoutPanel _costDetailsPanel;
-        private FlowLayoutPanel _infoPanel;
         private bool _navUpdating;
-        private int _overrideQty;
+        private decimal _overrideQty;
 
         public MainForm(IndustryManager manager)
         {
@@ -33,38 +37,67 @@ namespace DU_Industry_Tool
             CultureInfo.CurrentCulture = new CultureInfo("en-us");
             QuantityBox.SelectedIndex = 0;
 
-            // Setup the trees. One recipe on each main node
             _manager = manager;
-
             _market = new MarketManager();
+
             kryptonPage1.Flags = 0;
             kryptonPage1.ClearFlags(KryptonPageFlags.DockingAllowDocked);
             kryptonPage1.ClearFlags(KryptonPageFlags.DockingAllowClose);
-            var sortedRecipes = new List<string>();
-            treeView.AfterSelect += Treeview_AfterSelect;
+
+            kryptonNavigator1.Dock = DockStyle.None;
+            kryptonNavigator1.Dock = DockStyle.Fill;
+            OnMainformResize(null, null);
+
+            _manager.Databindings.ProductionListChanged += ProductionListUpdates;
+            ProductionListUpdates(null);
+
+            LoadTree();
+        }
+
+        private void LoadTree()
+        {
             treeView.NodeMouseClick += Treeview_NodeClick;
+            LoadTreeData();
+        }
+
+        private void LoadTreeData()
+        {
+            treeView.AfterSelect -= Treeview_AfterSelect;
+            var sortedRecipes = new List<string>();
             treeView.BeginUpdate();
-            foreach(var group in manager.Groupnames)
+            treeView.Nodes.Clear();
+            foreach(var group in DUData.Groupnames)
             {
                 var groupNode = new TreeNode(group);
-                foreach(var recipe in manager.Recipes.Where(x => x.Value?.ParentGroupName?.Equals(group, StringComparison.CurrentCultureIgnoreCase) == true)
-                            .OrderBy(r => r.Value.Level).ThenBy(r => r.Value.Name)
-                            .Select(x => x.Value))
+                foreach(var recipe in DUData.Recipes.Where(
+                    x => x.Value?.ParentGroupName?.Equals(group, StringComparison.CurrentCultureIgnoreCase) == true &&
+                         (!CbNanoOnly.Checked || x.Value.Nanocraftable))
+                          .OrderBy(r => r.Value.Level).ThenBy(r => r.Value.Name)
+                          .Select(x => x.Value))
                 {
                     sortedRecipes.Add(recipe.Name);
-                    var recipeNode = new TreeNode(recipe.Name)
-                    {
-                        Tag = recipe
-                    };
+                    var recipeNode = new TreeNode(recipe.Name) { Tag = recipe };
                     recipe.Node = recipeNode;
                     groupNode.Nodes.Add(recipeNode);
                 }
-                treeView.Nodes.Add(groupNode);
+                if (groupNode.Nodes.Count > 0)
+                {
+                    groupNode.Text += $"   ({groupNode.Nodes.Count})";
+                    treeView.Nodes.Add(groupNode);
+                }
             }
             treeView.EndUpdate();
             sortedRecipes.Sort();
             sortedRecipes.ForEach(x => SearchBox.Items.Add(x));
-            OnMainformResize(null, null);
+            treeView.AfterSelect += Treeview_AfterSelect;
+            CbNanoOnly.Text = $"filter nanocraftable?     ({sortedRecipes.Count})";
+        }
+
+        #region Recipe search and selection
+
+        private void CbNanoOnly_CheckedChanged(object sender, EventArgs e)
+        {
+            LoadTreeData();
         }
 
         private void Treeview_NodeClick(object sender, TreeNodeMouseClickEventArgs e)
@@ -93,244 +126,57 @@ namespace DU_Industry_Tool
             }
             PreviousButton.Enabled = _breadcrumbs.Count > 0;
 
-            // Display recipe info for the thing they have selected
-            SearchBox.Text = recipe.Name;
+            if (!DUData.IsIgnorableTitle(recipe.Name))
+            {
+                SearchBox.Text = recipe.Name;
+            }
             _navUpdating = true;
-            ContentDocument newDoc = null;
+
+            decimal cnt = 1;
+            if (!DUData.ProductionListMode)
+            {
+                if (_overrideQty > 0)
+                {
+                    cnt = _overrideQty;
+                }
+                else
+                if (QuantityBox.SelectedItem == null || !decimal.TryParse((string)QuantityBox.SelectedItem, out cnt))
+                {
+                    decimal.TryParse(QuantityBox.Text, out cnt);
+                }
+                cnt = Math.Max(1, cnt);
+            }
+
+            IContentDocument newDoc = null;
             try
             {
                 newDoc = NewDocument(recipe.Name);
-                if (newDoc == null || _infoPanel == null) return;
+                if (newDoc == null) return;
             }
             finally
             {
                 _navUpdating = false;
+                ProductionListUpdates(null);
             }
-            _infoPanel.Controls.Clear();
 
-            var lbl = AddLabel(_infoPanel.Controls, recipe.Name + (_manager.ProductionListMode ? "" : $" (T{recipe.Level})"), FontStyle.Bold);
-            lbl.Anchor = (AnchorStyles)(AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right);
-            lbl.Font = new Font(_infoPanel.Font.FontFamily, 12f, FontStyle.Bold);
-            lbl.Padding = new Padding(2, 5, 4, 2);
-            lbl.Height = 30;
-            lbl.Width = 370;
+            // ***** Primary Calculation *****
+            Calculator.Initialize();
+            Calculator.ProductQuantity = cnt;
+            Calculator.CalculateRecipe(recipe.Key, cnt, silent: false);
+            var calc = Calculator.Get(recipe.Key, Guid.Empty);
+            _overrideQty = 0; // must be reset here!
 
-            var tmp = recipe.UnitMass > 0 ? $"mass: {recipe.UnitMass:N2} " : "";
-            tmp += recipe.UnitVolume > 0 ? $"volume: {recipe.UnitMass:N2} " : "";
-            tmp += recipe.Nanocraftable ? "*nanocraftable*" : "";
-            if (tmp != "")
+            // Pass data on towards newly created tab
+            newDoc.IsProductionList = DUData.ProductionListMode;
+            if (DUData.ProductionListMode)
             {
-                lbl = AddLabel(_infoPanel.Controls, "Unit " + tmp);
-                lbl.Padding = new Padding(4, 0, 4, 5);
+                newDoc.RecalcProductionListClick = ProductionListRecalc_Click;
             }
+            newDoc.ItemClick = OpenRecipe;
+            newDoc.IndustryClick = LabelIndustry_Click;
+            newDoc.LinkClick = Link_Click;
+            newDoc.SetCalcResult(calc);
 
-            _manager.CostResults = new StringBuilder();
-            var cnt = 1;
-            if (_manager.ProductionListMode)
-            {
-                _manager.ProductQuantity = 1;
-            }
-            else
-            {
-                _manager.ProductQuantity = _overrideQty > 0 ? _overrideQty : int.Parse(QuantityBox.Text);
-                if (!int.TryParse(QuantityBox.Text, out cnt)) cnt = 1;
-            }
-
-            // ***** primary calculation *****
-            var costToMake = _manager.GetTotalCost(recipe.Key, cnt, silent: true);
-            AddFlowLabel(_infoPanel.Controls, "Cost for 1: " + costToMake.ToString("N02") + "q");
-
-            if (!_manager.ProductionListMode)
-            {
-                var cost = _manager.GetBaseCost(recipe.Key);
-                AddFlowLabel(_infoPanel.Controls, $"Untalented (no schematics): {cost:N1}q");
-            }
-
-            if (recipe.Time > 0)
-            {
-                var sp = TimeSpan.FromSeconds(recipe.Time);
-                lbl = AddLabel(_infoPanel.Controls, "Time to craft:  " +
-                                                    (sp.Days > 0 ? $"{sp.Days}d : " : "") +
-                                                    (sp.Hours > 0 ? $"{sp.Hours}h : " : "") +
-                                                    $"{sp.Minutes}m " +
-                                                    (sp.Seconds > 0 ? $" : {sp.Seconds}s" : ""));
-                lbl.Padding = new Padding(4, 0, 4, 5);
-
-                var amt = (86400 / recipe.Time).ToString();
-                var pnl = AddFlowLabel(_infoPanel.Controls, "", flow: FlowDirection.LeftToRight);
-                AddLabel(pnl.Controls, "Per industry ");
-                AddLinkedLabel(pnl.Controls, amt, recipe.Key+"#"+amt).Click += Label_Click;
-                AddLabel(pnl.Controls, " / day");
-                pnl.Padding = new Padding(0, 0, 0, 10);
-            }
-
-            if (!_manager.ProductionListMode)
-            {
-                // IDK why sometimes prices are listed as 0
-                var orders = _market.MarketOrders.Values.Where(o => o.ItemType == recipe.NqId &&
-                                                                    o.BuyQuantity < 0 &&
-                                                                    DateTime.Now < o.ExpirationDate &&
-                                                                    o.Price > 0);
-                var mostRecentOrder = orders.OrderBy(o => o.Price).FirstOrDefault();
-                if (mostRecentOrder?.Price > 0.00d)
-                {
-                    var costPanel = new FlowLayoutPanel
-                    {
-                        AutoSize = true,
-                        FlowDirection = FlowDirection.TopDown,
-                        Padding = new Padding(0)
-                    };
-                    AddLabel(costPanel.Controls, "Market " + mostRecentOrder.Price.ToString("N02") + "q");
-                    AddLabel(costPanel.Controls, "Until " + mostRecentOrder.ExpirationDate);
-                    AddLabel(costPanel.Controls, "Profit Margin ");
-                    var cost = ((mostRecentOrder.Price-costToMake) / mostRecentOrder.Price);
-                    AddLabel(costPanel.Controls, cost.ToString("0%"));
-                    cost = (mostRecentOrder.Price - costToMake)*(86400/recipe.Time);
-                    AddLabel(costPanel.Controls, "Profit/Day/Industry " + cost.ToString("N02") + "q");
-                    _infoPanel.Controls.Add(costPanel);
-                }
-            }
-
-            // ----- Ingredients -----
-            if (recipe.Ingredients.Count > 0)
-            {
-                var newPanel = AddFlowLabel(_infoPanel.Controls, "Ingredients", FontStyle.Bold);
-                newPanel.SuspendLayout();
-                var ingGrid = new TableLayoutPanel
-                {
-                    ColumnCount = 2,
-                    RowCount = recipe.Ingredients.Count,
-                    AutoSize = true,
-                    Margin = new Padding(0),
-                    Padding = new Padding(0, 0, 0, 10),
-                    Width = 300
-                };
-                ingGrid.LayoutSettings.ColumnStyles.Add(new ColumnStyle { Width = 240, SizeType = SizeType.Absolute });
-                ingGrid.SuspendLayout();
-                foreach (var ingredient in recipe.Ingredients)
-                {
-                    //var qty = ((_overrideQty == 0 ? 1 : _overrideQty) * ingredient.Quantity).ToString("0");
-                    var qty = ingredient.Quantity.ToString("0");
-                    AddLinkedLabel(ingGrid.Controls, ingredient.Name, ingredient.Type+"#"+qty).Click += Label_Click;
-                    AddLabel(ingGrid.Controls, qty);
-                }
-
-                ingGrid.ResumeLayout(false);
-                newPanel.Controls.Add(ingGrid);
-                newPanel.ResumeLayout(false);
-            }
-
-            // ----- Products -----
-            if (recipe.Products.Count > 0)
-            {
-                var newPanel = AddFlowLabel(_infoPanel.Controls, "Products", FontStyle.Bold);
-                newPanel.SuspendLayout();
-                newPanel.Height = Math.Min(recipe.Products.Count+2, 10) * Math.Abs(_infoPanel.Font.Height);
-                var grid = new TableLayoutPanel
-                {
-                    ColumnCount = 2,
-                    RowCount = recipe.Products.Count,
-                    AutoSize = true,
-                    Padding = new Padding(0, 4, 0, 10),
-                    Width = 300
-                };
-                grid.LayoutSettings.ColumnStyles.Add(new ColumnStyle { Width = 240, SizeType = SizeType.Absolute });
-                grid.SuspendLayout();
-                foreach (var prod in recipe.Products)
-                {
-                    if (prod.Type == recipe.Key)
-                        AddLabel(grid.Controls, prod.Name);
-                    else
-                        AddLinkedLabel(grid.Controls, prod.Name, prod.Type).Click += Label_Click;
-                    //var qty = (_overrideQty == 0 ? prod.Quantity : _overrideQty).ToString("0");
-                    var qty = prod.Quantity.ToString("0");
-                    AddLabel(grid.Controls, qty);
-                }
-
-                grid.ResumeLayout(false);
-                newPanel.Controls.Add(grid);
-                newPanel.ResumeLayout(false);
-            }
-            _overrideQty = 0; // must reset here!
-
-            // ----- Industry -----
-            if (!string.IsNullOrEmpty(recipe.Industry))
-            {
-                var newPanel = AddFlowLabel(_infoPanel.Controls, "Industry", FontStyle.Bold);
-                AddLinkedLabel(newPanel.Controls, recipe.Industry, recipe.Industry).Click += LabelIndustry_Click;
-                lbl = AddLabel(newPanel.Controls, "*not 100% correct!",FontStyle.Italic);
-                lbl.Font = new Font("Segoe UI", 8F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            }
-
-            // ----- Reverse recipes -----
-            if (recipe.ParentGroupName != null &&
-                (recipe.ParentGroupName.EndsWith("Ore", StringComparison.InvariantCultureIgnoreCase) ||
-                recipe.ParentGroupName.EndsWith("Parts", StringComparison.InvariantCultureIgnoreCase) ||
-                recipe.ParentGroupName.EndsWith("Product", StringComparison.InvariantCultureIgnoreCase) ||
-                recipe.ParentGroupName.EndsWith("Pure", StringComparison.InvariantCultureIgnoreCase) ||
-                recipe.Name?.StartsWith("Relic Plasma", StringComparison.InvariantCultureIgnoreCase) == true))
-            {
-                var containedIn = _manager.Recipes.Values.Where(x =>
-                    true == x.Ingredients?.Any(y => y.Name.Equals(recipe.Name, StringComparison.InvariantCultureIgnoreCase))).ToList();
-                if (containedIn?.Any() == true)
-                {
-                    var newPanel = AddFlowLabel(_infoPanel.Controls, "Part of recipes:", FontStyle.Bold);
-                    newPanel.Padding = new Padding(0, 10, 0, 0);
-
-                    var grid = new TableLayoutPanel
-                    {
-                        AutoScroll = true,
-                        ColumnCount = 1,
-                        Padding = new Padding(0),
-                        RowCount = containedIn.Count(),
-                        Height = Math.Min(containedIn.Count()+1, 10) * Math.Abs(_infoPanel.Font.Height+1),
-                        Width = 300,
-                        VerticalScroll = { Visible = true }
-                    };
-                    newPanel.SuspendLayout();
-                    grid.SuspendLayout();
-                    foreach (var entry in containedIn)
-                    {
-                        AddLinkedLabel(grid.Controls, entry.Name, entry.Key).Click += Label_Click;
-                    }
-                    grid.ResumeLayout(false);
-                    newPanel.Controls.Add(grid);
-                    newPanel.ResumeLayout(false);
-                }
-            }
-
-            _costDetailsPanel = new FlowLayoutPanel();
-            _costDetailsPanel.SuspendLayout();
-            try
-            {
-                _costDetailsPanel.FlowDirection = FlowDirection.TopDown;
-                _costDetailsPanel.BorderStyle = BorderStyle.None;
-                _costDetailsPanel.Dock = DockStyle.None;
-                _costDetailsPanel.AutoSize = true;
-                _costDetailsPanel.AutoScroll = true;
-                _costDetailsPanel.Font = new Font("Lucida Console", 10F, FontStyle.Regular, GraphicsUnit.Point, 0);
-                _costDetailsPanel.Size = new Size(600, 500);
-                _costDetailsLabel = new TextBox
-                {
-                    AutoSize = true,
-                    BorderStyle = BorderStyle.None,
-                    ScrollBars = ScrollBars.Both,
-                    Size = new Size(600, 500),
-                    Text = _manager.CostResults.ToString(),
-                    Multiline = true,
-                    WordWrap = false,
-                    ReadOnly = true
-                };
-                _costDetailsPanel.Controls.Add(_costDetailsLabel);
-                _infoPanel.Controls.Add(_costDetailsPanel);
-            }
-            finally
-            {
-                _costDetailsPanel.ResumeLayout(false);
-                newDoc.CostDetailsPanel = _costDetailsPanel;
-            }
-
-            _infoPanel.AutoScroll = false;
             OnMainformResize(null, null);
         }
 
@@ -349,7 +195,7 @@ namespace DU_Industry_Tool
                 var lbl = new Label
                 {
                     AutoSize = true,
-                    Font = new Font(_infoPanel.Font, fstyle),
+                    Font = new Font(this.Font, fstyle),
                     Padding = new Padding(0),
                     Text = lblText
                 };
@@ -359,12 +205,12 @@ namespace DU_Industry_Tool
             return panel;
         }
 
-        private Label AddLabel(System.Windows.Forms.Control.ControlCollection cc, string lblText, FontStyle fstyle = FontStyle.Regular)
+        private KryptonLabel AddKLinkLabel(System.Windows.Forms.Control.ControlCollection cc, string lblText, FontStyle fstyle = FontStyle.Regular)
         {
-            var lbl = new Label
+            var lbl = new KryptonLinkLabel
             {
                 AutoSize = true,
-                Font = new Font(_infoPanel.Font, fstyle),
+                Font = new Font(this.Font, fstyle),
                 Padding = new Padding(0),
                 Text = lblText
             };
@@ -372,133 +218,58 @@ namespace DU_Industry_Tool
             return lbl;
         }
 
-        private Label AddLinkedLabel(System.Windows.Forms.Control.ControlCollection cc, string lblText, string lblKey)
+        private KryptonLabel AddLinkedLabel(System.Windows.Forms.Control.ControlCollection cc, string lblText, string lblKey)
         {
-            var lbl = AddLabel(cc, lblText, FontStyle.Underline);
-            lbl.ForeColor = Color.CornflowerBlue;
+            var lbl = AddKLinkLabel(cc, lblText, FontStyle.Underline);
+            //lbl.ForeColor = Color.CornflowerBlue;
             lbl.Text = lblText;
             lbl.Tag = lblKey;
             return lbl;
         }
 
-        private void Label_Click(object sender, EventArgs e)
+        private void OpenRecipe(object sender, EventArgs e)
         {
-            if (!(sender is Label label)) return;
-            if (!(label.Tag is string tag)) return;
-            _overrideQty = 0;
-            var hashpos = tag.IndexOf('#');
-            if (hashpos > 0)
-            {
-                var amount = tag.Substring(hashpos+1);
-                if (!int.TryParse(amount, out _overrideQty))
-                {
-                    _overrideQty = 0;
-                }
-                tag = tag.Substring(0, hashpos);
-            }
-            if (!_manager.Recipes.ContainsKey(tag))
+            if (!(sender is TreeListView tree) || !(tree.SelectedItem?.RowObject is RecipeCalculation r))
             {
                 return;
             }
-            var recipe = _manager.Recipes[tag];
-
-            if (_breadcrumbs.Count == 0 || _breadcrumbs.LastOrDefault() != recipe.Name)
+            // Remove " (B)" byproduct marker
+            var search = (string.IsNullOrEmpty(r.Entry) ? r.Section : r.Entry);
+            search = search.TrimLast(DUData.ByproductMarker);
+            if (!DUData.IsIgnorableTitle(search))
             {
-                _breadcrumbs.Add(recipe.Name);
+                SearchBox.Text = search;
             }
-            PreviousButton.Enabled = _breadcrumbs.Count > 0;
+            _overrideQty = r.Qty;
+            SearchForRecipe(search);
+        }
 
-            var outerNodes = treeView.Nodes.OfType<TreeNode>();
-            TreeNode targetNode = null;
-            foreach(var outerNode in outerNodes)
+        private void SearchByLink(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return;
+            _overrideQty = 0;
+            var hashpos = text.IndexOf('#');
+            if (hashpos > 0)
             {
-                foreach(var innerNode in outerNode.Nodes.OfType<TreeNode>())
+                var amount = text.Substring(hashpos+1);
+                if (!decimal.TryParse(amount, out _overrideQty))
                 {
-                    if (!innerNode.Text.Equals(recipe.Name, StringComparison.CurrentCultureIgnoreCase)) continue;
-                    targetNode = innerNode;
-                    break;
+                    _overrideQty = 0;
                 }
-                if (targetNode != null) break;
+                text = text.Substring(0, hashpos);
             }
-            if (targetNode == null) return;
-            if (treeView.SelectedNode == targetNode)
-            {
-                treeView.SelectedNode = null;
-            }
-            treeView.SelectedNode = targetNode;
-            treeView.SelectedNode.EnsureVisible();
-            SearchBox.Text = targetNode.Text;
+
+            if (!DUData.Recipes.ContainsKey(text)) return;
+            var r = DUData.Recipes[text];
+            if (r.Node != null)
+                SelectRecipe(r.Node);
+            else
+                SearchForRecipe(r.Name);
         }
 
         private static int RecipeNameComparer(SchematicRecipe x, SchematicRecipe y)
         {
             return string.Compare(x.Name, y.Name, StringComparison.InvariantCultureIgnoreCase);
-        }
-
-        private void LabelIndustry_Click(object sender, EventArgs e)
-        {
-            if (!(sender is Label label)) return;
-            if (!(label.Tag is string tag)) return;
-            var products = _manager.Recipes.Where(x => x.Value.Industry.Equals(tag, StringComparison.InvariantCultureIgnoreCase))
-                                .Select(x => x.Value).ToList();
-            if (products?.Any() != true)
-            {
-                return;
-            }
-
-            products.Sort(RecipeNameComparer);
-
-            const string title = "Industry Products";
-
-            var page = kryptonNavigator1.Pages.FirstOrDefault(x => x.Text.Equals(title, StringComparison.InvariantCultureIgnoreCase));
-            if (page == null)
-            {
-                page = NewPage(title, null);
-                kryptonNavigator1.Pages.Insert(0, page);
-            }
-            if (page == null) return;
-            kryptonNavigator1.SelectedPage = page;
-            page.Controls.Clear();
-
-            var panel = AddFlowLabel(page.Controls, tag+" produces:", FontStyle.Bold);
-            panel.Dock = DockStyle.Top;
-
-            var grid = new TableLayoutPanel
-            {
-                AutoScroll = true,
-                AutoSize = true,
-                Dock = DockStyle.Fill,
-                ColumnCount = 1,
-                RowCount = products.Count,
-                Margin = new Padding(0, 22, 0, 0),
-                Padding = new Padding(0, 22, 0, 10)
-            };
-            page.Controls.Add(grid);
-
-            grid.SuspendLayout();
-            foreach (var prod in products)
-            {
-                AddLinkedLabel(grid.Controls, prod.Name, prod.Key).Click += Label_Click;
-            }
-            grid.ResumeLayout();
-        }
-
-        private void InputOreValuesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var form = new OreValueForm(_manager);
-            form.ShowDialog(this);
-        }
-
-        private void SkillLevelsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var form = new SkillForm(_manager);
-            form.ShowDialog(this);
-        }
-
-        private void SchematicValuesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var form = new SchematicValueForm(_manager);
-            form.ShowDialog(this);
         }
 
         private void PreviousButton_Click(object sender, EventArgs e)
@@ -515,7 +286,7 @@ namespace DU_Industry_Tool
                 if (string.IsNullOrEmpty(entry)) return;
                 SearchBox.Text = entry;
                 _breadcrumbs.Remove(entry);
-                SearchButton_Click(sender, null);
+                SearchForRecipe(entry);
             }
             finally
             {
@@ -523,9 +294,8 @@ namespace DU_Industry_Tool
             }
         }
 
-        private void SearchButton_Click(object sender, EventArgs e)
+        private void SearchForRecipe(string searchValue)
         {
-            var searchValue = SearchBox.Text;
             if (string.IsNullOrWhiteSpace(searchValue))
             {
                 PreviousButton.Enabled = _breadcrumbs.Count > 0;
@@ -566,17 +336,118 @@ namespace DU_Industry_Tool
             treeView.Focus();
         }
 
+        private void SearchButton_Click(object sender, EventArgs e)
+        {
+            SearchForRecipe(SearchBox.Text);
+        }
+
         private void QuantityBoxOnSelectionChangeCommitted(object sender, EventArgs e)
         {
-            if (treeView.SelectedNode == null)
+            BeginInvoke((MethodInvoker)delegate()
             {
-                SearchButton_Click(sender, e);
-            }
-            else
+                if (treeView.SelectedNode == null)
+                {
+                    SearchButton_Click(sender, e);
+                }
+                else
+                {
+                    SelectRecipe(treeView.SelectedNode);
+                }
+            });
+        }
+
+        private void QuantityBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsDigit(e.KeyChar) && ((Keys)e.KeyChar != Keys.Back) && ((Keys)e.KeyChar != Keys.Enter) && ((Keys)e.KeyChar != Keys.Tab))
             {
-                SelectRecipe(treeView.SelectedNode);
+                e.Handled = true;
             }
         }
+
+        #endregion
+
+        #region Results page delegates
+
+        private void Link_Click(object sender, LinkClickedEventArgs e)
+        {
+            SearchByLink(e.LinkText);
+        }
+
+        private void Label_Click(object sender, EventArgs e)
+        {
+            Object tag = null;
+            if (sender is KryptonLabel klabel) tag = klabel.Tag;
+            if (sender is Label label) tag = label.Tag;
+            if (tag == null || string.IsNullOrEmpty((string)tag)) return;
+            SearchByLink((string)tag);
+        }
+
+        private void LabelIndustry_Click(object sender, EventArgs e)
+        {
+            var tag = "";
+            var text = "";
+            if (sender is KryptonLabel klabel)
+            {
+                if (klabel.Tag is string tg) tag = tg;
+                text = klabel.Text;
+            }
+            else
+            if (sender is Label label)
+            {
+                if (label.Tag is string tg) tag = tg;
+                text = label.Text;
+            }
+            if (string.IsNullOrEmpty(tag) && string.IsNullOrEmpty(text))
+                return;
+
+            var products = DUData.Recipes.Where(x => x.Value?.Industry != null &&
+                    x.Value?.Industry.Equals(text, StringComparison.InvariantCultureIgnoreCase) == true)
+                    .Select(x => x.Value).ToList();
+            if (products?.Any() != true)
+            {
+                return;
+            }
+
+            products.Sort(RecipeNameComparer);
+
+            var page = kryptonNavigator1.Pages.FirstOrDefault(x => x.Text.StartsWith(DUData.IndyProductsTabTitle));
+            if (page == null)
+            {
+                page = NewPage(DUData.IndyProductsTabTitle, null);
+                kryptonNavigator1.Pages.Insert(0, page);
+            }
+            if (page == null) return;
+            kryptonNavigator1.SelectedPage = page;
+
+            page.Controls.Clear();
+            AddTabCloseButton(page);
+
+            var panel = AddFlowLabel(page.Controls, text+" produces:", FontStyle.Bold);
+            panel.Dock = DockStyle.Top;
+
+            var grid = new TableLayoutPanel
+            {
+                AutoScroll = true,
+                AutoSize = true,
+                Dock = DockStyle.Fill,
+                ColumnCount = 1,
+                RowCount = products.Count,
+                Margin = new Padding(0, 22, 0, 0),
+                Padding = new Padding(0, 22, 0, 10)
+            };
+            page.Controls.Add(grid);
+
+            grid.SuspendLayout();
+            foreach (var prod in products)
+            {
+                AddLinkedLabel(grid.Controls, prod.Name, prod.Key).Click += Label_Click;
+            }
+            grid.ResumeLayout();
+        }
+
+        #endregion
+
+        #region Tools events
 
         private void UpdateMarketValuesToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -588,7 +459,7 @@ namespace DU_Industry_Tool
                 List<ulong> toRemove = new List<ulong>();
                 foreach(var order in _market.MarketOrders)
                 {
-                    var recipe = _manager.Recipes.Values.Where(r => r.NqId == order.Value.ItemType).FirstOrDefault();
+                    var recipe =  DUData.Recipes.Values.FirstOrDefault(r => r.NqId == order.Value.ItemType);
                     if (recipe != null && recipe.ParentGroupName == "Ore")
                         toRemove.Add(order.Key);
 
@@ -602,10 +473,10 @@ namespace DU_Industry_Tool
                 // Process them and leave them so they show in exports
                 foreach (var order in _market.MarketOrders)
                 {
-                    var recipe = _manager.Recipes.Values.Where(r => r.NqId == order.Value.ItemType).FirstOrDefault();
+                    var recipe =  DUData.Recipes.Values.FirstOrDefault(r => r.NqId == order.Value.ItemType);
                     if (recipe != null && recipe.ParentGroupName == "Ore")
                     {
-                        var ore = _manager.Ores.Where(o => o.Key.ToLower() == recipe.Key.ToLower()).FirstOrDefault();
+                        var ore = DUData.Ores.FirstOrDefault(o => o.Key.ToLower() == recipe.Key.ToLower());
                         if (ore != null)
                         {
                             var orders = _market.MarketOrders.Values.Where(o => o.ItemType == recipe.NqId && o.BuyQuantity < 0 && DateTime.Now < o.ExpirationDate && o.Price > 0);
@@ -617,7 +488,7 @@ namespace DU_Industry_Tool
                     }
 
                 }
-                _manager.SaveOreValues();
+                DUData.SaveOreValues();
             }
             loadForm.Dispose();
         }
@@ -631,7 +502,7 @@ namespace DU_Industry_Tool
                 else
                 if (sender is KryptonContextMenuItem kBtn) kBtn.Text = "Filter to Market";
                 treeView.Nodes.Clear();
-                foreach (var group in _manager.Recipes.Values.GroupBy(r => r.ParentGroupName))
+                foreach (var group in DUData.Recipes.Values.GroupBy(r => r.ParentGroupName))
                 {
                     var groupNode = new TreeNode(group.Key);
                     foreach (var recipe in group)
@@ -640,8 +511,7 @@ namespace DU_Industry_Tool
                         {
                             Tag = recipe
                         };
-                        recipe.Node = recipeNode;
-
+                        //recipe.Node = recipeNode;
                         groupNode.Nodes.Add(recipeNode);
                     }
                     treeView.Nodes.Add(groupNode);
@@ -654,7 +524,7 @@ namespace DU_Industry_Tool
                     else
                 if (sender is KryptonContextMenuItem kBtn) kBtn.Text = "Unfilter Market";
                 treeView.Nodes.Clear();
-                foreach (var group in _manager.Recipes.Values.Where(r => _market.MarketOrders.Values.Any(v => v.ItemType == r.NqId)).GroupBy(r => r.ParentGroupName))
+                foreach (var group in  DUData.Recipes.Values.Where(r => _market.MarketOrders.Values.Any(v => v.ItemType == r.NqId)).GroupBy(r => r.ParentGroupName))
                 {
                     var groupNode = new TreeNode(group.Key);
                     foreach (var recipe in group)
@@ -663,8 +533,7 @@ namespace DU_Industry_Tool
                         {
                             Tag = recipe
                         };
-                        recipe.Node = recipeNode;
-
+                        //recipe.Node = recipeNode;
                         groupNode.Nodes.Add(recipeNode);
                     }
                     treeView.Nodes.Add(groupNode);
@@ -694,23 +563,25 @@ namespace DU_Industry_Tool
 
                 int row = 2;
 
-                var recipes = _manager.Recipes.Values.OrderBy(x => x.Name).ToList();
+                var recipes =  DUData.Recipes.Values.OrderBy(x => x.Name).ToList();
                 if (_marketFiltered)
                 {
-                    recipes = _manager.Recipes.Values.Where(r =>
+                    recipes =  DUData.Recipes.Values.Where(r =>
                         _market.MarketOrders.Values.Any(v => v.ItemType == r.NqId)).ToList();
                 }
 
+                Text = $"0 / {recipes.Count}";
                 foreach(var recipe in recipes)
                 {
                     worksheet.Cell(row, 1).Value = recipe.Name;
-                    var costToMake = _manager.GetTotalCost(recipe.Key, silent: true);
+                    Calculator.Initialize();
+                    var costToMake = Calculator.CalculateRecipe(recipe.Key, silent: true);
                     worksheet.Cell(row, 2).Value = Math.Round(costToMake,2);
 
                     var orders = _market.MarketOrders.Values.Where(o => o.ItemType == recipe.NqId && o.BuyQuantity < 0 && DateTime.Now < o.ExpirationDate && o.Price > 0);
 
                     var mostRecentOrder = orders.OrderBy(o => o.Price).FirstOrDefault();
-                    var cost = mostRecentOrder?.Price ?? 0d;
+                    var cost = mostRecentOrder?.Price ?? 0;
                     worksheet.Cell(row, 3).Value = cost;
                     worksheet.Cell(row, 4).Value = recipe.Time;
                     worksheet.Cell(row, 5).FormulaR1C1 = "=((R[0]C[-2]-R[0]C[-3])/R[0]C[-2])";
@@ -720,11 +591,16 @@ namespace DU_Industry_Tool
                     worksheet.Cell(row, 6).FormulaR1C1 = "=(R[0]C[-3]-R[0]C[-4])*(86400/R[0]C[-2])";
                     worksheet.Cell(row, 7).FormulaR1C1 = "=86400/R[0]C[-3]";
                     row++;
+                    if (Utils.MathMod(row, 10) == 0)
+                    {
+                        Text = $"Export to CSV: {row} / {recipes.Count}";
+                    }
                 }
                 worksheet.Range("A1:G1").Style.Font.Bold = true;
                 worksheet.ColumnsUsed().AdjustToContents(1, 50);
                 workbook.SaveAs("Item Export " + DateTime.Now.ToString("yyyy-MM-dd") + ".xlsx");
-                MessageBox.Show("Exported to Item Export " + DateTime.Now.ToString("yyyy-MM-dd") + ".xlsx in the same folder as the exe!");
+                ProductionListUpdates(null);
+                MessageBox.Show("Export 'Item export " + DateTime.Now.ToString("yyyy-MM-dd") + ".xlsx' in the same folder as this tool!");
             }
         }
 
@@ -750,8 +626,8 @@ namespace DU_Industry_Tool
 
                 worksheet.Row(1).Style.Font.SetBold();
 
-                int row = 2;
-                var ingredients = _manager.GetIngredientRecipes(recipe.Key).OrderByDescending(i => i.Level).GroupBy(i => i.Name);
+                var row = 2;
+                var ingredients = Calculator.GetIngredientRecipes(recipe.Key).OrderByDescending(i => i.Tier).GroupBy(i => i.Name);
                 if (!ingredients?.Any() == true) return;
                 try
                 {
@@ -760,13 +636,14 @@ namespace DU_Industry_Tool
                         var groupSum = group.Sum(g => g.Quantity);
                         worksheet.Cell(row, 3).Value = group.First().Name;
                         worksheet.Cell(row, 4).FormulaA1 = $"=B2*{groupSum}";
-                        double outputMult = 1;
-                        var talents = _manager.Talents.Where(t => t.InputTalent == false && t.ApplicableRecipes.Contains(group.First().Name));
+                        decimal outputMult = 1;
+                        var talents = DUData.Talents.Where(t => t.InputTalent == false &&
+                                                                t.ApplicableRecipes.Contains(group.First().Name));
                         if (talents?.Any() == true)
                             outputMult += talents.Sum(t => t.Multiplier);
-                        if (group.First().ParentGroupName != "Ore")
+                        if (group.First().Recipe.ParentGroupName != "Ore")
                         {
-                            worksheet.Cell(row, 5).Value = (86400 / group.First().Time) * group.First().Products.First().Quantity * outputMult;
+                            worksheet.Cell(row, 5).Value = (86400 / group.First().Recipe.Time) * group.First().Recipe.Products.First().Quantity * outputMult;
                             worksheet.Cell(row, 6).FormulaR1C1 = "=R[0]C[-2]/R[0]C[-1]";
                             worksheet.Cell(row, 7).FormulaR1C1 = "=ROUNDUP(R[0]C[-1])";
                         }
@@ -785,45 +662,17 @@ namespace DU_Industry_Tool
             }
         }
 
+        #endregion
+
+        #region Mainform events
+
         private void OnMainformResize(object sender, EventArgs e)
         {
             kryptonNavigator1.Left = searchPanel.Width + 0;
             kryptonNavigator1.Top = kryptonRibbon.Height + 0;
             kryptonNavigator1.Height = kryptonWorkspaceCell1.Height - 2;
             kryptonNavigator1.Width = ClientSize.Width - searchPanel.Width - 0;
-            _infoPanel = null;
-            _costDetailsPanel = null;
-            _costDetailsLabel = null;
-            if (kryptonNavigator1.SelectedPage == null) return;
-            if (kryptonNavigator1.SelectedPage.Controls.Count > 0 &&
-                kryptonNavigator1.SelectedPage.Controls[0] is ContentDocument xDoc)
-            {
-                _infoPanel = xDoc.InfoPanel;
-                _costDetailsPanel = xDoc.CostDetailsPanel;
-                if (_costDetailsPanel?.Controls.Count > 0)
-                {
-                    _costDetailsLabel = _costDetailsPanel.Controls[0] as TextBox;
-                }
-            }
-            if (_costDetailsPanel == null || _infoPanel == null) return;
-            _costDetailsPanel.SuspendLayout();
-            try
-            {
-                _costDetailsPanel.AutoSize = false;
-                _costDetailsPanel.Height = kryptonNavigator1.SelectedPage.Height - 4;
-                _costDetailsPanel.Width = kryptonNavigator1.SelectedPage.Width - _costDetailsPanel.Left;
-                if (_costDetailsLabel == null) return;
-                _costDetailsLabel.AutoSize = false;
-                _costDetailsLabel.Width  = _costDetailsPanel.Width  - 8;
-                _costDetailsLabel.Height = _costDetailsPanel.Height - 8;
-            }
-            finally
-            {
-                _costDetailsPanel.ResumeLayout(false);
-            }
         }
-
-        // Krypton related stuff
 
         private void MainForm_Load(object sender, EventArgs e)
         {
@@ -835,33 +684,143 @@ namespace DU_Industry_Tool
             }
             kryptonDockingManager.ManageFloating(this);
 
-            Properties.Settings.Default.Reload();
-            switch (Properties.Settings.Default.ThemeName)
-            {
-                case "Office2010Black":
-                    RbOffice2010Black_Click(null, null);
-                    break;
-                case "Office2010Silver":
-                    RbOffice2010BSilver_Click(null, null);
-                    break;
-                default:
-                    RbOffice2010Blue_Click(null, null);
-                    break;
-            }
-
             // Do not allow the left-side page to be closed or made auto hidden/docked
             kryptonPage1.ClearFlags(KryptonPageFlags.DockingAllowAutoHidden |
                             KryptonPageFlags.DockingAllowDocked |
                             KryptonPageFlags.DockingAllowClose);
 
-            QuantityBox.SelectionChangeCommitted += QuantityBoxOnSelectionChangeCommitted;
-            kryptonNavigator1.SelectedPageChanged += KryptonNavigator1OnSelectedPageChanged;
-            RbnBtnProductionList.Click += RbnBtnProductionList_Click;
             OnMainformResize(sender, e);
-            this.Resize += OnMainformResize;
+
+            Properties.Settings.Default.Reload();
+            ApplySettings();
+
+            _startUp = false;
         }
 
-        private static KryptonPage NewPage(string name, Control content)
+        private void MainForm_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (!e.Control) return;
+            // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
+            switch (e.KeyCode)
+            {
+                case Keys.O: // Open a production list from file
+                    RbnBtnProductionListLoad_Click(RbnBtnProductionListLoad, e);
+                    e.Handled = true;
+                    break;
+                case Keys.S: // Save current production list to file
+                    RbnBtnProductionListSave_Click(RbnBtnProductionListSave, e);
+                    e.Handled = true;
+                    break;
+                case Keys.W:
+                    if (kryptonNavigator1.SelectedPage != null)
+                    {
+                        kryptonNavigator1.Pages.Remove(kryptonNavigator1.SelectedPage);
+                        e.Handled = true;
+                    }
+                    break;
+            }
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            SaveSettings();
+        }
+
+        private void SetWindowSettingsIntoScreenArea()
+        {
+            // https://stackoverflow.com/a/48864640
+            // first detect Screen, where we will display the Window
+            // second correct bottom and right position
+            // then the top and left position.
+            // If Size is bigger than current Screen, it's still
+            // possible to move and size the Window
+
+            var Default = new Rect(new System.Windows.Point(200, 200),
+                                   new System.Windows.Size(1500, 900));
+            var LastLeftTop = Properties.Settings.Default.LastLeftTop;
+            var lastSize = Properties.Settings.Default.LastSize;
+
+            // get the screen to display the window
+            var screen = Screen.FromPoint(new Point((int)Default.Left, (int)Default.Top));
+
+            // is bottom position out of screen for more than 1/3 Height of Window?
+            if (LastLeftTop.Y + (lastSize.Height / 3) > screen.WorkingArea.Height)
+                LastLeftTop.Y = screen.WorkingArea.Height - lastSize.Height;
+
+            // is right position out of screen for more than 1/2 Width of Window?
+            if (LastLeftTop.X + (lastSize.Width / 2) > screen.WorkingArea.Width)
+                LastLeftTop.X = screen.WorkingArea.Width - lastSize.Width;
+
+            // is top position out of screen?
+            if (LastLeftTop.Y < screen.WorkingArea.Top)
+                LastLeftTop.Y = screen.WorkingArea.Top;
+
+            // is left position out of screen?
+            if (LastLeftTop.X < screen.WorkingArea.Left)
+                LastLeftTop.X = screen.WorkingArea.Left;
+
+            this.Left = LastLeftTop.X;
+            this.Top = LastLeftTop.Y;
+            this.Width = lastSize.Width > 500 ? lastSize.Width : 1500;
+            this.Height = lastSize.Height > 500 ? lastSize.Height : 900;
+        }
+
+        private void ApplySettings()
+        {
+            CbRestoreWindow.Checked = Properties.Settings.Default.RestoreWindow;
+            CbStartupProdList.Checked = Properties.Settings.Default.LaunchProdList;
+            if (Properties.Settings.Default.ThemeId >= 0)
+            {
+                kryptonManager.GlobalPaletteMode = (PaletteModeManager)Properties.Settings.Default.ThemeId;
+            }
+
+            if (!_startUp) return;
+
+            if (CbRestoreWindow.Checked)
+            {
+                SetWindowSettingsIntoScreenArea();
+            }
+
+            try
+            {
+                var recentsList = JsonConvert.DeserializeObject<string[]>(Properties.Settings.Default.RecentProdLists);
+                if (recentsList != null)
+                {
+                    CbRecentLists.Items.Clear();
+                    CbRecentLists.Items.AddRange(recentsList);
+                }
+            }
+            catch (Exception)
+            {
+            }
+
+            LoadAndRunProductionList(Properties.Settings.Default.LastProductionList);
+        }
+
+        private void SaveSettings()
+        {
+            if (_startUp) return;
+            var recentsList = JsonConvert.SerializeObject(CbRecentLists.Items);
+            Properties.Settings.Default.RecentProdLists = recentsList;
+            Properties.Settings.Default.LastLeftTop = new System.Drawing.Point(Left, Top);
+            Properties.Settings.Default.LastSize = new System.Drawing.Size(Width, Height);
+            Properties.Settings.Default.LaunchProdList = CbStartupProdList.Checked;
+            Properties.Settings.Default.RestoreWindow = CbRestoreWindow.Checked;
+            Properties.Settings.Default.ThemeId = (int)kryptonManager.GlobalPaletteMode;
+            //Properties.Settings.Default.ThemeName = kryptonManager.GlobalPaletteMode.ToString();
+            Properties.Settings.Default.Save();
+        }
+
+        private void CbRestoreWindow_CheckedChanged(object sender, EventArgs e)
+        {
+            SaveSettings();
+        }
+
+        #endregion
+
+        #region Navigator related events
+
+        private static KryptonPage NewPage(string name, IContentDocument content)
         {
             var p = new KryptonPage(name)
             {
@@ -871,54 +830,120 @@ namespace DU_Industry_Tool
             };
             p.SetFlags(KryptonPageFlags.DockingAllowDocked | KryptonPageFlags.DockingAllowClose);
             if (content == null) return p;
-            content.Dock = DockStyle.Fill;
-            p.Controls.Add(content);
+            ((Control)content).Dock = DockStyle.Fill;
+            p.Controls.Add((Control)content);
             return p;
         }
 
-        private ContentDocument NewDocument(string title = null)
+        private IContentDocument NewDocument(string title = null)
         {
-            _infoPanel = null;
-            _costDetailsPanel = null;
             if (kryptonNavigator1 == null) return null;
             var oldPage = kryptonNavigator1.Pages.FirstOrDefault(x => x.Text == title);
-            if (oldPage != null)
+            if (oldPage != null && oldPage.Controls.Count > 0)
             {
-                if (oldPage.Controls.Count > 0 && oldPage.Controls[0] is ContentDocument xDoc)
+                if (oldPage.Controls[0] is IContentDocument xDoc)
                 {
-                    _infoPanel = xDoc.InfoPanel;
+                    xDoc.HideAll();
                     kryptonNavigator1.SelectedPage = oldPage;
                     return xDoc;
                 }
             }
-            var newDoc = new ContentDocument();
-            _infoPanel = newDoc.InfoPanel;
-            var page = NewPage(title ?? "Cost", newDoc);
+            var newDoc = new ContentDocumentTree();
+            var page = NewPage(title ?? "Recipe", newDoc);
             kryptonNavigator1.Pages.Add(page);
             kryptonNavigator1.SelectedPage = page;
+            AddTabCloseButton(kryptonNavigator1.SelectedPage);
             return newDoc;
         }
 
-        private void RibbonAppButtonExit_Click(object sender, EventArgs e)
+        private void AddTabCloseButton(KryptonPage page)
         {
-            Close();
+            // Add a close button
+            var bsa = new ButtonSpecAny
+            {
+                Style = PaletteButtonStyle.FormClose,
+                Type = PaletteButtonSpecStyle.Close,
+                Tag = kryptonNavigator1.SelectedPage,
+                Visible = true,
+            };
+            bsa.Click += BsaOnClick;
+            page.ButtonSpecs.Add(bsa);
+        }
+
+        private void BsaOnClick(object sender, EventArgs e)
+        {
+            if (sender is ButtonSpecAny btn && btn.Tag is KryptonPage page)
+            {
+                kryptonNavigator1.Pages.Remove(page);
+            }
         }
 
         private void KryptonDockableWorkspace_WorkspaceCellAdding(object sender, WorkspaceCellEventArgs e)
         {
             e.Cell.Button.CloseButtonAction = CloseButtonAction.RemovePageAndDispose;
-            // Remove the context menu from the tabs bar, as it is not relevant to this sample
+            // Remove the context menu from the tabs bar, as it is not relevant
             e.Cell.Button.ContextButtonDisplay = ButtonDisplay.Hide;
             e.Cell.Button.NextButtonDisplay = ButtonDisplay.Hide;
             e.Cell.Button.PreviousButtonDisplay = ButtonDisplay.Hide;
         }
 
+        private void KryptonNavigator1_TabCountChanged(object sender, EventArgs e)
+        {
+            if (GetProductionPage() == null)
+            {
+                ProductionListClose();
+            }
+            if (kryptonNavigator1.Pages.Count == 0)
+            {
+                Calculator.Initialize();
+            }
+        }
+
         private void KryptonNavigator1OnSelectedPageChanged(object sender, EventArgs e)
         {
             if(_navUpdating || !(sender is KryptonNavigator nav && nav.SelectedPage != null)) return;
+            ProductionListUpdates(sender);
             if (nav.SelectedPage.Controls.Count == 0) return;
-            SearchBox.Text = nav.SelectedPage.Text;
-            //SearchButton_Click(SearchButton, e);
+            if (!DUData.IsIgnorableTitle(nav.SelectedPage.Text))
+            {
+                SearchBox.Text = nav.SelectedPage.Text;
+            }
+            OnMainformResize(null, null);
+        }
+
+        private KryptonPage GetProductionPage(bool remove = false)
+        {
+            var page = kryptonNavigator1.Pages.FirstOrDefault(x => x.Text == DUData.ProductionListTitle);
+            if (!remove) return page;
+            kryptonNavigator1.Pages.Remove(page);
+            return null;
+        }
+
+        #endregion
+
+        #region Ribbon related events
+
+        private void BtnTalents_Click(object sender, EventArgs e)
+        {
+            var form = new SkillForm();
+            form.ShowDialog(this);
+        }
+
+        private void BtnOreValues_Click(object sender, EventArgs e)
+        {
+            var form = new OreValueForm();
+            form.ShowDialog(this);
+        }
+
+        private void BtnSchematics_Click(object sender, EventArgs e)
+        {
+            var form = new SchematicValueForm();
+            form.ShowDialog(this);
+        }
+
+        private void RibbonAppButtonExit_Click(object sender, EventArgs e)
+        {
+            Close();
         }
 
         private void RibbonButtonAboutClick(object sender, EventArgs e)
@@ -939,52 +964,187 @@ namespace DU_Industry_Tool
             SaveSettings();
         }
 
-        private void RbOffice2010Black_Click(object sender, EventArgs e)
+        private void RbOffice365White_Click(object sender, EventArgs e)
         {
-            kryptonManager.GlobalPaletteMode = PaletteModeManager.Office2010Black;
+            kryptonManager.GlobalPaletteMode = PaletteModeManager.Office365White;
             SaveSettings();
         }
 
-        private void SaveSettings()
+        private void CmbThemes_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            Properties.Settings.Default.ThemeName = kryptonManager.GlobalPaletteMode.ToString();
-            Properties.Settings.Default.Save();
+            var idx = ((KryptonThemeComboBox)CmbThemes.CustomControl).ThemeSelectedIndex;
+            if (idx >= 0)
+            {
+                kryptonManager.GlobalPaletteMode = (PaletteModeManager)idx;
+            }
         }
+
+        #endregion
+
+        #region Production List
 
         private void RbnBtnProductionList_Click(object sender, EventArgs e)
         {
             var form = new ProductionListForm(_manager);
 
-            foreach (var entry in _manager.RecipeNames)
+            foreach (var entry in DUData.RecipeNames)
             {
                 form.RecipeNames.Items.Add(entry);
             }
             var result = form.ShowDialog(this);
             if (result == DialogResult.Cancel) return;
+            ProcessProductionList();
+        }
 
-            // Let Manager prepare the compound recipe which includes
-            // all items' ingredients and the items as products.
-            if (!_manager.PrepareProductListRecipe())
-            {
-                KryptonMessageBox.Show("Production list could not be prepared!", "Failure");
-                return;
-            }
-
-            // TODO develop new ContentDocument/method for displaying these results?
-            Calculator.Initialize();
+        private void LoadAndRunProductionList(string filename)
+        {
             try
             {
-                _manager.ProductionListMode = true;
-                SelectRecipe(new TreeNode{
-                    Text = "Production List",
-                    Tag = _manager.CompoundRecipe
-                });
+                if (string.IsNullOrEmpty(filename) || !File.Exists(filename))
+                    return;
+                if (!_manager.Databindings.Load(filename) || !_manager.Databindings.ListLoaded)
+                    return;
+                StoreLatestList(filename);
+                ProcessProductionList();
             }
-            finally
+            catch (Exception)
             {
-                _manager.ProductionListMode = false;
+                // ignore
             }
         }
+
+        private void StoreLatestList(string filename)
+        {
+            if (string.IsNullOrEmpty(filename) || !File.Exists(filename)) return;
+            Properties.Settings.Default.LastProductionList = filename;
+            SaveSettings();
+            if (!CbRecentLists.Items.Contains(filename))
+            {
+                CbRecentLists.Items.Insert(0, filename);
+                CbRecentLists.SelectedIndex = 0;
+                return;
+            }
+            CbRecentLists.SelectedIndex = CbRecentLists.Items.IndexOf(filename);
+        }
+
+        private void CbRecentLists_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            if (!(sender is KryptonRibbonGroupComboBox cb)) return;
+            LoadAndRunProductionList(cb.Text);
+        }
+
+        private void CbStartupProdList_CheckedChanged(object sender, EventArgs e)
+        {
+            SaveSettings();
+        }
+
+        private void RbnBtnProductionListLoad_Click(object sender, EventArgs e)
+        {
+            if (!ProductionListForm.LoadList(_manager)) return;
+            if (!_manager.Databindings.ListLoaded) return;
+            StoreLatestList(_manager.Databindings.Filepath);
+            ProcessProductionList();
+        }
+
+        private void RbnBtnProductionListSave_Click(object sender, EventArgs e)
+        {
+            if (!ProductionListForm.SaveList(_manager)) return;
+            StoreLatestList(_manager.Databindings.Filepath);
+            KryptonMessageBox.Show(@"Production List saved to:"+Environment.NewLine+
+                                   _manager.Databindings.Filepath, @"Success",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void ProcessProductionList()
+        {
+            // Let Manager prepare the compound recipe which includes
+            // all items' ingredients and the items as products.
+            BeginInvoke((MethodInvoker)delegate()
+            {
+                if (!_manager.Databindings.PrepareProductListRecipe())
+                {
+                    KryptonMessageBox.Show("Production List could not be prepared!", "Failure");
+                    return;
+                }
+
+                DUData.ProductionListMode = true;
+                try
+                {
+                    SelectRecipe(new TreeNode
+                    {
+                        Text = DUData.ProductionListTitle,
+                        Tag = DUData.CompoundRecipe
+                    });
+                }
+                finally
+                {
+                    DUData.ProductionListMode = false;
+                }
+            });
+        }
+
+        private void ProductionListRecalc_Click(object sender, EventArgs e)
+        {
+            ProcessProductionList();
+        }
+
+        private void BtnProdListAdd_Click(object sender, EventArgs e)
+        {
+            if (DUData.IsIgnorableTitle(kryptonNavigator1.SelectedPage?.Text)) return;
+            if (kryptonNavigator1.SelectedPage.Controls[0] is IContentDocument doc)
+            {
+                _manager.Databindings.Add(kryptonNavigator1.SelectedPage.Text, doc.Quantity);
+            }
+        }
+
+        private void BtnProdListRemove_Click(object sender, EventArgs e)
+        {
+            if (kryptonNavigator1.SelectedPage == null) return;
+            _manager.Databindings.Remove(kryptonNavigator1.SelectedPage.Text);
+        }
+
+        private void BtnProdListClose_Click(object sender, EventArgs e)
+        {
+            if (KryptonMessageBox.Show(@"Really close current Production List?",
+                @"Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)== DialogResult.Yes)
+            {
+                GetProductionPage(true);
+            }
+        }
+
+        private void ProductionListClose()
+        {
+            _manager.Databindings.Clear();
+            CbRecentLists.SelectedIndex = -1;
+            CbRecentLists.Text = "";
+            Properties.Settings.Default.LastProductionList = "";
+            SaveSettings();
+            ProductionListUpdates(null);
+        }
+
+        private void ProductionListUpdates(object sender)
+        {
+            BtnProdListAdd.Enabled = !DUData.IsIgnorableTitle(kryptonNavigator1.SelectedPage?.Text);
+            BtnProdListClose.Enabled = _manager.Databindings.HasData || _manager.Databindings.ListLoaded;
+            BtnProdListRemove.Enabled = BtnProdListAdd.Enabled && _manager.Databindings.HasData;
+            RbnBtnProductionListSave.Enabled = BtnProdListClose.Enabled;
+            if (_navUpdating) return;
+            Text = "DU Industry Tool " + Utils.GetVersion();
+            if (!RbnBtnProductionListSave.Enabled) return;
+            Text += " (";
+            if (_manager.Databindings.ListLoaded)
+            {
+                Text += DUData.ProductionListTitle + ": " + _manager.Databindings.GetFilename() +
+                        " / " + _manager.Databindings.Count;
+            }
+            else
+            {
+                Text += DUData.ProductionListTitle + " " + _manager.Databindings.Count;
+            }
+            Text += ")";
+        }
+
+        #endregion Production List
 
     } // Mainform
 }

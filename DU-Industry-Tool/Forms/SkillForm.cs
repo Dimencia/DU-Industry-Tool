@@ -2,81 +2,112 @@
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-//using Timer = System.Threading.Timer;
+using Krypton.Toolkit;
 
 namespace DU_Industry_Tool
 {
-    public sealed partial class SkillForm : Form
+    public sealed partial class SkillForm : KryptonForm
     {
-        private readonly IndustryManager _manager;
-        private readonly FlowLayoutPanel _mainPanel;
+        private readonly Color HighlightColor = Color.Aquamarine;
 
-        public SkillForm(IndustryManager manager)
+        public SkillForm()
         {
             InitializeComponent();
-            this.SuspendLayout();
-            _manager = manager;
-            _mainPanel = new FlowLayoutPanel
-            {
-                FlowDirection = FlowDirection.TopDown,
-                WrapContents = false,
-                AutoScroll = true,
-                AutoSize = true
-            };
-            _mainPanel.SuspendLayout();
-            foreach (var talent in manager.Talents.OrderBy(t => t.Name))
+            TimerLoad.Enabled = true;
+        }
+
+        private void TimerLoad_Tick(object sender, EventArgs e)
+        {
+            TimerLoad.Enabled = false;
+            FillData();
+        }
+
+        public void FillData()
+        {
+            SuspendLayout();
+
+            FlowPanel.BringToFront();
+            FlowPanel.SuspendLayout();
+            var applicableTalentsExist = Calculator.ApplicableTalents?.Any() == true;
+            foreach (var talent in DUData.Talents.OrderBy(t => t.Name))
             {
                 var panel = new FlowLayoutPanel
                 {
                     WrapContents = false,
                     AutoSize = true,
-                    Margin = new System.Windows.Forms.Padding(0)
+                    Margin = new Padding(0)
                 };
-                if (manager.ApplicableTalents?.Any() == true && manager.ApplicableTalents.Contains(talent.Name))
+                if (applicableTalentsExist && Calculator.ApplicableTalents.Contains(talent.Name))
                 {
-                    panel.BackColor = Color.Aquamarine;
+                    panel.BackColor = HighlightColor;
                 }
                 var label = new Label
                 {
                     Text = talent.Name,
                     AutoSize = false,
-                    Location = new System.Drawing.Point(4, 12),
-                    Size = new System.Drawing.Size(250, 30),
-                    Margin = new System.Windows.Forms.Padding(4, 4, 4, 0),
+                    Location = new Point(4, 12),
+                    Size = new Size(250, 30),
+                    Margin = new Padding(4, 4, 4, 0),
                     TabStop = false
                 };
                 panel.Controls.Add(label);
 
-                var textbox = new TextBox
+                var textbox = new KryptonNumericUpDown()
                 {
                     Text = talent.Value.ToString(),
-                    Location = new System.Drawing.Point(258, 0),
-                    Size = new System.Drawing.Size(30, 32),
-                    MaxLength = 1
+                    Location = new Point(258, 0),
+                    Size = new Size(30, 32),
+                    Minimum = 0,
+                    Maximum = 5,
+                    InterceptArrowKeys = true,
+                    UpDownAlign = LeftRightAlignment.Right
                 };
+                textbox.KeyPress += TextboxOnKeyPress;
+                textbox.Enter += TextboxOnEnter;
                 panel.Controls.Add(textbox);
-                _mainPanel.Controls.Add(panel);
-                _mainPanel.ScrollControlIntoView(panel);
+                FlowPanel.Controls.Add(panel);
+                FlowPanel.ScrollControlIntoView(panel);
             }
-            _mainPanel.ResumeLayout();
-            this.Controls.Add(_mainPanel);
-            this.ResumeLayout();
-            this.AutoScroll = true;
+            FlowPanel.ResumeLayout();
+            LblHint.Visible = false;
+            Controls.Add(FlowPanel);
+            ResumeLayout();
+            AutoScroll = true;
+            BtnSave.Enabled = true;
         }
 
-        private void Button1_Click(object sender, EventArgs e)
+        private void TextboxOnEnter(object sender, EventArgs e)
         {
-            foreach(var panel in _mainPanel.Controls.OfType<FlowLayoutPanel>())
+            // Select value when entering editor
+            if (sender is KryptonNumericUpDown comp && comp.Text.Length > 0)
+                comp.Select(0, 1);
+        }
+
+        private void TextboxOnKeyPress(object sender, KeyPressEventArgs e)
+        {
+            // Prevent more than 1 digit, replace existing text
+            if (sender is KryptonNumericUpDown comp && comp.Text.Length > 0)
             {
-                var talentName = (panel.Controls[0] as Label).Text;
-                var talentValue = (panel.Controls[1] as TextBox).Text;
-                if (int.TryParse(talentValue, out var value))
+                if (!char.IsDigit(e.KeyChar))
                 {
-                    _manager.Talents.First(t => t.Name == talentName).Value = value;
+                    e.Handled = true;
+                    return;
                 }
+                comp.Text = "";
             }
-            _manager.SaveTalents();
-            this.Close();
+        }
+
+        private void BtnSave_Click(object sender, EventArgs e)
+        {
+            foreach (var panel in FlowPanel.Controls.OfType<FlowLayoutPanel>())
+            {
+                if (panel.Controls.Count != 2) continue;
+                var talentName = (panel.Controls[0] as Label).Text;
+                var talentValue = (panel.Controls[1] as KryptonNumericUpDown).Value;
+                DUData.Talents.First(t => t.Name == talentName).Value = (int)talentValue;
+            }
+            DUData.SaveTalents();
+            Close();
         }
     }
 }

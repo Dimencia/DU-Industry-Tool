@@ -25,18 +25,6 @@ namespace DU_Industry_Tool.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Office2010Blue")]
-        public string ThemeName {
-            get {
-                return ((string)(this["ThemeName"]));
-            }
-            set {
-                this["ThemeName"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string ProdListDirectory {
             get {
@@ -44,6 +32,90 @@ namespace DU_Industry_Tool.Properties {
             }
             set {
                 this["ProdListDirectory"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool LaunchProdList {
+            get {
+                return ((bool)(this["LaunchProdList"]));
+            }
+            set {
+                this["LaunchProdList"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LastProductionList {
+            get {
+                return ((string)(this["LastProductionList"]));
+            }
+            set {
+                this["LastProductionList"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
+        public global::System.Drawing.Point LastLeftTop {
+            get {
+                return ((global::System.Drawing.Point)(this["LastLeftTop"]));
+            }
+            set {
+                this["LastLeftTop"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
+        public global::System.Drawing.Size LastSize {
+            get {
+                return ((global::System.Drawing.Size)(this["LastSize"]));
+            }
+            set {
+                this["LastSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool RestoreWindow {
+            get {
+                return ((bool)(this["RestoreWindow"]));
+            }
+            set {
+                this["RestoreWindow"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string RecentProdLists {
+            get {
+                return ((string)(this["RecentProdLists"]));
+            }
+            set {
+                this["RecentProdLists"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("-1")]
+        public int ThemeId {
+            get {
+                return ((int)(this["ThemeId"]));
+            }
+            set {
+                this["ThemeId"] = value;
             }
         }
     }
