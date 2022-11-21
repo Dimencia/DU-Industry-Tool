@@ -5,7 +5,7 @@ on:
         paths-ignore:
             - '.git*'
             - '.vscode'
-            - '.github/**/*.yml'
+            #- '.github/**/*.yml'
 
 jobs:
     build:

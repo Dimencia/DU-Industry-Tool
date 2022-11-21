@@ -17,8 +17,6 @@ his website https://du-lua.dev which helped me a lot to update the data displaye
 Binary releases available here:
 https://github.com/tobitege/DU-Industry-Tool/releases
 
-![Overview](https://github.com/tobitege/DU-Industry-Tool/blob/master/DU%20Industry%20Tool%20(Mercury)%20Screenshot.png?raw=true)
-
 # DU-Industry-Tool
 Basic WinForms project that allows you to view calculated values of all known in-game recipes. Has search bar, and ability to drill down through intermediates to find their recipes as well
 
