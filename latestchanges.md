@@ -1,5 +1,8 @@
 # Latest Changes
 
+## v1.0.1
+- Fix for market order reading regex (thanks to Ferry)
+
 ## v1.0.0
 - Major revamp of calculation output as a tree layout 
 - Double-click an ore, pure, product or part in tree to drill-down.
