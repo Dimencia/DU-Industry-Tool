@@ -512,14 +512,14 @@
             this.SearchBox.MaxDropDownItems = 20;
             this.SearchBox.MaxLength = 40;
             this.SearchBox.Name = "SearchBox";
-            this.SearchBox.Size = new System.Drawing.Size(242, 25);
+            this.SearchBox.Size = new System.Drawing.Size(232, 25);
             this.SearchBox.TabIndex = 0;
             // 
             // SearchButton
             // 
             this.SearchButton.AutoSize = true;
             this.SearchButton.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.SearchButton.Location = new System.Drawing.Point(249, 3);
+            this.SearchButton.Location = new System.Drawing.Point(239, 3);
             this.SearchButton.Name = "SearchButton";
             this.SearchButton.Size = new System.Drawing.Size(80, 33);
             this.SearchButton.TabIndex = 1;
@@ -529,7 +529,7 @@
             // QuantityBox
             // 
             this.QuantityBox.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawVariable;
-            this.QuantityBox.DropDownWidth = 80;
+            this.QuantityBox.DropDownWidth = 60;
             this.QuantityBox.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.QuantityBox.IntegralHeight = false;
             this.QuantityBox.Items.AddRange(new object[] {
@@ -546,12 +546,12 @@
             "1000",
             "5000",
             "10000"});
-            this.QuantityBox.Location = new System.Drawing.Point(336, 6);
+            this.QuantityBox.Location = new System.Drawing.Point(326, 6);
             this.QuantityBox.Margin = new System.Windows.Forms.Padding(4, 6, 0, 0);
             this.QuantityBox.MaxDropDownItems = 12;
             this.QuantityBox.MaxLength = 6;
             this.QuantityBox.Name = "QuantityBox";
-            this.QuantityBox.Size = new System.Drawing.Size(80, 25);
+            this.QuantityBox.Size = new System.Drawing.Size(70, 25);
             this.QuantityBox.TabIndex = 2;
             this.QuantityBox.SelectionChangeCommitted += new System.EventHandler(this.QuantityBoxOnSelectionChangeCommitted);
             this.QuantityBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.QuantityBox_KeyPress);
@@ -561,7 +561,7 @@
             this.PreviousButton.AutoSize = true;
             this.PreviousButton.Enabled = false;
             this.PreviousButton.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.PreviousButton.Location = new System.Drawing.Point(375, 38);
+            this.PreviousButton.Location = new System.Drawing.Point(325, 38);
             this.PreviousButton.Name = "PreviousButton";
             this.PreviousButton.Size = new System.Drawing.Size(40, 33);
             this.PreviousButton.TabIndex = 3;

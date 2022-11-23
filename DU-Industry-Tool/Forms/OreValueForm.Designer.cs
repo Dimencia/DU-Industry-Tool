@@ -30,12 +30,12 @@ namespace DU_Industry_Tool
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.oreGrid = new System.Windows.Forms.DataGridView();
             this.BtnSave = new System.Windows.Forms.Button();
             this.OreName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.OrePrice = new Krypton.Toolkit.KryptonDataGridViewMaskedTextBoxColumn();
+            this.Test = new Krypton.Toolkit.KryptonDataGridViewNumericUpDownColumn();
             ((System.ComponentModel.ISupportInitialize)(this.oreGrid)).BeginInit();
             this.SuspendLayout();
             // 
@@ -51,13 +51,13 @@ namespace DU_Industry_Tool
             this.oreGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.oreGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.OreName,
-            this.OrePrice});
+            this.Test});
             this.oreGrid.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
-            this.oreGrid.Location = new System.Drawing.Point(14, 14);
+            this.oreGrid.Location = new System.Drawing.Point(13, 13);
             this.oreGrid.Name = "oreGrid";
             this.oreGrid.RowHeadersWidth = 51;
             this.oreGrid.RowTemplate.Height = 24;
-            this.oreGrid.Size = new System.Drawing.Size(561, 664);
+            this.oreGrid.Size = new System.Drawing.Size(538, 636);
             this.oreGrid.TabIndex = 0;
             // 
             // BtnSave
@@ -66,9 +66,9 @@ namespace DU_Industry_Tool
             | System.Windows.Forms.AnchorStyles.Right)));
             this.BtnSave.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BtnSave.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BtnSave.Location = new System.Drawing.Point(242, 684);
+            this.BtnSave.Location = new System.Drawing.Point(232, 655);
             this.BtnSave.Name = "BtnSave";
-            this.BtnSave.Size = new System.Drawing.Size(100, 32);
+            this.BtnSave.Size = new System.Drawing.Size(96, 31);
             this.BtnSave.TabIndex = 1;
             this.BtnSave.Text = "&Save";
             this.BtnSave.UseVisualStyleBackColor = true;
@@ -77,37 +77,45 @@ namespace DU_Industry_Tool
             // OreName
             // 
             this.OreName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.OreName.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.OreName.DefaultCellStyle = dataGridViewCellStyle1;
             this.OreName.HeaderText = "Name";
+            this.OreName.MaxInputLength = 30;
             this.OreName.MinimumWidth = 60;
             this.OreName.Name = "OreName";
+            this.OreName.ReadOnly = true;
             this.OreName.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             // 
-            // OrePrice
+            // Test
             // 
-            this.OrePrice.AllowPromptAsInput = false;
-            this.OrePrice.AsciiOnly = true;
-            this.OrePrice.CutCopyMaskFormat = System.Windows.Forms.MaskFormat.ExcludePromptAndLiterals;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.OrePrice.DefaultCellStyle = dataGridViewCellStyle4;
-            this.OrePrice.HeaderText = "Quanta/L";
-            this.OrePrice.Mask = "########";
-            this.OrePrice.MinimumWidth = 150;
-            this.OrePrice.Name = "OrePrice";
-            this.OrePrice.RejectInputOnFirstFailure = true;
-            this.OrePrice.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.OrePrice.TextMaskFormat = System.Windows.Forms.MaskFormat.ExcludePromptAndLiterals;
-            this.OrePrice.Width = 150;
+            this.Test.DecimalPlaces = 2;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Segoe UI", 10.01739F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.NullValue = "0";
+            this.Test.DefaultCellStyle = dataGridViewCellStyle2;
+            this.Test.HeaderText = "Quanta/L";
+            this.Test.Maximum = new decimal(new int[] {
+            99000000,
+            0,
+            0,
+            0});
+            this.Test.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.Test.MinimumWidth = 60;
+            this.Test.Name = "Test";
+            this.Test.TrailingZeroes = true;
+            this.Test.Width = 200;
             // 
             // OreValueForm
             // 
             this.AcceptButton = this.BtnSave;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(120F, 120F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(115F, 115F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(590, 722);
+            this.ClientSize = new System.Drawing.Size(565, 692);
             this.Controls.Add(this.BtnSave);
             this.Controls.Add(this.oreGrid);
             this.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -124,6 +132,6 @@ namespace DU_Industry_Tool
         private System.Windows.Forms.DataGridView oreGrid;
         private System.Windows.Forms.Button BtnSave;
         private DataGridViewTextBoxColumn OreName;
-        private Krypton.Toolkit.KryptonDataGridViewMaskedTextBoxColumn OrePrice;
+        private Krypton.Toolkit.KryptonDataGridViewNumericUpDownColumn Test;
     }
 }

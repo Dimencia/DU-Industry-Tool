@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.0.2
+- Fixed industry size detail for 259 recipes
+- Ore values: improved editing of price
+
 ## v1.0.1
 - Fix for market order reading regex (thanks to Ferry)
 

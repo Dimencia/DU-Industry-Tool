@@ -7,7 +7,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Windows.Forms;
 using Krypton.Toolkit;
 
 namespace DU_Industry_Tool
