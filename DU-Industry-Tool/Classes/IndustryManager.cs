@@ -397,6 +397,16 @@ namespace DU_Industry_Tool
                 //    DetermineIndustryFor(kvp.Value);
                 //}
 
+                //if (!string.IsNullOrEmpty(kvp.Value.SchemaType))
+                //{
+                //    var r = DUData.Schematics.FirstOrDefault(x => x.Key == kvp.Value.SchemaType);
+                //    if (r.Value != null && kvp.Value.SchemaPrice != r.Value.Cost)
+                //    {
+                //        Console.WriteLine(kvp.Value.Name + $" schema cost fix {kvp.Value.SchemaPrice} to {r.Value.Cost}");
+                //        kvp.Value.SchemaPrice = r.Value.Cost;
+                //    }
+                //}
+
                 // Skip further processing on some conditions...
                 if (SkipProcessing ||
                     (!string.IsNullOrEmpty(kvp.Value.SchemaType) && kvp.Value.SchemaPrice > 0) ||
