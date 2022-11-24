@@ -184,6 +184,7 @@ namespace DU_Industry_Tool
             }
 
             // calculate T2+ ore schematic costs
+            calc.ResetSchematicCost();
             CollectSchematics(calc, SummationType.PURES);
             CollectSchematics(calc, SummationType.PRODUCTS);
 
@@ -695,6 +696,11 @@ namespace DU_Industry_Tool
         public void AddSchematicCost(decimal quantity)
         {
             SchematicsCost += quantity;
+        }
+
+        public void ResetSchematicCost()
+        {
+            SchematicsCost = 0;
         }
 
         public void AddSchema(string schemaKey, int qty, decimal amount)
