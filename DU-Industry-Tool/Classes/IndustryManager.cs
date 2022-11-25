@@ -7,7 +7,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Windows.Forms;
 using Krypton.Toolkit;
 
 namespace DU_Industry_Tool
@@ -396,6 +395,16 @@ namespace DU_Industry_Tool
                 //if (string.IsNullOrEmpty(kvp.Value.Industry))
                 //{
                 //    DetermineIndustryFor(kvp.Value);
+                //}
+
+                //if (!string.IsNullOrEmpty(kvp.Value.SchemaType))
+                //{
+                //    var r = DUData.Schematics.FirstOrDefault(x => x.Key == kvp.Value.SchemaType);
+                //    if (r.Value != null && kvp.Value.SchemaPrice != r.Value.Cost)
+                //    {
+                //        Console.WriteLine(kvp.Value.Name + $" schema cost fix {kvp.Value.SchemaPrice} to {r.Value.Cost}");
+                //        kvp.Value.SchemaPrice = r.Value.Cost;
+                //    }
                 //}
 
                 // Skip further processing on some conditions...

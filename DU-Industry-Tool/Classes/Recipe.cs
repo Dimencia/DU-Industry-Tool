@@ -28,6 +28,7 @@ namespace DU_Industry_Tool
                     IsPart = false;
                     IsPure = false;
                     IsProduct = false;
+                    IsFuel = false;
                     return;
                 }
                 IsOre = _parentGroupName.Equals("Ore");
@@ -36,6 +37,7 @@ namespace DU_Industry_Tool
                            _parentGroupName.Equals("Consumables");
                 IsPure = _parentGroupName.Equals("Pure");
                 IsProduct = _parentGroupName.Equals("Product");
+                IsFuel = _parentGroupName.Equals("Fuels");
             }
         }
 
@@ -50,7 +52,9 @@ namespace DU_Industry_Tool
         [JsonIgnore]
         public bool IsProduct { get; protected set; }
         [JsonIgnore]
-        public bool IsBatchmode => IsOre || IsPure || IsProduct;
+        public bool IsFuel { get; protected set; }
+        [JsonIgnore]
+        public bool IsBatchmode => IsOre || IsPure || IsProduct || IsFuel;
     }
 
     public class SchematicRecipe : ProductNameClass

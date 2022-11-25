@@ -1,5 +1,23 @@
 # Changelog
 
+## v1.0.5
+- More corrections in schematics file with regard to release data
+
+## v1.0.4
+- Fixed 771 legacy schematic prices in recipes file
+
+## v1.0.3
+- Fixed fuels schematic quantity calculation
+- Fix duplicate addition of element schematic
+- Fixed version number in About dialog
+
+## v1.0.2
+- Fixed industry size detail for 259 recipes
+- Ore values: improved editing of price
+
+## v1.0.1
+- Fix for market order reading regex (thanks to Ferry)
+
 ## v1.0.0
 - Major revamp of calculation output as a tree layout 
 - Double-click an ore, pure, product or part in tree to drill-down.

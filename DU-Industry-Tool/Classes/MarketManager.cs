@@ -16,7 +16,8 @@ namespace DU_Industry_Tool
     public class MarketManager
     {
         // This is a terrible idea.
-        private readonly Regex MarketRegex = new Regex(@"MarketOrder:\[marketId = ([0-9]*), orderId = ([0-9]*), itemType = ([0-9]*), buyQuantity = ([\-0-9]*), expirationDate = @\([0-9]*\) ([^,]*), updateDate = @\([0-9]*\) ([^,]*), ownerId = EntityId:\[playerId = ([0-9]*), organizationId = ([0-9]*)\], ownerName = ([^,]*), unitPrice = Currency:\[amount = ([0-9]*)");
+        //private readonly Regex MarketRegex = new Regex(@"MarketOrder:\[marketId = ([0-9]*), orderId = ([0-9]*), itemType = ([0-9]*), buyQuantity = ([\-0-9]*), expirationDate = @\([0-9]*\) ([^,]*), updateDate = @\([0-9]*\) ([^,]*), ownerId = EntityId:\[playerId = ([0-9]*), organizationId = ([0-9]*)\], ownerName = ([^,]*), unitPrice = Currency:\[amount = ([0-9]*)");
+        private readonly Regex MarketRegex = new Regex(@"MarketOrder:\[marketId = ([0-9]*), orderId = ([0-9]*), itemType = ([0-9]*), buyQuantity = ([\-0-9]*), expirationDate = @\([0-9]*\) ([^,]*), updateDate = @\([0-9]*\) ([^,]*), unitPrice = Currency:\[amount = ([0-9]*)");
 
         public readonly Dictionary<ulong,MarketData> MarketOrders = new Dictionary<ulong, MarketData>(); // Indexed by orderId for our purposes
         private readonly List<string> CheckedLogFiles = new List<string>();
@@ -43,7 +44,7 @@ namespace DU_Industry_Tool
 
             // Do an initial scan?
             //UpdateMarketData();
-            Console.WriteLine("Parsed " + MarketOrders.Count + " market orders from settings file");
+            //Console.WriteLine("Parsed " + MarketOrders.Count + " market orders from settings file");
         }
 
         public void UpdateMarketData(LoadingForm form = null)
@@ -93,10 +94,10 @@ namespace DU_Industry_Tool
                                     BuyQuantity = long.Parse(match.Groups[4].Value),
                                     ExpirationDate = DateTime.ParseExact(match.Groups[5].Value, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture),
                                     UpdateDate = DateTime.ParseExact(match.Groups[6].Value, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture),
-                                    PlayerId = ulong.Parse(match.Groups[7].Value),
-                                    OrganizationId = ulong.Parse(match.Groups[8].Value),
-                                    OwnerName = match.Groups[9].Value,
-                                    Price = ulong.Parse(match.Groups[10].Value)/100, // Weirdly, their prices are *100
+                                    //PlayerId = ulong.Parse(match.Groups[7].Value),
+                                    //OrganizationId = ulong.Parse(match.Groups[8].Value),
+                                    //OwnerName = match.Groups[9].Value,
+                                    Price = ulong.Parse(match.Groups[7].Value)/100, // Weirdly, their prices are *100
                                     LogDate = lastDate
                                 };
 

@@ -538,7 +538,6 @@ namespace DU_Industry_Tool
                 fontSize += fontDelta;
             }
             Font = new Font("Segoe UI", fontSize, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0)));
-            //kryptonPanel.Font = Font;
             foreach (var ct in this.Controls.OfType<KryptonLabel>())
             {
                 ct.Font = Font;
@@ -549,6 +548,5 @@ namespace DU_Industry_Tool
             }
             treeListView.Font = Font;
         }
-
     }
 }

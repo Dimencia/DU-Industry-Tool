@@ -11,9 +11,9 @@ namespace DU_Industry_Tool
         public long BuyQuantity { get; set; } // Negative when selling
         public DateTime ExpirationDate { get; set; }
         public DateTime UpdateDate { get; set; }
-        public ulong PlayerId { get; set; }
-        public ulong OrganizationId { get; set; }
-        public string OwnerName { get; set; }
+        //public ulong PlayerId { get; set; }
+        //public ulong OrganizationId { get; set; }
+        //public string OwnerName { get; set; }
         public decimal Price { get; set; }
         public DateTime LogDate { get; set; }
     }
