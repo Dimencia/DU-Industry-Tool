@@ -1,5 +1,8 @@
 # Latest Changes
 
+## v1.1.0
+- Updated recipes to include most changes as per DU patch 1.1
+
 ## v1.0.6
 - Applied v1.0.5 corrections to recipes file (was left out due to time constraints)
 - Textual changes from "" to null for unset schematic keys in recipes file
