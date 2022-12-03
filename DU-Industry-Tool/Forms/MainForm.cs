@@ -769,6 +769,7 @@ namespace DU_Industry_Tool
         {
             CbRestoreWindow.Checked = Properties.Settings.Default.RestoreWindow;
             CbStartupProdList.Checked = Properties.Settings.Default.LaunchProdList;
+            CbFullSchematicQty.Checked = Properties.Settings.Default.FullSchematicQuantities;
             if (Properties.Settings.Default.ThemeId >= 0)
             {
                 kryptonManager.GlobalPaletteMode = (PaletteModeManager)Properties.Settings.Default.ThemeId;
@@ -807,7 +808,7 @@ namespace DU_Industry_Tool
             Properties.Settings.Default.LaunchProdList = CbStartupProdList.Checked;
             Properties.Settings.Default.RestoreWindow = CbRestoreWindow.Checked;
             Properties.Settings.Default.ThemeId = (int)kryptonManager.GlobalPaletteMode;
-            //Properties.Settings.Default.ThemeName = kryptonManager.GlobalPaletteMode.ToString();
+            Properties.Settings.Default.FullSchematicQuantities = DUData.FullSchematicQuantities;
             Properties.Settings.Default.Save();
         }
 
@@ -1145,6 +1146,11 @@ namespace DU_Industry_Tool
         }
 
         #endregion Production List
+
+        private void CbFullSchematicQty_CheckedChanged(object sender, EventArgs e)
+        {
+            DUData.FullSchematicQuantities = CbFullSchematicQty.Checked;
+        }
 
     } // Mainform
 }

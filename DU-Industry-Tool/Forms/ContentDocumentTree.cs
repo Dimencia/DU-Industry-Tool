@@ -16,6 +16,7 @@ namespace DU_Industry_Tool
     {
         private bool expand = false;
         private byte[] treeListViewViewState;
+        private float fontSize;
 
         private Random _rand;
         private readonly string[] _funHints = new[]
@@ -47,6 +48,7 @@ namespace DU_Industry_Tool
         {
             InitializeComponent();
             HideAll();
+            fontSize = Font.Size;
         }
 
         public void HideAll()
@@ -362,7 +364,9 @@ namespace DU_Industry_Tool
                 olvColumnQty.AspectGetter = x => (x is RecipeCalculation t && t.Qty > 0 ? $"{t.Qty:N2}" : "");
                 olvColumnAmt.AspectGetter = x => (x is RecipeCalculation t && t.Amt > 0 ? $"{t.Amt:N2}" : "");
 
-                olvColumnSchemataQ.AspectGetter = x => (x is RecipeCalculation t && t.QtySchemata > 0 ? $"{t.QtySchemata:N0}" : "");
+                olvColumnSchemataQ.AspectGetter = x => (x is RecipeCalculation t && t.QtySchemata > 0 
+                    ? (DUData.FullSchematicQuantities ? $"{t.QtySchemata:N0}" : $"{t.QtySchemata:N2}") 
+                    : "");
                 olvColumnSchemataA.AspectGetter = x => (x is RecipeCalculation t && t.AmtSchemata > 0 ? $"{t.AmtSchemata:N2}" : "");
 
                 olvColumnTier.AspectGetter = x => (x is RecipeCalculation t && t.Tier > 0 ? $"{t.Tier}" : "");
@@ -389,6 +393,7 @@ namespace DU_Industry_Tool
         private static DataGridViewRow CreateTalentsRow(Talent talent)
         {
             var row = new DataGridViewRow();
+            row.Height = 32;
             row.Cells.Add(new DataGridViewTextBoxCell());
             row.Cells.Add(new KryptonDataGridViewNumericUpDownCell());
             row.Cells[0].ValueType = typeof(string);
@@ -532,21 +537,11 @@ namespace DU_Industry_Tool
 
         private void SetFont(float fontDelta)
         {
-            var fontSize = this.Font.Size;
-            if ((fontDelta < 0 && fontSize > 8) || (fontDelta > 0 && fontSize < 15))
+            if ((fontDelta < 0 && fontSize > 9) || (fontDelta > 0 && fontSize < 18))
             {
                 fontSize += fontDelta;
+                treeListView.Font = new Font("Segoe UI", fontSize, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0)));
             }
-            Font = new Font("Segoe UI", fontSize, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0)));
-            foreach (var ct in this.Controls.OfType<KryptonLabel>())
-            {
-                ct.Font = Font;
-            }
-            foreach (var ct in this.Controls.OfType<Label>())
-            {
-                ct.Font = Font;
-            }
-            treeListView.Font = Font;
         }
     }
 }

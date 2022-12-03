@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using DocumentFormat.OpenXml;
 using Krypton.Toolkit;
 using Newtonsoft.Json;
 
@@ -253,6 +254,7 @@ namespace DU_Industry_Tool
         ///<br>which can contain any amount of items and is created with the</br>
         ///<br>help of the Production List dialogue/ribbon buttons.</br>
         ///</summary>
+        public static bool FullSchematicQuantities { get; set; }
         public static bool ProductionListMode { get; set; }
         public static SchematicRecipe CompoundRecipe { get; set; }
         public static readonly string CompoundName = "COMPOUNDLIST";

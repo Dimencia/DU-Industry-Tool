@@ -54,10 +54,16 @@ namespace DU_Industry_Tool
             this.BtnFontDown = new Krypton.Toolkit.ButtonSpecHeaderGroup();
             this.LblHint = new System.Windows.Forms.Label();
             this.OrePicture = new System.Windows.Forms.PictureBox();
+            this.BtnRecalc = new Krypton.Toolkit.KryptonButton();
+            this.pictureNano = new System.Windows.Forms.PictureBox();
+            this.GridTalents = new Krypton.Toolkit.KryptonDataGridView();
+            this.ColTitle = new Krypton.Toolkit.KryptonDataGridViewTextBoxColumn();
+            this.ColValue = new Krypton.Toolkit.KryptonDataGridViewNumericUpDownColumn();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.OreImageList = new System.Windows.Forms.ImageList(this.components);
             this.lblBatches = new DU_Industry_Tool.KLabel();
             this.lblBatchesValue = new DU_Industry_Tool.KLabel();
             this.lblCraftTimeInfoValue = new DU_Industry_Tool.KLabel();
-            this.BtnRecalc = new Krypton.Toolkit.KryptonButton();
             this.lblCraftTime = new DU_Industry_Tool.KLabel();
             this.lblDefaultCraftTimeValue = new DU_Industry_Tool.KLabel();
             this.LblPure = new DU_Industry_Tool.KLabel();
@@ -71,17 +77,11 @@ namespace DU_Industry_Tool
             this.lblBasicCostValue = new DU_Industry_Tool.KLabel();
             this.lblCostValue = new DU_Industry_Tool.KLabel();
             this.lblIndustry = new DU_Industry_Tool.KLabel();
-            this.pictureNano = new System.Windows.Forms.PictureBox();
             this.lblNano = new DU_Industry_Tool.KLabel();
             this.lblPerIndustry = new DU_Industry_Tool.KLabel();
             this.lblBasicCost = new DU_Industry_Tool.KLabel();
             this.lblCostFor1 = new DU_Industry_Tool.KLabel();
             this.lblUnitData = new DU_Industry_Tool.KLabel();
-            this.GridTalents = new Krypton.Toolkit.KryptonDataGridView();
-            this.ColTitle = new Krypton.Toolkit.KryptonDataGridViewTextBoxColumn();
-            this.ColValue = new Krypton.Toolkit.KryptonDataGridViewNumericUpDownColumn();
-            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.OreImageList = new System.Windows.Forms.ImageList(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.kryptonPanel)).BeginInit();
             this.kryptonPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.treeListView)).BeginInit();
@@ -414,6 +414,117 @@ namespace DU_Industry_Tool
             this.OrePicture.TabStop = false;
             this.OrePicture.Visible = false;
             // 
+            // BtnRecalc
+            // 
+            this.BtnRecalc.Location = new System.Drawing.Point(502, 158);
+            this.BtnRecalc.Name = "BtnRecalc";
+            this.BtnRecalc.Size = new System.Drawing.Size(108, 46);
+            this.BtnRecalc.TabIndex = 31;
+            this.BtnRecalc.Values.Text = "Recalculate";
+            this.BtnRecalc.Click += new System.EventHandler(this.BtnRecalc_Click);
+            // 
+            // pictureNano
+            // 
+            this.pictureNano.Image = global::DU_Industry_Tool.Properties.Resources.Green_Ball;
+            this.pictureNano.InitialImage = null;
+            this.pictureNano.Location = new System.Drawing.Point(730, 12);
+            this.pictureNano.Margin = new System.Windows.Forms.Padding(2);
+            this.pictureNano.MaximumSize = new System.Drawing.Size(20, 20);
+            this.pictureNano.MinimumSize = new System.Drawing.Size(20, 20);
+            this.pictureNano.Name = "pictureNano";
+            this.pictureNano.Size = new System.Drawing.Size(20, 20);
+            this.pictureNano.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureNano.TabIndex = 9;
+            this.pictureNano.TabStop = false;
+            this.toolTip1.SetToolTip(this.pictureNano, "Green, if the recipe is nano-craftable, else red.");
+            // 
+            // GridTalents
+            // 
+            this.GridTalents.AllowUserToAddRows = false;
+            this.GridTalents.AllowUserToDeleteRows = false;
+            this.GridTalents.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.GridTalents.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllHeaders;
+            this.GridTalents.ColumnHeadersHeight = 32;
+            this.GridTalents.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.ColTitle,
+            this.ColValue});
+            this.GridTalents.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
+            this.GridTalents.Location = new System.Drawing.Point(4, 128);
+            this.GridTalents.MultiSelect = false;
+            this.GridTalents.Name = "GridTalents";
+            this.GridTalents.RowHeadersWidth = 30;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            this.GridTalents.RowsDefaultCellStyle = dataGridViewCellStyle2;
+            this.GridTalents.RowTemplate.DefaultCellStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopLeft;
+            this.GridTalents.RowTemplate.DefaultCellStyle.Font = new System.Drawing.Font("Segoe UI", 8.765218F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.GridTalents.RowTemplate.DefaultCellStyle.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.GridTalents.RowTemplate.Height = 30;
+            this.GridTalents.RowTemplate.ReadOnly = true;
+            this.GridTalents.RowTemplate.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.GridTalents.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.GridTalents.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
+            this.GridTalents.ShowEditingIcon = false;
+            this.GridTalents.Size = new System.Drawing.Size(492, 153);
+            this.GridTalents.StateSelected.DataCell.Border.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.GridTalents.StateSelected.DataCell.Border.DrawBorders = ((Krypton.Toolkit.PaletteDrawBorders)((((Krypton.Toolkit.PaletteDrawBorders.Top | Krypton.Toolkit.PaletteDrawBorders.Bottom) 
+            | Krypton.Toolkit.PaletteDrawBorders.Left) 
+            | Krypton.Toolkit.PaletteDrawBorders.Right)));
+            this.GridTalents.TabIndex = 15;
+            // 
+            // ColTitle
+            // 
+            this.ColTitle.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.ColTitle.DefaultCellStyle = dataGridViewCellStyle1;
+            this.ColTitle.HeaderText = "Related Talents";
+            this.ColTitle.MinimumWidth = 300;
+            this.ColTitle.Name = "ColTitle";
+            this.ColTitle.ReadOnly = true;
+            this.ColTitle.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.ColTitle.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.ColTitle.Width = 322;
+            // 
+            // ColValue
+            // 
+            this.ColValue.AllowDecimals = false;
+            this.ColValue.FillWeight = 50F;
+            this.ColValue.HeaderText = "Level";
+            this.ColValue.Maximum = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.ColValue.MinimumWidth = 50;
+            this.ColValue.Name = "ColValue";
+            this.ColValue.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.ColValue.Width = 140;
+            // 
+            // OreImageList
+            // 
+            this.OreImageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("OreImageList.ImageStream")));
+            this.OreImageList.TransparentColor = System.Drawing.Color.Transparent;
+            this.OreImageList.Images.SetKeyName(0, "ore_bauxite.png");
+            this.OreImageList.Images.SetKeyName(1, "ore_calcium.png");
+            this.OreImageList.Images.SetKeyName(2, "ore_carbon.png");
+            this.OreImageList.Images.SetKeyName(3, "ore_chromite.png");
+            this.OreImageList.Images.SetKeyName(4, "ore_coal.png");
+            this.OreImageList.Images.SetKeyName(5, "ore_cobalt.png");
+            this.OreImageList.Images.SetKeyName(6, "ore_copper.png");
+            this.OreImageList.Images.SetKeyName(7, "ore_fluorine.png");
+            this.OreImageList.Images.SetKeyName(8, "ore_gold.png");
+            this.OreImageList.Images.SetKeyName(9, "ore_iron.png");
+            this.OreImageList.Images.SetKeyName(10, "ore_lithium.png");
+            this.OreImageList.Images.SetKeyName(11, "ore_manganese.png");
+            this.OreImageList.Images.SetKeyName(12, "ore_nickel.png");
+            this.OreImageList.Images.SetKeyName(13, "ore_niobium.png");
+            this.OreImageList.Images.SetKeyName(14, "ore_quartz.png");
+            this.OreImageList.Images.SetKeyName(15, "ore_scandium.png");
+            this.OreImageList.Images.SetKeyName(16, "ore_silicon.png");
+            this.OreImageList.Images.SetKeyName(17, "ore_silver.png");
+            this.OreImageList.Images.SetKeyName(18, "ore_sodium.png");
+            this.OreImageList.Images.SetKeyName(19, "ore_sulfur.png");
+            this.OreImageList.Images.SetKeyName(20, "ore_titanium.png");
+            this.OreImageList.Images.SetKeyName(21, "ore_vanadium.png");
+            // 
             // lblBatches
             // 
             this.lblBatches.Location = new System.Drawing.Point(330, 96);
@@ -441,15 +552,6 @@ namespace DU_Industry_Tool
             this.lblCraftTimeInfoValue.Text = "_";
             this.toolTip1.SetToolTip(this.lblCraftTimeInfoValue, "Remaining quantity that is below batch input volume.");
             this.lblCraftTimeInfoValue.Values.Text = "_";
-            // 
-            // BtnRecalc
-            // 
-            this.BtnRecalc.Location = new System.Drawing.Point(502, 158);
-            this.BtnRecalc.Name = "BtnRecalc";
-            this.BtnRecalc.Size = new System.Drawing.Size(108, 46);
-            this.BtnRecalc.TabIndex = 31;
-            this.BtnRecalc.Values.Text = "Recalculate";
-            this.BtnRecalc.Click += new System.EventHandler(this.BtnRecalc_Click);
             // 
             // lblCraftTime
             // 
@@ -573,21 +675,6 @@ namespace DU_Industry_Tool
             this.lblIndustry.Text = "Industry: ";
             this.lblIndustry.Values.Text = "Industry: ";
             // 
-            // pictureNano
-            // 
-            this.pictureNano.Image = global::DU_Industry_Tool.Properties.Resources.Green_Ball;
-            this.pictureNano.InitialImage = null;
-            this.pictureNano.Location = new System.Drawing.Point(730, 12);
-            this.pictureNano.Margin = new System.Windows.Forms.Padding(2);
-            this.pictureNano.MaximumSize = new System.Drawing.Size(20, 20);
-            this.pictureNano.MinimumSize = new System.Drawing.Size(20, 20);
-            this.pictureNano.Name = "pictureNano";
-            this.pictureNano.Size = new System.Drawing.Size(20, 20);
-            this.pictureNano.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureNano.TabIndex = 9;
-            this.pictureNano.TabStop = false;
-            this.toolTip1.SetToolTip(this.pictureNano, "Green, if the recipe is nano-craftable, else red.");
-            // 
             // lblNano
             // 
             this.lblNano.Location = new System.Drawing.Point(750, 12);
@@ -632,89 +719,6 @@ namespace DU_Industry_Tool
             this.lblUnitData.TabIndex = 2;
             this.lblUnitData.Text = "Unit ";
             this.lblUnitData.Values.Text = "Unit ";
-            // 
-            // GridTalents
-            // 
-            this.GridTalents.AllowUserToAddRows = false;
-            this.GridTalents.AllowUserToDeleteRows = false;
-            this.GridTalents.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.GridTalents.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllHeaders;
-            this.GridTalents.ColumnHeadersHeight = 32;
-            this.GridTalents.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.ColTitle,
-            this.ColValue});
-            this.GridTalents.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
-            this.GridTalents.Location = new System.Drawing.Point(4, 128);
-            this.GridTalents.MultiSelect = false;
-            this.GridTalents.Name = "GridTalents";
-            this.GridTalents.RowHeadersWidth = 32;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            this.GridTalents.RowsDefaultCellStyle = dataGridViewCellStyle2;
-            this.GridTalents.RowTemplate.Height = 30;
-            this.GridTalents.RowTemplate.ReadOnly = true;
-            this.GridTalents.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.GridTalents.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect;
-            this.GridTalents.ShowEditingIcon = false;
-            this.GridTalents.Size = new System.Drawing.Size(492, 153);
-            this.GridTalents.StateSelected.DataCell.Border.Color1 = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
-            this.GridTalents.StateSelected.DataCell.Border.DrawBorders = ((Krypton.Toolkit.PaletteDrawBorders)((((Krypton.Toolkit.PaletteDrawBorders.Top | Krypton.Toolkit.PaletteDrawBorders.Bottom) 
-            | Krypton.Toolkit.PaletteDrawBorders.Left) 
-            | Krypton.Toolkit.PaletteDrawBorders.Right)));
-            this.GridTalents.TabIndex = 15;
-            // 
-            // ColTitle
-            // 
-            this.ColTitle.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.ColTitle.DefaultCellStyle = dataGridViewCellStyle1;
-            this.ColTitle.HeaderText = "Related Talents";
-            this.ColTitle.MinimumWidth = 300;
-            this.ColTitle.Name = "ColTitle";
-            this.ColTitle.ReadOnly = true;
-            this.ColTitle.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.ColTitle.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.ColTitle.Width = 327;
-            // 
-            // ColValue
-            // 
-            this.ColValue.AllowDecimals = false;
-            this.ColValue.FillWeight = 50F;
-            this.ColValue.HeaderText = "Level";
-            this.ColValue.Maximum = new decimal(new int[] {
-            5,
-            0,
-            0,
-            0});
-            this.ColValue.MinimumWidth = 50;
-            this.ColValue.Name = "ColValue";
-            this.ColValue.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.ColValue.Width = 133;
-            // 
-            // OreImageList
-            // 
-            this.OreImageList.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("OreImageList.ImageStream")));
-            this.OreImageList.TransparentColor = System.Drawing.Color.Transparent;
-            this.OreImageList.Images.SetKeyName(0, "ore_bauxite.png");
-            this.OreImageList.Images.SetKeyName(1, "ore_calcium.png");
-            this.OreImageList.Images.SetKeyName(2, "ore_carbon.png");
-            this.OreImageList.Images.SetKeyName(3, "ore_chromite.png");
-            this.OreImageList.Images.SetKeyName(4, "ore_coal.png");
-            this.OreImageList.Images.SetKeyName(5, "ore_cobalt.png");
-            this.OreImageList.Images.SetKeyName(6, "ore_copper.png");
-            this.OreImageList.Images.SetKeyName(7, "ore_fluorine.png");
-            this.OreImageList.Images.SetKeyName(8, "ore_gold.png");
-            this.OreImageList.Images.SetKeyName(9, "ore_iron.png");
-            this.OreImageList.Images.SetKeyName(10, "ore_lithium.png");
-            this.OreImageList.Images.SetKeyName(11, "ore_manganese.png");
-            this.OreImageList.Images.SetKeyName(12, "ore_nickel.png");
-            this.OreImageList.Images.SetKeyName(13, "ore_niobium.png");
-            this.OreImageList.Images.SetKeyName(14, "ore_quartz.png");
-            this.OreImageList.Images.SetKeyName(15, "ore_scandium.png");
-            this.OreImageList.Images.SetKeyName(16, "ore_silicon.png");
-            this.OreImageList.Images.SetKeyName(17, "ore_silver.png");
-            this.OreImageList.Images.SetKeyName(18, "ore_sodium.png");
-            this.OreImageList.Images.SetKeyName(19, "ore_sulfur.png");
-            this.OreImageList.Images.SetKeyName(20, "ore_titanium.png");
-            this.OreImageList.Images.SetKeyName(21, "ore_vanadium.png");
             // 
             // ContentDocumentTree
             // 

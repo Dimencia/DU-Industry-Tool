@@ -77,6 +77,7 @@
             this.kryptonPage1 = new Krypton.Navigator.KryptonPage();
             this.treeView = new System.Windows.Forms.TreeView();
             this.searchPanel = new Krypton.Toolkit.KryptonPanel();
+            this.CbNanoOnly = new Krypton.Toolkit.KryptonCheckBox();
             this.SearchBox = new Krypton.Toolkit.KryptonComboBox();
             this.SearchButton = new Krypton.Toolkit.KryptonButton();
             this.QuantityBox = new Krypton.Toolkit.KryptonComboBox();
@@ -87,7 +88,7 @@
             this.kryptonDockingManager = new Krypton.Docking.KryptonDockingManager();
             this.kryptonManager = new Krypton.Toolkit.KryptonManager(this.components);
             this.kryptonRibbonGroupGallery1 = new Krypton.Ribbon.KryptonRibbonGroupGallery();
-            this.CbNanoOnly = new Krypton.Toolkit.KryptonCheckBox();
+            this.CbFullSchematicQty = new Krypton.Ribbon.KryptonRibbonGroupCheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.kryptonRibbon)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.kryptonThemeComboBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.kryptonDockableWorkspace)).BeginInit();
@@ -122,9 +123,10 @@
             this.rbnTabThemes,
             this.kryptonRibbonTab2,
             this.kryptonRibbonTab1});
-            this.kryptonRibbon.SelectedTab = this.rbnTabTools;
+            this.kryptonRibbon.SelectedContext = null;
+            this.kryptonRibbon.SelectedTab = this.kryptonRibbonTab2;
             this.kryptonRibbon.ShowMinimizeButton = false;
-            this.kryptonRibbon.Size = new System.Drawing.Size(1500, 136);
+            this.kryptonRibbon.Size = new System.Drawing.Size(1437, 130);
             this.kryptonRibbon.TabIndex = 0;
             // 
             // buttonUpdateMarketValues
@@ -249,7 +251,7 @@
             this.CbRecentLists.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.CbRecentLists.DropDownWidth = 200;
             this.CbRecentLists.FormattingEnabled = false;
-            this.CbRecentLists.ItemHeight = 19;
+            this.CbRecentLists.ItemHeight = 18;
             this.CbRecentLists.MinimumSize = new System.Drawing.Size(200, 0);
             this.CbRecentLists.Text = "";
             this.CbRecentLists.SelectionChangeCommitted += new System.EventHandler(this.CbRecentLists_SelectionChangeCommitted);
@@ -358,12 +360,13 @@
             // 
             this.RibbonGroupOptionsLines1.Items.AddRange(new Krypton.Ribbon.KryptonRibbonGroupItem[] {
             this.CbStartupProdList,
-            this.CbRestoreWindow});
+            this.CbRestoreWindow,
+            this.CbFullSchematicQty});
             // 
             // CbStartupProdList
             // 
             this.CbStartupProdList.KeyTip = "L";
-            this.CbStartupProdList.TextLine1 = "Load Prod.List on launch";
+            this.CbStartupProdList.TextLine1 = "Load Prod.list on launch";
             this.CbStartupProdList.CheckedChanged += new System.EventHandler(this.CbStartupProdList_CheckedChanged);
             // 
             // CbRestoreWindow
@@ -429,7 +432,7 @@
             this.kryptonThemeComboBox1.IntegralHeight = false;
             this.kryptonThemeComboBox1.Location = new System.Drawing.Point(16, 11);
             this.kryptonThemeComboBox1.Name = "kryptonThemeComboBox1";
-            this.kryptonThemeComboBox1.Size = new System.Drawing.Size(112, 25);
+            this.kryptonThemeComboBox1.Size = new System.Drawing.Size(112, 24);
             this.kryptonThemeComboBox1.StateCommon.ComboBox.Content.TextH = Krypton.Toolkit.PaletteRelativeAlign.Near;
             this.kryptonThemeComboBox1.TabIndex = 8;
             this.kryptonThemeComboBox1.ThemeSelectedIndex = -1;
@@ -441,8 +444,8 @@
             this.kryptonDockableWorkspace.CompactFlags = Krypton.Workspace.CompactFlags.AtLeastOneVisibleCell;
             this.kryptonDockableWorkspace.ContainerBackStyle = Krypton.Toolkit.PaletteBackStyle.TabDock;
             this.kryptonDockableWorkspace.Dock = System.Windows.Forms.DockStyle.Left;
-            this.kryptonDockableWorkspace.Location = new System.Drawing.Point(0, 136);
-            this.kryptonDockableWorkspace.MinimumSize = new System.Drawing.Size(420, 400);
+            this.kryptonDockableWorkspace.Location = new System.Drawing.Point(0, 130);
+            this.kryptonDockableWorkspace.MinimumSize = new System.Drawing.Size(402, 383);
             this.kryptonDockableWorkspace.Name = "kryptonDockableWorkspace";
             this.kryptonDockableWorkspace.PaletteMode = Krypton.Toolkit.PaletteMode.Office2010Blue;
             // 
@@ -454,7 +457,7 @@
             this.kryptonDockableWorkspace.Root.WorkspaceControl = this.kryptonDockableWorkspace;
             this.kryptonDockableWorkspace.SeparatorStyle = Krypton.Toolkit.SeparatorStyle.HighProfile;
             this.kryptonDockableWorkspace.ShowMaximizeButton = false;
-            this.kryptonDockableWorkspace.Size = new System.Drawing.Size(420, 864);
+            this.kryptonDockableWorkspace.Size = new System.Drawing.Size(402, 828);
             this.kryptonDockableWorkspace.SplitterWidth = 8;
             this.kryptonDockableWorkspace.TabIndex = 0;
             this.kryptonDockableWorkspace.TabStop = true;
@@ -467,9 +470,9 @@
             this.kryptonPage1.Controls.Add(this.searchPanel);
             this.kryptonPage1.Flags = 32;
             this.kryptonPage1.LastVisibleSet = true;
-            this.kryptonPage1.MinimumSize = new System.Drawing.Size(400, 450);
+            this.kryptonPage1.MinimumSize = new System.Drawing.Size(383, 431);
             this.kryptonPage1.Name = "kryptonPage1";
-            this.kryptonPage1.Size = new System.Drawing.Size(418, 833);
+            this.kryptonPage1.Size = new System.Drawing.Size(400, 798);
             this.kryptonPage1.Text = "Recipes Explorer";
             this.kryptonPage1.TextDescription = "";
             this.kryptonPage1.TextTitle = "";
@@ -479,10 +482,11 @@
             // treeView
             // 
             this.treeView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.treeView.Location = new System.Drawing.Point(0, 80);
-            this.treeView.MinimumSize = new System.Drawing.Size(400, 400);
+            this.treeView.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.treeView.Location = new System.Drawing.Point(0, 77);
+            this.treeView.MinimumSize = new System.Drawing.Size(383, 383);
             this.treeView.Name = "treeView";
-            this.treeView.Size = new System.Drawing.Size(418, 753);
+            this.treeView.Size = new System.Drawing.Size(400, 721);
             this.treeView.TabIndex = 3;
             // 
             // searchPanel
@@ -495,10 +499,19 @@
             this.searchPanel.Controls.Add(this.PreviousButton);
             this.searchPanel.Dock = System.Windows.Forms.DockStyle.Top;
             this.searchPanel.Location = new System.Drawing.Point(0, 0);
-            this.searchPanel.MinimumSize = new System.Drawing.Size(0, 80);
+            this.searchPanel.MinimumSize = new System.Drawing.Size(0, 77);
             this.searchPanel.Name = "searchPanel";
-            this.searchPanel.Size = new System.Drawing.Size(418, 80);
+            this.searchPanel.Size = new System.Drawing.Size(400, 77);
             this.searchPanel.TabIndex = 0;
+            // 
+            // CbNanoOnly
+            // 
+            this.CbNanoOnly.Location = new System.Drawing.Point(4, 39);
+            this.CbNanoOnly.Name = "CbNanoOnly";
+            this.CbNanoOnly.Size = new System.Drawing.Size(186, 23);
+            this.CbNanoOnly.TabIndex = 4;
+            this.CbNanoOnly.Values.Text = "only show nanocraftable?";
+            this.CbNanoOnly.CheckedChanged += new System.EventHandler(this.CbNanoOnly_CheckedChanged);
             // 
             // SearchBox
             // 
@@ -512,16 +525,16 @@
             this.SearchBox.MaxDropDownItems = 20;
             this.SearchBox.MaxLength = 40;
             this.SearchBox.Name = "SearchBox";
-            this.SearchBox.Size = new System.Drawing.Size(232, 25);
+            this.SearchBox.Size = new System.Drawing.Size(222, 24);
             this.SearchBox.TabIndex = 0;
             // 
             // SearchButton
             // 
             this.SearchButton.AutoSize = true;
             this.SearchButton.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.SearchButton.Location = new System.Drawing.Point(239, 3);
+            this.SearchButton.Location = new System.Drawing.Point(229, 3);
             this.SearchButton.Name = "SearchButton";
-            this.SearchButton.Size = new System.Drawing.Size(80, 33);
+            this.SearchButton.Size = new System.Drawing.Size(77, 32);
             this.SearchButton.TabIndex = 1;
             this.SearchButton.Values.Text = "Search";
             this.SearchButton.Click += new System.EventHandler(this.SearchButton_Click);
@@ -546,12 +559,12 @@
             "1000",
             "5000",
             "10000"});
-            this.QuantityBox.Location = new System.Drawing.Point(326, 6);
+            this.QuantityBox.Location = new System.Drawing.Point(312, 6);
             this.QuantityBox.Margin = new System.Windows.Forms.Padding(4, 6, 0, 0);
             this.QuantityBox.MaxDropDownItems = 12;
             this.QuantityBox.MaxLength = 6;
             this.QuantityBox.Name = "QuantityBox";
-            this.QuantityBox.Size = new System.Drawing.Size(70, 25);
+            this.QuantityBox.Size = new System.Drawing.Size(67, 24);
             this.QuantityBox.TabIndex = 2;
             this.QuantityBox.SelectionChangeCommitted += new System.EventHandler(this.QuantityBoxOnSelectionChangeCommitted);
             this.QuantityBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.QuantityBox_KeyPress);
@@ -561,9 +574,9 @@
             this.PreviousButton.AutoSize = true;
             this.PreviousButton.Enabled = false;
             this.PreviousButton.Font = new System.Drawing.Font("Segoe UI", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.PreviousButton.Location = new System.Drawing.Point(325, 38);
+            this.PreviousButton.Location = new System.Drawing.Point(311, 36);
             this.PreviousButton.Name = "PreviousButton";
-            this.PreviousButton.Size = new System.Drawing.Size(40, 33);
+            this.PreviousButton.Size = new System.Drawing.Size(38, 32);
             this.PreviousButton.TabIndex = 3;
             this.PreviousButton.Values.Text = "<<";
             this.PreviousButton.Click += new System.EventHandler(this.PreviousButton_Click);
@@ -599,7 +612,7 @@
             this.kryptonNavigator1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.kryptonNavigator1.Bar.BarMultiline = Krypton.Navigator.BarMultiline.Multiline;
             this.kryptonNavigator1.Bar.TabBorderStyle = Krypton.Toolkit.TabBorderStyle.RoundedEqualMedium;
-            this.kryptonNavigator1.Location = new System.Drawing.Point(422, 62);
+            this.kryptonNavigator1.Location = new System.Drawing.Point(404, 59);
             this.kryptonNavigator1.Name = "kryptonNavigator1";
             this.kryptonNavigator1.Size = new System.Drawing.Size(1078, 938);
             this.kryptonNavigator1.StateCommon.CheckButton.Content.Image.ImageH = Krypton.Toolkit.PaletteRelativeAlign.Center;
@@ -626,28 +639,24 @@
             // 
             this.kryptonRibbonGroupGallery1.ImageList = null;
             // 
-            // CbNanoOnly
+            // CbFullSchematicQty
             // 
-            this.CbNanoOnly.Location = new System.Drawing.Point(4, 41);
-            this.CbNanoOnly.Name = "CbNanoOnly";
-            this.CbNanoOnly.Size = new System.Drawing.Size(198, 24);
-            this.CbNanoOnly.TabIndex = 4;
-            this.CbNanoOnly.Values.Text = "only show nanocraftable?";
-            this.CbNanoOnly.CheckedChanged += new System.EventHandler(this.CbNanoOnly_CheckedChanged);
+            this.CbFullSchematicQty.TextLine1 = "Full schematic quantities?";
+            this.CbFullSchematicQty.CheckedChanged += new System.EventHandler(this.CbFullSchematicQty_CheckedChanged);
             // 
             // MainForm
             // 
             this.AcceptButton = this.SearchButton;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(120F, 120F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(115F, 115F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.ClientSize = new System.Drawing.Size(1500, 1000);
+            this.ClientSize = new System.Drawing.Size(1437, 958);
             this.Controls.Add(this.kryptonNavigator1);
             this.Controls.Add(this.kryptonDockableWorkspace);
             this.Controls.Add(this.kryptonRibbon);
-            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
-            this.MinimumSize = new System.Drawing.Size(800, 600);
+            this.MinimumSize = new System.Drawing.Size(767, 577);
             this.Name = "MainForm";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
@@ -737,5 +746,6 @@
         private Krypton.Ribbon.KryptonRibbonGroupCustomControl CmbThemes;
         private Krypton.Toolkit.KryptonThemeComboBox kryptonThemeComboBox1;
         private Krypton.Toolkit.KryptonCheckBox CbNanoOnly;
+        private Krypton.Ribbon.KryptonRibbonGroupCheckBox CbFullSchematicQty;
     }
 }
