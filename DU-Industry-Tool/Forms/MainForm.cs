@@ -167,9 +167,9 @@ namespace DU_Industry_Tool
             _overrideQty = 0; // must be reset here!
 
             // Pass data on towards newly created tab
-            newDoc.IsProductionList = DUData.ProductionListMode;
             if (DUData.ProductionListMode)
             {
+                newDoc.IsProductionList = true;
                 newDoc.RecalcProductionListClick = ProductionListRecalc_Click;
             }
             newDoc.ItemClick = OpenRecipe;

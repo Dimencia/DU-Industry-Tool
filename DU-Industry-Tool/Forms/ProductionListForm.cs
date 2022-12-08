@@ -47,7 +47,9 @@ namespace DU_Industry_Tool
         private void BtnAddOnClick(object sender, EventArgs e)
         {
             // make sure the entered text is actually existing in the recipes list
-            if (!DUData.RecipeNames.Any(x => x.Equals(ComboRecipeNames.Text, StringComparison.CurrentCultureIgnoreCase)))
+            if (string.IsNullOrEmpty(ComboRecipeNames.Text) ||
+                NumUpDownQuantity.Value <= 0 ||
+                !DUData.RecipeNames.Any(x => x.Equals(ComboRecipeNames.Text, StringComparison.CurrentCultureIgnoreCase)))
             {
                 return;
             }

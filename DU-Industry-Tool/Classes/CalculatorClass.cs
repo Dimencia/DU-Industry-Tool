@@ -182,7 +182,10 @@ namespace DU_Industry_Tool
             }
 
             // calculate T2+ ore schematic costs
-            calc.ResetSchematicCost();
+            if (!prodMode)
+            {
+                calc.ResetSchematicCost();
+            }
             CollectSchematics(calc, SummationType.PURES);
             CollectSchematics(calc, SummationType.PRODUCTS);
 
@@ -303,7 +306,6 @@ namespace DU_Industry_Tool
             // - Catalysts are NOT calculated due to their positive return ratio, i.e.
             //   they usually return in a higher amount than they're used for (with talents)
             // - Plasma as ingredient is assumed to be 1 L for all recipes.
-            //if (!DUData.Recipes.Keys.Contains(key))
             if (!DUData.GetRecipeCloneByKey(key, out var recipe))
             {
                 var err = $"*** Recipe not found: '{key}' !!!";
@@ -604,7 +606,7 @@ namespace DU_Industry_Tool
 
                 if (entry.Recipe.Ingredients.Count > 0)
                 {
-                    results.AddRange(GetIngredientRecipes(ingredient.Type, entry.Quantity, reverse));
+                    //results.AddRange(GetIngredientRecipes(ingredient.Type, entry.Quantity, reverse));
                 }
             }
 

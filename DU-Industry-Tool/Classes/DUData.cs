@@ -44,7 +44,7 @@ namespace DU_Industry_Tool
         public void Add(string itemName, decimal qty)
         {
             CheckInstance();
-            if (ProductionBindingList.Any(x => x.Name == itemName)) return;
+            if (string.IsNullOrEmpty(itemName) || ProductionBindingList.Any(x => x.Name == itemName)) return;
             var item = new ProductionItem
             {
                 Name = itemName,
@@ -83,7 +83,10 @@ namespace DU_Industry_Tool
                 ProductionBindingList = new BindingList<ProductionItem>();
                 foreach (var entry in tmp)
                 {
-                    ProductionBindingList.Add(entry);
+                    if (!string.IsNullOrEmpty(entry?.Name))
+                    {
+                        ProductionBindingList.Add(entry);
+                    }
                 }
                 ListLoaded = true;
                 Filepath = filename;
