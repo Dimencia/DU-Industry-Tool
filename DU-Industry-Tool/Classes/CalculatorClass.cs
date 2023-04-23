@@ -407,7 +407,6 @@ namespace DU_Industry_Tool
                     calc2.OreCost = cost;
                     calc2.Quantity = qty;
                     calc.Add(SummationType.ORES, ingKey, qty, cost);
-                    //calc.Add(SummationType.INGREDIENTS, ingKey, qty, cost);
                     Debug.WriteLineIf(!silent && qty > 0, $"{curLevel}     ({ingredient.Name}: {qty:N2} = {cost:N2}q)");
                     continue;
                 }
@@ -437,7 +436,11 @@ namespace DU_Industry_Tool
                 }
                 if (myRecipe.IsProduct)
                 {
-                    calc.Add(SummationType.PRODUCTS, ingKey, qty, cost);
+                    var excl = ingKey.Contains("Catalyst") || ingKey.Contains("Hydrogen") || ingKey.Contains("Oxygen");
+                    if (!excl)
+                    {
+                        calc.Add(SummationType.PRODUCTS, ingKey, qty, cost);
+                    }
                     continue;
                 }
                 calc.Add(SummationType.PURES, ingKey, qty, cost);

@@ -291,14 +291,19 @@ namespace DU_Industry_Tool
                 child.Comment = dataItem.Value.SchematicType;
 
                 // Exclude ores and special pures from drilldown
-                if (SumType == SummationType.ORES ||
-                    (SumType == SummationType.PURES &&
-                     (realKey.StartsWith("Catalyst", StringComparison.InvariantCultureIgnoreCase) ||
-                      realKey.Equals("Pure Hydrogen", StringComparison.InvariantCultureIgnoreCase) ||
-                      realKey.Equals("Pure Oxygen", StringComparison.InvariantCultureIgnoreCase))))
+                var exclude = SumType == SummationType.PRODUCTS &&
+                              (realKey.StartsWith("Catalyst", StringComparison.InvariantCultureIgnoreCase) ||
+                               realKey.Contains("Hydrogen") ||
+                               realKey.Contains("Oxygen"));
+                if (SumType == SummationType.ORES || exclude)
                 {
                     child.Section = child.Entry;
                     child.Entry = "";
+                    if (exclude)
+                    {
+                        child.QtySchemata = 0;
+                        child.AmtSchemata = 0;
+                    }
                     children.Add(child);
                     continue;
                 }
