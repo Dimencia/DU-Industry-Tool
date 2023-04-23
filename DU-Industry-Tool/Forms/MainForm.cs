@@ -162,14 +162,14 @@ namespace DU_Industry_Tool
             // ***** Primary Calculation *****
             Calculator.Initialize();
             Calculator.ProductQuantity = cnt;
-            Calculator.CalculateRecipe(recipe.Key, cnt, silent: false);
+            Calculator.CalculateRecipe(recipe.Key, cnt, silent: true);
             var calc = Calculator.Get(recipe.Key, Guid.Empty);
             _overrideQty = 0; // must be reset here!
 
             // Pass data on towards newly created tab
-            newDoc.IsProductionList = DUData.ProductionListMode;
             if (DUData.ProductionListMode)
             {
+                newDoc.IsProductionList = true;
                 newDoc.RecalcProductionListClick = ProductionListRecalc_Click;
             }
             newDoc.ItemClick = OpenRecipe;
@@ -552,30 +552,42 @@ namespace DU_Industry_Tool
                 var worksheet = workbook.Worksheets.Add("Price Data " + DateTime.Now.ToString("yyyy-MM-dd"));
 
                 worksheet.Cell(1, 1).Value = "Name";
-                worksheet.Cell(1, 2).Value = "Cost To Make";
+                worksheet.Cell(1, 2).Value = "Ore Cost";
                 worksheet.Cell(1, 3).Value = "Market Cost";
                 worksheet.Cell(1, 4).Value = "Time To Make";
                 worksheet.Cell(1, 5).Value = "Profit Margin";
                 worksheet.Cell(1, 6).Value = "Profit Per Day";
                 worksheet.Cell(1, 7).Value = "Units Per Day";
+                worksheet.Cell(1, 8).Value = "Schematic Cost";
+                worksheet.Cell(1, 9).Value = "Total Cost";
 
                 worksheet.Row(1).CellsUsed().Style.Font.SetBold();
 
                 int row = 2;
 
-                var recipes =  DUData.Recipes.Values.OrderBy(x => x.Name).ToList();
+                var recipes =  DUData.Recipes.Values.Where(x => x.ParentGroupName != "Ore").OrderBy(x => x.Name).ToList();
                 if (_marketFiltered)
                 {
                     recipes =  DUData.Recipes.Values.Where(r =>
                         _market.MarketOrders.Values.Any(v => v.ItemType == r.NqId)).ToList();
                 }
 
+                var cnt = 1m;
+                if (QuantityBox.SelectedItem == null || !decimal.TryParse((string)QuantityBox.SelectedItem, out cnt))
+                {
+                    decimal.TryParse(QuantityBox.Text, out cnt);
+                }
+                cnt = Math.Max(1, cnt);
+
                 Text = $"0 / {recipes.Count}";
                 foreach(var recipe in recipes)
                 {
                     worksheet.Cell(row, 1).Value = recipe.Name;
                     Calculator.Initialize();
-                    var costToMake = Calculator.CalculateRecipe(recipe.Key, silent: true);
+                    Calculator.ProductQuantity = cnt;
+                    var costToMake = Calculator.CalculateRecipe(recipe.Key, cnt, silent: true);
+                    var calc = Calculator.Get(recipe.Key, Guid.Empty);
+
                     worksheet.Cell(row, 2).Value = Math.Round(costToMake,2);
 
                     var orders = _market.MarketOrders.Values.Where(o => o.ItemType == recipe.NqId && o.BuyQuantity < 0 && DateTime.Now < o.ExpirationDate && o.Price > 0);
@@ -590,12 +602,15 @@ namespace DU_Industry_Tool
                     //cost = (mostRecentOrder.Price - costToMake)*(86400/recipe.Time);
                     worksheet.Cell(row, 6).FormulaR1C1 = "=(R[0]C[-3]-R[0]C[-4])*(86400/R[0]C[-2])";
                     worksheet.Cell(row, 7).FormulaR1C1 = "=86400/R[0]C[-3]";
+                    worksheet.Cell(row, 8).Value = calc.SchematicsCost;
+                    worksheet.Cell(row, 9).Value = Math.Round(costToMake + calc.SchematicsCost, 2);
                     row++;
                     if (Utils.MathMod(row, 10) == 0)
                     {
                         Text = $"Export to CSV: {row} / {recipes.Count}";
                     }
                 }
+                Calculator.ProductQuantity = 1;
                 worksheet.Range("A1:G1").Style.Font.Bold = true;
                 worksheet.ColumnsUsed().AdjustToContents(1, 50);
                 workbook.SaveAs("Item Export " + DateTime.Now.ToString("yyyy-MM-dd") + ".xlsx");
@@ -769,6 +784,7 @@ namespace DU_Industry_Tool
         {
             CbRestoreWindow.Checked = Properties.Settings.Default.RestoreWindow;
             CbStartupProdList.Checked = Properties.Settings.Default.LaunchProdList;
+            CbFullSchematicQty.Checked = Properties.Settings.Default.FullSchematicQuantities;
             if (Properties.Settings.Default.ThemeId >= 0)
             {
                 kryptonManager.GlobalPaletteMode = (PaletteModeManager)Properties.Settings.Default.ThemeId;
@@ -807,7 +823,7 @@ namespace DU_Industry_Tool
             Properties.Settings.Default.LaunchProdList = CbStartupProdList.Checked;
             Properties.Settings.Default.RestoreWindow = CbRestoreWindow.Checked;
             Properties.Settings.Default.ThemeId = (int)kryptonManager.GlobalPaletteMode;
-            //Properties.Settings.Default.ThemeName = kryptonManager.GlobalPaletteMode.ToString();
+            Properties.Settings.Default.FullSchematicQuantities = DUData.FullSchematicQuantities;
             Properties.Settings.Default.Save();
         }
 
@@ -1145,6 +1161,11 @@ namespace DU_Industry_Tool
         }
 
         #endregion Production List
+
+        private void CbFullSchematicQty_CheckedChanged(object sender, EventArgs e)
+        {
+            DUData.FullSchematicQuantities = CbFullSchematicQty.Checked;
+        }
 
     } // Mainform
 }

@@ -1,12 +1,11 @@
 # Latest Changes
 
-## v1.0.5
-- More corrections in schematics file with regard to release data
+## v1.1.5
+- Transparent Screens: fixed element schematics
+- Excluded Hydrogen, Oxygen, Catalyst from calculation/grid display
 
-## v1.0.4
-- Fixed 771 legacy schematic prices in recipes file
-
-## v1.0.3
-- Fixed fuels schematic quantity calculation
-- Fix duplicate addition of element schematic
-- Fixed version number in About dialog
+## v1.1.4
+- Concrete product ingredients fix
+- Fixed industry for Poly* products
+- Added Kergon-X5
+- Fixed recipe calculation for Refined Materials

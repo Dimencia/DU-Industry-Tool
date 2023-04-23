@@ -36,7 +36,7 @@ namespace DU_Industry_Tool
                 IsPlasma = Name?.StartsWith("Relic Plasma") == true &&
                            _parentGroupName.Equals("Consumables");
                 IsPure = _parentGroupName.Equals("Pure");
-                IsProduct = _parentGroupName.Equals("Product");
+                IsProduct = _parentGroupName.Equals("Product") || _parentGroupName.Equals("Refined Materials");
                 IsFuel = _parentGroupName.Equals("Fuels");
             }
         }

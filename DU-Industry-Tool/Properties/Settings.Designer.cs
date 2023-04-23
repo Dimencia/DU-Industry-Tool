@@ -118,5 +118,17 @@ namespace DU_Industry_Tool.Properties {
                 this["ThemeId"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool FullSchematicQuantities {
+            get {
+                return ((bool)(this["FullSchematicQuantities"]));
+            }
+            set {
+                this["FullSchematicQuantities"] = value;
+            }
+        }
     }
 }

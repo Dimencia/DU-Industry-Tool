@@ -51,7 +51,7 @@ namespace DU_Industry_Tool
                     _tlview.BeginInvoke((MethodInvoker)delegate()
                     {
                         _tlview.Collapse(x);
-                        MessageBox.Show(ex.Message, "Recipes Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        MessageBox.Show(ex.Message, @"Recipes Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     });
                     return new ArrayList();
                 }

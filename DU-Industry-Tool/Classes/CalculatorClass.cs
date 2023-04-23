@@ -156,15 +156,15 @@ namespace DU_Industry_Tool
                 {
                     if (prod.IsByproduct || !CreateByKey(prod.Type, out var pCalc))
                         continue;
-                    pCalc.GetTalents();
                     if (pCalc.IsPlasma || string.IsNullOrEmpty(pCalc.SchematicType))
                         continue;
+                    pCalc.GetTalents();
                     // TODO determine correct schematics needed (pures, products)!
                     if (pCalc.IsBatchmode)
                     {
                         if (pCalc.BatchOutput != null)
                         {
-                            if (pCalc.CalcSchematicFromQty(prod.SchemaType, prod.Quantity, (decimal)pCalc.BatchOutput,
+                            if (pCalc.CalcSchematicFromQty(pCalc.SchematicType, prod.Quantity, (decimal)pCalc.BatchOutput,
                                     out var cnt, out var minCost1, out var _, out var _))
                             {
                                 calc.AddSchema(pCalc.SchematicType, cnt, minCost1);
@@ -173,18 +173,19 @@ namespace DU_Industry_Tool
                         }
                     }
                     else
+                    if (CalcSchematic(pCalc.SchematicType, prod.Quantity, out var minCost2, out _, out _))
                     {
-                        if (CalcSchematic(prod.SchemaType, prod.Quantity, out var minCost2, out _, out _))
-                        {
-                            calc.AddSchema(pCalc.SchematicType, (int)Math.Ceiling(prod.Quantity), minCost2);
-                            calc.AddSchematicCost(minCost2);
-                        }
+                        calc.AddSchema(pCalc.SchematicType, (int)Math.Ceiling(prod.Quantity), minCost2);
+                        calc.AddSchematicCost(minCost2);
                     }
                 }
             }
 
             // calculate T2+ ore schematic costs
-            calc.ResetSchematicCost();
+            if (!prodMode)
+            {
+                calc.ResetSchematicCost();
+            }
             CollectSchematics(calc, SummationType.PURES);
             CollectSchematics(calc, SummationType.PRODUCTS);
 
@@ -196,7 +197,11 @@ namespace DU_Industry_Tool
             var batches = ProductQuantity;
             if (calc.IsBatchmode && calc.BatchOutput > 0)
             {
-                batches = Math.Floor(ProductQuantity / (decimal)calc.BatchOutput);
+                batches = ProductQuantity / (decimal)calc.BatchOutput;
+                if (DUData.FullSchematicQuantities)
+                {
+                    batches = Math.Floor(batches);
+                }
             }
             if (CalcSchematic(calc.SchematicType, (int)batches, out var minCost, out _, out _))
             {
@@ -212,7 +217,7 @@ namespace DU_Industry_Tool
         /// </summary>
         public static bool CalcSchematic(string schematicId, decimal qtySchematic,
                                          out decimal minCost, out decimal copyCost,
-                                         out int qtyCopies)
+                                         out decimal qtyCopies)
         {
             minCost = 0M;
             copyCost = 0M;
@@ -224,12 +229,13 @@ namespace DU_Industry_Tool
                 return false;
             }
 
-            qtySchematic = Math.Ceiling(qtySchematic);
-            minCost  = Math.Round(schemata.Cost * qtySchematic); // cost is a breakdown to x1 schematic
+            //qtySchematic = Math.Ceiling(qtySchematic);
+            minCost = Math.Round(schemata.Cost * qtySchematic); // cost is a breakdown to x1 schematic
             // number of copy jobs that need to be started to cover all needed schematics,
             // (which depends on the batch size of a copy, e.g. 10 per copy process):
-            qtyCopies = (int)Math.Ceiling(qtySchematic / (decimal)Math.Max(1, schemata.BatchSize));
-            // copyCost is the single schematic cose multiplied by batch size and the number of copies:
+            qtyCopies = qtySchematic / (decimal)Math.Max(1, schemata.BatchSize);
+            qtyCopies = Math.Ceiling(qtyCopies);
+            // copyCost is the single schematic cost multiplied by batch size and the number of copies:
             copyCost = schemata.Cost * schemata.BatchSize * qtyCopies;
             copyCost = Math.Round(copyCost, 2);
             return true;
@@ -258,10 +264,14 @@ namespace DU_Industry_Tool
                 tmp.Quantity = val.Qty;
                 tmp.GetTalents();
                 if (tmp.BatchOutput == null) continue;// happens (on purpose)
-                tmp.Quantity = (int)Math.Ceiling(tmp.Quantity / (decimal)tmp.BatchOutput);
+                tmp.Quantity = tmp.Quantity / (decimal)tmp.BatchOutput;
+                if (DUData.FullSchematicQuantities)
+                {
+                    tmp.Quantity = (int)Math.Ceiling(tmp.Quantity);
+                }
                 val.QtySchemata = tmp.Quantity;
 
-                if (!CalcSchematic(val.SchematicType, (int)tmp.Quantity,
+                if (!CalcSchematic(val.SchematicType, tmp.Quantity,
                         out var minCost, out _, out var copies))
                 {
                     continue;
@@ -296,7 +306,6 @@ namespace DU_Industry_Tool
             // - Catalysts are NOT calculated due to their positive return ratio, i.e.
             //   they usually return in a higher amount than they're used for (with talents)
             // - Plasma as ingredient is assumed to be 1 L for all recipes.
-            //if (!DUData.Recipes.Keys.Contains(key))
             if (!DUData.GetRecipeCloneByKey(key, out var recipe))
             {
                 var err = $"*** Recipe not found: '{key}' !!!";
@@ -398,7 +407,6 @@ namespace DU_Industry_Tool
                     calc2.OreCost = cost;
                     calc2.Quantity = qty;
                     calc.Add(SummationType.ORES, ingKey, qty, cost);
-                    //calc.Add(SummationType.INGREDIENTS, ingKey, qty, cost);
                     Debug.WriteLineIf(!silent && qty > 0, $"{curLevel}     ({ingredient.Name}: {qty:N2} = {cost:N2}q)");
                     continue;
                 }
@@ -428,7 +436,11 @@ namespace DU_Industry_Tool
                 }
                 if (myRecipe.IsProduct)
                 {
-                    calc.Add(SummationType.PRODUCTS, ingKey, qty, cost);
+                    var excl = ingKey.Contains("Catalyst") || ingKey.Contains("Hydrogen") || ingKey.Contains("Oxygen");
+                    if (!excl)
+                    {
+                        calc.Add(SummationType.PRODUCTS, ingKey, qty, cost);
+                    }
                     continue;
                 }
                 calc.Add(SummationType.PURES, ingKey, qty, cost);
@@ -597,7 +609,7 @@ namespace DU_Industry_Tool
 
                 if (entry.Recipe.Ingredients.Count > 0)
                 {
-                    results.AddRange(GetIngredientRecipes(ingredient.Type, entry.Quantity, reverse));
+                    //results.AddRange(GetIngredientRecipes(ingredient.Type, entry.Quantity, reverse));
                 }
             }
 
@@ -777,7 +789,7 @@ namespace DU_Industry_Tool
         }
 
         public bool CalcSchematicFromQty(string schematicType, decimal qty, decimal batchOutput,
-                        out int batches, out decimal minCost, out decimal copyCost, out int qtyCopies)
+                        out int batches, out decimal minCost, out decimal copyCost, out decimal qtyCopies)
         {
             minCost = 0M;
             copyCost = 0M;
@@ -792,7 +804,7 @@ namespace DU_Industry_Tool
             {
                 qty /= batchOutput;
             }
-            batches = (int)Math.Ceiling(qty);
+            batches = DUData.FullSchematicQuantities ? (int)Math.Ceiling(qty) : (int)qty;
             return Calculator.CalcSchematic(schematicType, (int)batches, out minCost, out copyCost, out qtyCopies);
         }
     }

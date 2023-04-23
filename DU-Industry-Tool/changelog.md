@@ -1,5 +1,36 @@
 # Changelog
 
+## v1.1.5
+- Transparent Screens: fixed element schematics
+- Excluded Hydrogen, Oxygen, Catalyst from calculation/grid display
+
+## v1.1.4
+- Concrete product ingredients fix
+- Fixed industry for Poly* products
+- Added Kergon-X5
+- Fixed recipe calculation for Refined Materials
+
+## v1.1.3
+- Fixed: calculation of production list was broken
+- Fixed: empty entries in production list caused exception
+
+## v1.1.2
+- Fixed: added 2 missing parts in recipes
+- File|Export to CSV: it now takes the currently entered quantity instead of just 1.
+- File|Export to CSV: renamed "Cost to make" to "Ore Cost" and added columns "Schematic Cost" and "Total Cost"
+
+## v1.1.1
+- Options: added "Full schematic quantities" (default: checked) to calculate
+full costs of schematics (on) or fractional costs (off).
+Results display also shows either e.g. 7 schematics vs. 6.44 schematics.
+
+## v1.1.0
+- Updated recipes to include most changes as per DU patch 1.1
+
+## v1.0.6
+- Applied v1.0.5 corrections to recipes file (was left out due to time constraints)
+- Textual changes from "" to null for unset schematic keys in recipes file
+
 ## v1.0.5
 - More corrections in schematics file with regard to release data
 

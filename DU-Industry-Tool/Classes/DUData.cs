@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using DocumentFormat.OpenXml;
 using Krypton.Toolkit;
 using Newtonsoft.Json;
 
@@ -43,7 +44,7 @@ namespace DU_Industry_Tool
         public void Add(string itemName, decimal qty)
         {
             CheckInstance();
-            if (ProductionBindingList.Any(x => x.Name == itemName)) return;
+            if (string.IsNullOrEmpty(itemName) || ProductionBindingList.Any(x => x.Name == itemName)) return;
             var item = new ProductionItem
             {
                 Name = itemName,
@@ -82,7 +83,10 @@ namespace DU_Industry_Tool
                 ProductionBindingList = new BindingList<ProductionItem>();
                 foreach (var entry in tmp)
                 {
-                    ProductionBindingList.Add(entry);
+                    if (!string.IsNullOrEmpty(entry?.Name))
+                    {
+                        ProductionBindingList.Add(entry);
+                    }
                 }
                 ListLoaded = true;
                 Filepath = filename;
@@ -157,7 +161,7 @@ namespace DU_Industry_Tool
                      *                        1667 L Pure Sulfur
                      *
                      */
-                    if (prod.Name == prodItem.Name)
+                    if (prod.Name.Equals(prodItem.Name, StringComparison.InvariantCultureIgnoreCase))
                     {
                         prod.Quantity = prodItem.Quantity;
                         prod.Level = calc.Tier;
@@ -184,7 +188,7 @@ namespace DU_Industry_Tool
                         continue;
                     if (rec2.IsPlasma) continue;
                     prod.IsByproduct = true;
-                    prod.Name += " (B)";
+                    prod.Name += DUData.ByproductMarker;
                     prod.Quantity *= calc.OutputMultiplier;
                     prod.Quantity *= batchCount;
                     cmp.Products.Add(prod);
@@ -253,17 +257,18 @@ namespace DU_Industry_Tool
         ///<br>which can contain any amount of items and is created with the</br>
         ///<br>help of the Production List dialogue/ribbon buttons.</br>
         ///</summary>
+        public static bool FullSchematicQuantities { get; set; }
         public static bool ProductionListMode { get; set; }
         public static SchematicRecipe CompoundRecipe { get; set; }
-        public const string CompoundName = "COMPOUNDLIST";
-        public const string ProductionListTitle = "Production List";
+        public static readonly string CompoundName = "COMPOUNDLIST";
+        public static readonly string ProductionListTitle = "Production List";
         #endregion
 
-        public const string SubpartSectionTitle = "Subpart";
-        public const string IndustryTitle = "Industry";
-        public const string SchematicsTitle = "Schematics";
-        public const string PlasmaStart = "Relic Plasma";
-        public const string ByproductMarker = " (B)";
+        public static readonly string SubpartSectionTitle = "Subpart";
+        public static readonly string IndustryTitle = "Industry";
+        public static readonly string SchematicsTitle = "Schematics";
+        public static readonly string PlasmaStart = "Relic Plasma";
+        public static readonly string ByproductMarker = " (B)";
 
         ///<summary>
         ///<br>Returns true if result was created as a clone of a recipe identified by key "recipeKey".</br>
